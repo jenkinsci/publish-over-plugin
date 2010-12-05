@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.jvnet.hudson.plugins</groupId>
+		<artifactId>plugin</artifactId>
+		<version>1.325</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<groupId>org.jvnet.hudson.plugins</groupId>
+	<artifactId>bap-publisher</artifactId>
+	<packaging>jar</packaging>
+	<name>Bap Publisher</name>
+	<version>0.1-SNAPSHOT</version>
+	<description>Send build artifacts somewhere.</description>
+
+	<developers>
+		<developer>
+			<id>bap</id>
+			<name>Bap</name>
+		</developer>
+	</developers>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.8.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymockclassextension</artifactId>
+			<version>2.4</version>
+			<scope>test</scope>
+		</dependency>
+        
+	</dependencies>
+
+</project>
+
