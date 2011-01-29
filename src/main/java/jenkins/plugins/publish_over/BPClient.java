@@ -1,8 +1,7 @@
-package hudson.plugins.bap_publisher;
+package jenkins.plugins.publish_over;
 
 import hudson.FilePath;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 public interface BPClient<TRANSFER extends BPTransfer> {

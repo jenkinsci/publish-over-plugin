@@ -1,4 +1,4 @@
-package hudson.plugins.bap_publisher;
+package jenkins.plugins.publish_over;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;

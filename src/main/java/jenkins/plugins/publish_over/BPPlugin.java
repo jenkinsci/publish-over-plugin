@@ -1,4 +1,4 @@
-package hudson.plugins.bap_publisher;
+package jenkins.plugins.publish_over;
 
 import hudson.FilePath;
 import hudson.Launcher;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BPClient> extends Notifier implements BPHostConfigurationAccess<CLIENT> {
 
-    private static final String PROMOTION_CLASS_NAME = "hudson.plugins.promoted_builds.Promotion";
+    private static final String PROMOTION_CLASS_NAME = "jenkins.plugins.promoted_builds.Promotion";
 
     private BPInstanceConfig delegate;
     private String consolePrefix;

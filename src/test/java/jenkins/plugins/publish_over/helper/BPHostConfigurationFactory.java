@@ -1,9 +1,9 @@
-package hudson.plugins.bap_publisher.helper;
+package jenkins.plugins.publish_over.helper;
 
-import hudson.plugins.bap_publisher.BPBuildInfo;
-import hudson.plugins.bap_publisher.BPClient;
-import hudson.plugins.bap_publisher.BPHostConfiguration;
-import hudson.plugins.bap_publisher.BapPublisherException;
+import jenkins.plugins.publish_over.BPBuildInfo;
+import jenkins.plugins.publish_over.BPClient;
+import jenkins.plugins.publish_over.BPHostConfiguration;
+import jenkins.plugins.publish_over.BapPublisherException;
 
 import static org.mockito.Mockito.mock;
 

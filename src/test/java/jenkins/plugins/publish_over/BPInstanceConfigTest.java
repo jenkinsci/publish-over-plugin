@@ -1,8 +1,8 @@
-package hudson.plugins.bap_publisher;
+package jenkins.plugins.publish_over;
 
 import hudson.model.Result;
-import hudson.plugins.bap_publisher.helper.BPBuildInfoFactory;
-import hudson.plugins.bap_publisher.helper.BPHostConfigurationFactory;
+import jenkins.plugins.publish_over.helper.BPBuildInfoFactory;
+import jenkins.plugins.publish_over.helper.BPHostConfigurationFactory;
 import org.easymock.classextension.EasyMock;
 import org.easymock.classextension.IMocksControl;
 import org.junit.AfterClass;

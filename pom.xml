@@ -5,14 +5,14 @@
 	<parent>
 		<groupId>org.jvnet.hudson.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.325</version>
+		<version>1.388</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
 	<groupId>org.jvnet.hudson.plugins</groupId>
-	<artifactId>bap-publisher</artifactId>
+	<artifactId>publish-over</artifactId>
 	<packaging>jar</packaging>
-	<name>Bap Publisher</name>
+	<name>Publish Over</name>
 	<version>0.1-SNAPSHOT</version>
 	<description>Send build artifacts somewhere.</description>
 

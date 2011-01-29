@@ -1,4 +1,4 @@
-package hudson.plugins.bap_publisher;
+package jenkins.plugins.publish_over;
 
 import hudson.FilePath;
 import hudson.model.TaskListener;
@@ -15,7 +15,7 @@ import java.util.Calendar;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static hudson.plugins.bap_publisher.InputStreamMatcher.streamContains;
+import static jenkins.plugins.publish_over.InputStreamMatcher.streamContains;
 import static junit.framework.Assert.assertEquals;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertSame;

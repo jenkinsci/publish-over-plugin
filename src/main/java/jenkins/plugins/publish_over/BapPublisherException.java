@@ -1,4 +1,4 @@
-package hudson.plugins.bap_publisher;
+package jenkins.plugins.publish_over;
 
 public class BapPublisherException extends RuntimeException {
 

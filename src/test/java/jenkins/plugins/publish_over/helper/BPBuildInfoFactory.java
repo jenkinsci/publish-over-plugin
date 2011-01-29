@@ -1,8 +1,8 @@
-package hudson.plugins.bap_publisher.helper;
+package jenkins.plugins.publish_over.helper;
 
 import hudson.FilePath;
 import hudson.model.TaskListener;
-import hudson.plugins.bap_publisher.BPBuildInfo;
+import jenkins.plugins.publish_over.BPBuildInfo;
 
 import java.io.File;
 import java.util.Calendar;

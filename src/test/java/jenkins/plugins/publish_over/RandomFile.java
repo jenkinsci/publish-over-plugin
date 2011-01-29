@@ -1,4 +1,4 @@
-package hudson.plugins.bap_publisher;
+package jenkins.plugins.publish_over;
 
 import org.apache.commons.io.FileUtils;
 
@@ -27,9 +27,8 @@ public class RandomFile {
         contents = new byte[size];
         random.nextBytes(contents);
         File parent = file.getParentFile();
-        if (!parent.exists()) {
+        if (!parent.exists())
             parent.mkdirs();
-        }
         try {
             FileUtils.writeByteArrayToFile(file, contents);
         } catch (IOException ioe) {
