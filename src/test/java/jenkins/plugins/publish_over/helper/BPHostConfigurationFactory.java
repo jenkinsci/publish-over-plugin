@@ -45,7 +45,7 @@ public class BPHostConfigurationFactory {
         return config;
     }
     
-    public static class ConcreteBPHostConfiguration<CLIENT extends BPClient> extends BPHostConfiguration<CLIENT> {
+    public static class ConcreteBPHostConfiguration<CLIENT extends BPClient> extends BPHostConfiguration<CLIENT, Object> {
         
         private CLIENT client;
 

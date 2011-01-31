@@ -43,7 +43,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BPClient> extends Notifier implements BPHostConfigurationAccess<CLIENT> {
+public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BPClient, COMMON_CONFIG> 
+            extends Notifier implements BPHostConfigurationAccess<CLIENT, COMMON_CONFIG> {
 
     private static final String PROMOTION_CLASS_NAME = "jenkins.plugins.promoted_builds.Promotion";
 

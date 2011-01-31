@@ -24,6 +24,6 @@
 
 package jenkins.plugins.publish_over;
 
-public interface BPHostConfigurationAccess<CLIENT extends BPClient> {
-    BPHostConfiguration<CLIENT> getConfiguration(String name);
+public interface BPHostConfigurationAccess<CLIENT extends BPClient, COMMON_CONFIG> {
+    BPHostConfiguration<CLIENT, COMMON_CONFIG> getConfiguration(String name);
 }

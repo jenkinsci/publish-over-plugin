@@ -43,19 +43,27 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TreeMap;
 
-public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration> extends BuildStepDescriptor<Publisher> {
+public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_CONFIG> 
+            extends BuildStepDescriptor<Publisher> {
 
     private final transient Log log = LogFactory.getLog(BPPluginDescriptor.class);
-    private final CopyOnWriteList<HOST_CONFIG> hostConfigurations = new CopyOnWriteList<HOST_CONFIG>();
-    private final Class<HOST_CONFIG> hostConfigClass;
-    private final DescriptorMessages msg;
+    private DescriptorMessages msg;
+    private Class<COMMON_CONFIG> commonConfigClass;
+    private Class<HOST_CONFIG> hostConfigClass;
+    private COMMON_CONFIG commonConfig;
+    private CopyOnWriteList<HOST_CONFIG> hostConfigurations = new CopyOnWriteList<HOST_CONFIG>();
 
-    public BPPluginDescriptor(DescriptorMessages messages, Class pluginClass, Class<HOST_CONFIG> hostConfigClass) {
+    public BPPluginDescriptor(DescriptorMessages messages, Class pluginClass, Class<HOST_CONFIG> hostConfigClass, 
+                              Class<COMMON_CONFIG> commonConfigClass) {
         super(pluginClass);
         load();
         this.hostConfigClass = hostConfigClass;
+        this.commonConfigClass = commonConfigClass;
         this.msg = messages;
     }
+    
+    public COMMON_CONFIG getCommonConfig() { return commonConfig; }
+    public void setCommonConfig(COMMON_CONFIG commonConfig) { this.commonConfig = commonConfig; }
 
     public String getDisplayName() {
         return msg.displayName();
@@ -78,16 +86,27 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration> extends
 		return null;
 	}
 
-    public boolean configure(StaplerRequest req, JSONObject formData) {
+    public boolean configure(StaplerRequest request, JSONObject formData) {
         if (log.isDebugEnabled())
             log.debug(Messages.log_configureGlobal(formData.toString(2)));
-        hostConfigurations.replaceBy(req.bindJSONToList(hostConfigClass, formData.get("hostconfig")));
+        List<HOST_CONFIG> newConfigurations = request.bindJSONToList(hostConfigClass, formData.get("hostconfig"));
+        if (commonConfigClass != null) {
+            commonConfig = request.bindJSON(commonConfigClass, formData.getJSONObject("common"));
+            for (HOST_CONFIG hostConfig : newConfigurations) {
+                hostConfig.setCommonConfig(commonConfig);
+            }
+        }
+        hostConfigurations.replaceBy(newConfigurations);
         save();
         return true;
     }
 
     public FormValidation doTestConnection(StaplerRequest request, StaplerResponse response) {
         HOST_CONFIG hostConfig = request.bindParameters(hostConfigClass, "bap-pub.");
+        if (commonConfigClass != null) {
+            COMMON_CONFIG commonConfig = request.bindParameters(commonConfigClass, "common.");
+            hostConfig.setCommonConfig(commonConfig);
+        }
         BPBuildInfo buildInfo = createDummyBuildInfo();
         try {
             hostConfig.createClient(buildInfo).disconnect();

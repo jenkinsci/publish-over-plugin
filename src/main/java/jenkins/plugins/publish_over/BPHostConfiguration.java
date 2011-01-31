@@ -31,7 +31,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 import java.io.Serializable;
 
-public abstract class BPHostConfiguration<CLIENT extends BPClient> implements Serializable {
+public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG> implements Serializable {
 
     private String name;
 	private String hostname;
@@ -39,6 +39,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient> implements Se
     private String password;
     private String remoteRootDir;
     private int port;
+    private COMMON_CONFIG commonConfig;
 
 	public BPHostConfiguration() {}
 
@@ -68,6 +69,9 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient> implements Se
 
 	public int getPort() { return port; }
 	public void setPort(int port) { this.port = port; }
+    
+    public COMMON_CONFIG getCommonConfig() { return commonConfig; }
+    public void setCommonConfig(COMMON_CONFIG commonConfig) { this.commonConfig = commonConfig; }
 
     public abstract CLIENT createClient(BPBuildInfo buildInfo) throws BapPublisherException;
 
@@ -87,6 +91,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient> implements Se
             .append(username)
             .append(password)
             .append(remoteRootDir)
+            .append(commonConfig)
             .append(port);
     }
     
@@ -100,6 +105,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient> implements Se
             .append(username, that.username)
             .append(password, that.password)
             .append(remoteRootDir, that.remoteRootDir)
+            .append(commonConfig, that.commonConfig)
             .append(port, that.port);
     }
     
@@ -109,6 +115,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient> implements Se
             .append("username", username)
             .append("password", "***")
             .append("remoteRootDir", remoteRootDir)
+            .append("commonConfig", commonConfig)
             .append("port", port);
     }
     
