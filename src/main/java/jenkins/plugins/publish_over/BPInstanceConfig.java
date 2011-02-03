@@ -24,6 +24,7 @@
 
 package jenkins.plugins.publish_over;
 
+import hudson.Util;
 import hudson.model.Result;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -41,21 +42,24 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
 
     static final long serialVersionUID = 1L;
 
+    public static final String ENV_NODE_NAME = "NODE_NAME";
     private static final Log LOG = LogFactory.getLog(BPInstanceConfig.class);
 
     private List<PUBLISHER> publishers;
     private boolean continueOnError;
     private boolean failOnError;
     private boolean alwaysPublishFromMaster;
+    private String masterNodeName;
     private BPHostConfigurationAccess hostConfigurationAccess;
 
     public BPInstanceConfig() {}
 
-	public BPInstanceConfig(List<PUBLISHER> publishers, boolean continueOnError, boolean failOnError, boolean alwaysPublishFromMaster) {
+	public BPInstanceConfig(List<PUBLISHER> publishers, boolean continueOnError, boolean failOnError, boolean alwaysPublishFromMaster, String masterNodeName) {
         setPublishers(publishers);
         this.continueOnError = continueOnError;
         this.failOnError = failOnError;
         this.alwaysPublishFromMaster = alwaysPublishFromMaster;
+        this.masterNodeName = masterNodeName;
 	}
 
     public List<PUBLISHER> getPublishers() {
@@ -78,6 +82,9 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     public boolean isAlwaysPublishFromMaster() { return alwaysPublishFromMaster; }
     public void setAlwaysPublishFromMaster(boolean alwaysPublishFromMaster) { this.alwaysPublishFromMaster = alwaysPublishFromMaster; }
 
+    public String getMasterNodeName() { return masterNodeName; }
+    public void setMasterNodeName(String masterNodeName) { this.masterNodeName = masterNodeName; }
+        
     public void setHostConfigurationAccess(BPHostConfigurationAccess hostConfigurationAccess) {
         this.hostConfigurationAccess = hostConfigurationAccess;
     }
@@ -100,10 +107,24 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
             LOG.debug(builder.toString());
         }
     }
-
+    
+    private void fixEmptyButNotMissingEnvVar(BPBuildInfo buildInfo, String envVarName, String replacement) {
+        if (Util.fixEmptyAndTrim(replacement) == null) return;
+        Map<String, String> env = buildInfo.getEnvVars();
+        if (!env.containsKey(envVarName)) return;
+        if (Util.fixEmptyAndTrim(env.get(envVarName)) == null)
+            env.put(envVarName, replacement);
+    }
+    
+    private void fixMasterNodeName(BPBuildInfo buildInfo) {
+        fixEmptyButNotMissingEnvVar(buildInfo, ENV_NODE_NAME, masterNodeName);
+        fixEmptyButNotMissingEnvVar(buildInfo, BPBuildInfo.PROMOTION_ENV_VARS_PREFIX + ENV_NODE_NAME, masterNodeName);
+    }
+    
     public Result perform(BPBuildInfo buildInfo) {
         Result toReturn = Result.SUCCESS;
         Result onError = failOnError ? Result.FAILURE : Result.UNSTABLE;
+        fixMasterNodeName(buildInfo);
         logEnvVars(buildInfo);
         for (PUBLISHER publisher : publishers) {
             try {
@@ -130,7 +151,8 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     }
     
     protected HashCodeBuilder addToHashCode(HashCodeBuilder builder) {
-        return builder.append(publishers).append(continueOnError).append(failOnError).append(alwaysPublishFromMaster);
+        return builder.append(publishers).append(continueOnError).append(failOnError)
+            .append(alwaysPublishFromMaster).append(masterNodeName);
     }
     
     protected EqualsBuilder createEqualsBuilder(BPInstanceConfig that) {
@@ -141,6 +163,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         return builder.append(publishers, that.publishers)
             .append(continueOnError, that.continueOnError)
             .append(failOnError, that.failOnError)
+            .append(masterNodeName, that.masterNodeName)
             .append(alwaysPublishFromMaster, that.alwaysPublishFromMaster);
     }
     
@@ -148,6 +171,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         return builder.append("publishers", publishers)
             .append("continueOnError", continueOnError)
             .append("failOnError", failOnError)
+            .append("masterNodeName", masterNodeName)
             .append("alwaysPublishFromMaster", alwaysPublishFromMaster);
     }
     

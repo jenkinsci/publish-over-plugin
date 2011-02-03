@@ -26,6 +26,15 @@ package jenkins.plugins.publish_over;
 
 public abstract class BPDefaultClient<TRANSFER extends BPTransfer> implements BPClient<TRANSFER> {
 
+    private String absoluteRemoteRoot;
+    
+    public String getAbsoluteRemoteRoot() { return absoluteRemoteRoot; }
+    public void setAbsoluteRemoteRoot(String absoluteRemoteRoot) { this.absoluteRemoteRoot = absoluteRemoteRoot; }
+
+    public boolean changeToInitialDirectory() {
+        return changeDirectory(absoluteRemoteRoot);
+    }
+
     public void beginTransfers(TRANSFER transfer) { }
 
     public void endTransfers(TRANSFER transfer) { }

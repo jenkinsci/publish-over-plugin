@@ -24,11 +24,13 @@
 
 package jenkins.plugins.publish_over;
 
+import hudson.Util;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG> implements Serializable {
@@ -79,6 +81,18 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
         if (directory == null)
             return false;
         return directory.startsWith("/") || directory.startsWith("\\");
+    }
+    
+    protected void changeToRootDirectory(BPClient client) throws IOException {
+        String remoteRootDir = getRemoteRootDir();
+        if (Util.fixEmptyAndTrim(remoteRootDir) != null) {
+            if (!client.changeDirectory(remoteRootDir))
+                exception(client, Messages.exception_cwdRemoteRoot(remoteRootDir));
+        }
+    }
+    
+    protected void exception(BPClient client, String message) {
+        BapPublisherException.exception(client, message);
     }
     
     protected HashCodeBuilder createHashCodeBuilder() {

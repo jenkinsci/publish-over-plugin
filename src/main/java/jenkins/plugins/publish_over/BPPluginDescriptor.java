@@ -27,6 +27,7 @@ package jenkins.plugins.publish_over;
 import hudson.FilePath;
 import hudson.Util;
 import hudson.model.AbstractProject;
+import hudson.model.Hudson;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Publisher;
@@ -47,13 +48,13 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
             extends BuildStepDescriptor<Publisher> {
 
     private final transient Log log = LogFactory.getLog(BPPluginDescriptor.class);
-    private DescriptorMessages msg;
+    private BPDescriptorMessages msg;
     private Class<COMMON_CONFIG> commonConfigClass;
     private Class<HOST_CONFIG> hostConfigClass;
     private COMMON_CONFIG commonConfig;
     private CopyOnWriteList<HOST_CONFIG> hostConfigurations = new CopyOnWriteList<HOST_CONFIG>();
 
-    public BPPluginDescriptor(DescriptorMessages messages, Class pluginClass, Class<HOST_CONFIG> hostConfigClass, 
+    public BPPluginDescriptor(BPDescriptorMessages messages, Class pluginClass, Class<HOST_CONFIG> hostConfigClass, 
                               Class<COMMON_CONFIG> commonConfigClass) {
         super(pluginClass);
         load();
@@ -126,16 +127,15 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
             new FilePath(new File("")),
             Calendar.getInstance(),
             TaskListener.NULL,
-            ""
+            "",
+            Hudson.getInstance().getRootPath()
         );
     }
 
-    public static interface DescriptorMessages {
-
+    public static interface BPDescriptorMessages {
         String displayName();
         String connectionOK();
         String connectionErr();
-
     }
 
 }

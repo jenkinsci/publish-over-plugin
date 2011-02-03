@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package jenkins.plugins.publish_over;
+package jenkins.plugins.publish_over.helper;
 
 import org.apache.commons.io.FileUtils;
 

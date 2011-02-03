@@ -35,7 +35,7 @@ import java.util.LinkedHashMap;
 public class BPBuildInfoFactory {
     
     public BPBuildInfo createEmpty() {
-        return new BPBuildInfo(new LinkedHashMap<String, String>(), new FilePath(new File("")), Calendar.getInstance(), TaskListener.NULL, "");
+        return new BPBuildInfo(new LinkedHashMap<String, String>(), new FilePath(new File("")), Calendar.getInstance(), TaskListener.NULL, "", new FilePath(new File("")));
     }
     
 }

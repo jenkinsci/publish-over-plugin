@@ -28,10 +28,13 @@ import hudson.FilePath;
 import hudson.Util;
 import hudson.model.TaskListener;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -45,6 +48,7 @@ public class BPBuildInfo implements Serializable {
     private static final String ENV_BUILD_NUMBER = "BUILD_NUMBER";
     
     private Map<String, String> envVars;
+    private FilePath configDir;
     private FilePath baseDirectory;
     private Calendar buildTime;
     private TaskListener listener;
@@ -53,17 +57,21 @@ public class BPBuildInfo implements Serializable {
 
     public BPBuildInfo() {}
 
-    public BPBuildInfo(Map<String, String> envVars, FilePath baseDirectory, Calendar buildTime, TaskListener listener, String consoleMsgPrefix) {
+    public BPBuildInfo(Map<String, String> envVars, FilePath baseDirectory, Calendar buildTime, TaskListener listener, String consoleMsgPrefix, FilePath configDir) {
         this.envVars = envVars;
         this.baseDirectory = baseDirectory;
         this.buildTime = buildTime;
         this.listener = listener;
         this.consoleMsgPrefix = consoleMsgPrefix;
+        this.configDir = configDir;
     }
 
-    public void setEnvVars(Map<String, String> envVars) { this.envVars = envVars; }
     public Map<String, String> getEnvVars() { return envVars; }
+    public void setEnvVars(Map<String, String> envVars) { this.envVars = envVars; }
 
+    public FilePath getConfigDir() { return configDir; }
+    public void setConfigDir(FilePath configDir) { this.configDir = configDir; }
+    
     public FilePath getBaseDirectory() { return baseDirectory; }
     public void setBaseDirectory(FilePath baseDirectory) { this.baseDirectory = baseDirectory; }
 
@@ -78,6 +86,19 @@ public class BPBuildInfo implements Serializable {
 
     public boolean isVerbose() { return verbose; }
     public void setVerbose(boolean verbose) { this.verbose = verbose; }
+    
+    public byte[] readFileFromMaster(String filePath) {
+        FilePath file = configDir.child(filePath);
+        InputStream is = null;
+        try {
+            is = file.read();
+            return IOUtils.toByteArray(is);
+        } catch (IOException ioe) {
+            throw new BapPublisherException(Messages.exception_readFile(filePath, ioe.getLocalizedMessage()), ioe);
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+    }
 
     public String getNormalizedBaseDirectory() {
         try {

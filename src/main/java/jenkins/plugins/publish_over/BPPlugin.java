@@ -28,6 +28,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
+import hudson.model.Hudson;
 import hudson.model.Result;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepMonitor;
@@ -51,8 +52,8 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     private BPInstanceConfig delegate;
     private String consolePrefix;
 
-	public BPPlugin(String consolePrefix, List<PUBLISHER> publishers, boolean continueOnError, boolean failOnError, boolean alwaysPublishFromMaster) {
-		this.delegate = new BPInstanceConfig<PUBLISHER>(publishers, continueOnError, failOnError, alwaysPublishFromMaster);
+	public BPPlugin(String consolePrefix, List<PUBLISHER> publishers, boolean continueOnError, boolean failOnError, boolean alwaysPublishFromMaster, String masterNodeName) {
+		this.delegate = new BPInstanceConfig<PUBLISHER>(publishers, continueOnError, failOnError, alwaysPublishFromMaster, masterNodeName);
         delegate.setHostConfigurationAccess(this);
         this.consolePrefix = consolePrefix;
     }
@@ -69,6 +70,9 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     public boolean isAlwaysPublishFromMaster() { return delegate.isAlwaysPublishFromMaster(); }
     public void setAlwaysPublishFromMaster(boolean alwaysPublishFromMaster) { delegate.setAlwaysPublishFromMaster(alwaysPublishFromMaster); }
 
+    public String getMasterNodeName() { return delegate.getMasterNodeName(); }
+    public void setMasterNodeName(String masterNodeName) { delegate.setMasterNodeName(masterNodeName); }
+    
     public BPInstanceConfig getDelegate() { return delegate; }
     public void setDelegate(BPInstanceConfig delegate) { this.delegate = delegate; }
 
@@ -126,7 +130,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
             console.println(Messages.console_promotion_no());
         }
 
-        Result result = delegate.perform(new BPBuildInfo(envVars, baseDirectory, buildToUse.getTimestamp(), listener, consolePrefix));
+        Result result = delegate.perform(new BPBuildInfo(envVars, baseDirectory, buildToUse.getTimestamp(), listener, consolePrefix, Hudson.getInstance().getRootPath()));
 
         build.setResult(result.combine(build.getResult()));
         return result.isBetterOrEqualTo(Result.UNSTABLE);
