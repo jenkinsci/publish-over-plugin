@@ -47,24 +47,11 @@ public class BapPublisherTest {
     private List<BPTransfer> transfers = new LinkedList<BPTransfer>();
 
     @Test public void testTransfersExecutedAndClientNotified() throws Exception {
-        BPTransfer transfer1 = mockControl.createMock(BPTransfer.class);
-        BPTransfer transfer2 = mockControl.createMock(BPTransfer.class);
-        BPTransfer transfer3 = mockControl.createMock(BPTransfer.class);
+        BPTransfer transfer1 = createHappyTransfer(2);
+        BPTransfer transfer2 = createHappyTransfer(3);
+        BPTransfer transfer3 = createHappyTransfer(4);
         transfers.addAll(Arrays.asList(new BPTransfer[]{transfer1, transfer2, transfer3}));
         BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
-        
-        mockClient.beginTransfers(transfer1);
-        expect(transfer1.transfer(buildInfo, mockClient)).andReturn(2);
-        mockClient.endTransfers(transfer1);
-        
-        mockClient.beginTransfers(transfer2);
-        expect(transfer2.transfer(buildInfo, mockClient)).andReturn(3);
-        mockClient.endTransfers(transfer2);
-        
-        mockClient.beginTransfers(transfer3);
-        expect(transfer3.transfer(buildInfo, mockClient)).andReturn(4);
-        mockClient.endTransfers(transfer3);
-        
         mockClient.disconnectQuietly();
         
         mockControl.replay();
@@ -72,14 +59,23 @@ public class BapPublisherTest {
         mockControl.verify();
     }
     
+    private BPTransfer createHappyTransfer(int numberOfFilesTransferred) throws Exception {
+        BPTransfer transfer = mockControl.createMock(BPTransfer.class);
+        mockClient.beginTransfers(transfer);
+        expect(transfer.hasConfiguredSourceFiles()).andReturn(true);
+        expect(transfer.transfer(buildInfo, mockClient)).andReturn(numberOfFilesTransferred);
+        mockClient.endTransfers(transfer);
+        return transfer;
+    }
+
     @Test public void testExceptionPropagatedAndClientDisconnected() throws Exception {
         BPTransfer transfer1 = mockControl.createMock(BPTransfer.class);
         BPTransfer transfer2 = mockControl.createMock(BPTransfer.class);
         transfers.addAll(Arrays.asList(new BPTransfer[]{transfer1, transfer2}));
         BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
         RuntimeException toThrow = new RuntimeException("xxx");        
-        
         mockClient.beginTransfers(transfer1);
+        expect(transfer1.hasConfiguredSourceFiles()).andReturn(true);
         expect(transfer1.transfer(buildInfo, mockClient)).andThrow(toThrow);
         
         mockClient.disconnectQuietly();

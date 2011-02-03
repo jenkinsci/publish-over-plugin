@@ -75,6 +75,10 @@ public class BPTransfer implements Serializable {
     public boolean isFlatten() { return flatten; }
     public void setFlatten(boolean flatten) { this.flatten = flatten; }
 
+    public boolean hasConfiguredSourceFiles() {
+        return Util.fixEmptyAndTrim(getSourceFiles()) != null;
+    }
+
     public FilePath[] getSourceFiles(BPBuildInfo buildInfo) throws IOException, InterruptedException {
         String expanded = Util.replaceMacro(sourceFiles, buildInfo.getEnvVars());
         if (LOG.isDebugEnabled())
