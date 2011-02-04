@@ -93,6 +93,8 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
                 client.beginTransfers(transfer);
                 if (transfer.hasConfiguredSourceFiles())
                     transferred.add(transfer.transfer(buildInfo, client));
+                else
+                    transferred.add(0);
                 client.endTransfers(transfer);
             }
             printNumberOfFilesTransferred(buildInfo, transferred);

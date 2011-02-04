@@ -87,6 +87,12 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
 		return null;
 	}
 
+    public Publisher newInstance(StaplerRequest req, JSONObject formData) throws FormException {
+        if (log.isDebugEnabled())
+            log.debug(Messages.log_newInstance(formData.toString(2)));
+        return super.newInstance(req, formData);
+    }
+
     public boolean configure(StaplerRequest request, JSONObject formData) {
         if (log.isDebugEnabled())
             log.debug(Messages.log_configureGlobal(formData.toString(2)));

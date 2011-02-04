@@ -74,7 +74,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     public void setMasterNodeName(String masterNodeName) { delegate.setMasterNodeName(masterNodeName); }
     
     public BPInstanceConfig getDelegate() { return delegate; }
-    public void setDelegate(BPInstanceConfig delegate) { this.delegate = delegate; }
+    public void setDelegate(BPInstanceConfig delegate) { this.delegate = delegate; delegate.setHostConfigurationAccess(this); }
 
     public String getConsolePrefix() { return consolePrefix; }
     public void setConsolePrefix(String consolePrefix) { this.consolePrefix = consolePrefix; }
@@ -106,7 +106,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         PrintStream console = listener.getLogger();
-        if (!build.getResult().isBetterOrEqualTo(Result.UNSTABLE)) {
+        if ((build.getResult() != null) && !build.getResult().isBetterOrEqualTo(Result.UNSTABLE)) {
             console.println(Messages.console_notPerforming(build.getResult()));
             return true;
         }
@@ -132,7 +132,10 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
 
         Result result = delegate.perform(new BPBuildInfo(envVars, baseDirectory, buildToUse.getTimestamp(), listener, consolePrefix, Hudson.getInstance().getRootPath()));
 
-        build.setResult(result.combine(build.getResult()));
+        if (build.getResult() != null)
+            build.setResult(result.combine(build.getResult()));
+        else 
+            build.setResult(result);
         return result.isBetterOrEqualTo(Result.UNSTABLE);
 	}
     
