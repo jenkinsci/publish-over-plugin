@@ -120,10 +120,9 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
             return FormValidation.ok(msg.connectionOK());
         } catch (Exception e) {
             return FormValidation.errorWithMarkup("<p>"
-                    + msg.connectionErr() + "</p><p>"
-                    + Util.escape(hostConfig.toString()) + "</p><pre>"
+                    + msg.connectionErr() + "</p><p><pre>"
                     + Util.escape(e.getClass().getCanonicalName() + ": " + e.getLocalizedMessage())
-                    + "</pre>");
+                    + "</pre></p>");
         }
     }
 
