@@ -37,7 +37,7 @@
 	<artifactId>publish-over</artifactId>
 	<packaging>jar</packaging>
 	<name>Publish Over</name>
-	<version>0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<description>Send build artifacts somewhere.</description>
 
     <licenses>
