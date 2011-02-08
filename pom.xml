@@ -34,8 +34,6 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 
-    <groupId>org.jvnet.hudson.plugins</groupId>
-	<!--<groupId>org.jenkins-ci.plugins</groupId>-->
 	<artifactId>publish-over</artifactId>
 	<packaging>jar</packaging>
 	<name>Publish Over</name>
@@ -76,6 +74,18 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+    
+    <scm>
+        <connection>scm:git:git://github.com/jenkinsci/publish-over-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:jenkinsci/publish-over-plugin.git</developerConnection>
+    </scm>
+    
+    <distributionManagement>
+        <repository>
+            <id>maven.jenkins-ci.org</id>
+            <url>http://maven.jenkins-ci.org:8081/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
+    
 </project>
 
