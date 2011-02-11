@@ -36,7 +36,6 @@ import java.util.List;
 
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
 
 public class BapPublisherTest {
     
@@ -91,24 +90,79 @@ public class BapPublisherTest {
     }
     
     @Test public void testVerbositySetInBuildInfo() throws Exception {
-        BPTransfer transferQuiet = new BPTransfer("", "", "", false, false) {
-            public int transfer(BPBuildInfo buildInfo, BPClient client) throws Exception {
-                assertFalse(buildInfo.isVerbose());
-                return 5;
-            }
-        };
-        BPTransfer transferVerbose = new BPTransfer("", "", "", false, false) {
-            public int transfer(BPBuildInfo buildInfo, BPClient client) throws Exception {
-                assertTrue(buildInfo.isVerbose());
-                return 5;
-            }
-        };
-        BPHostConfiguration hostConfig = new BPHostConfigurationFactory().create("TEST-CONFIG", mock(BPClient.class));
-        
-        BapPublisher publisher = new BapPublisher(hostConfig.getName(), false, Arrays.asList(new BPTransfer[]{transferQuiet, transferQuiet}));
-        publisher.perform(hostConfig, buildInfo);
-        publisher = new BapPublisher(hostConfig.getName(), true, Arrays.asList(new BPTransfer[]{transferVerbose, transferVerbose}));
-        publisher.perform(hostConfig, buildInfo);
+        BapPublisher publisher = new BapPublisher(null, false, null);
+        publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
+        assertFalse(buildInfo.isVerbose());
+        publisher.setVerbose(true);
+        publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
+        assertTrue(buildInfo.isVerbose());
     }
+    
+    @Test public void testEnvironmentUntouchedIfNotPromotion() {
+        assertNotSame(buildInfo, buildInfo.getCurrentBuildEnv());
+        BapPublisher publisher = new BapPublisher(null, false, null);
+        publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
+        assertSame(buildInfo.getCurrentBuildEnv().getEnvVars(), buildInfo.getEnvVars());
+        assertSame(buildInfo.getCurrentBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
+        assertSame(buildInfo.getCurrentBuildEnv().getBuildTime(), buildInfo.getBuildTime());
+    }
+    
+    private void assertEffectiveBuildInfoNot(BPBuildInfo buildInfo, BPBuildEnv buildEnv) throws Exception {
+        assertNotSame(buildEnv.getEnvVars(), buildInfo.getEnvVars());
+        assertNotSame(buildEnv.getBaseDirectory(), buildInfo.getBaseDirectory());
+        assertNotSame(buildEnv.getBuildTime(), buildInfo.getBuildTime());
+    }
+    
+    @Test public void testEnvironmentIsTargetBuildIfInPromotion() {
+        BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
+        buildInfo.setTargetBuildEnv(target);
+        String promoJobName = "promo";
+        String targetJobName = "job";
+        String envVarName = "JOB_NAME";
+        target.getEnvVars().put(envVarName, targetJobName);
+        buildInfo.getCurrentBuildEnv().getEnvVars().put(envVarName, promoJobName);
+        assertNotSame(buildInfo, target);
+        BapPublisher publisher = new BapPublisher(null, false, null);
+        publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
+        assertSame(buildInfo.getTargetBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
+        assertSame(buildInfo.getTargetBuildEnv().getBuildTime(), buildInfo.getBuildTime());
+        assertEquals(buildInfo.getEnvVars().get(envVarName), targetJobName);
+        assertEquals(buildInfo.getEnvVars().get(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX + envVarName), promoJobName);
+    }
+    
+    @Test public void testEnvironmentCanSelectWorkspaceForPromotion() {
+        BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
+        buildInfo.setTargetBuildEnv(target);
+        String promoJobName = "promo";
+        String targetJobName = "job";
+        String envVarName = "JOB_NAME";
+        target.getEnvVars().put(envVarName, targetJobName);
+        buildInfo.getCurrentBuildEnv().getEnvVars().put(envVarName, promoJobName);
+        assertNotSame(buildInfo, target);
+        BapPublisher publisher = new BapPublisher(null, false, null, true, false);
+        publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
+        assertSame(buildInfo.getCurrentBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
+        assertSame(buildInfo.getTargetBuildEnv().getBuildTime(), buildInfo.getBuildTime());
+        assertEquals(buildInfo.getEnvVars().get(envVarName), targetJobName);
+        assertEquals(buildInfo.getEnvVars().get(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX + envVarName), promoJobName);
+    }
+    
+    @Test public void testEnvironmentCanSelectPromotionTimestampForRemoteDir() {
+        BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
+        buildInfo.setTargetBuildEnv(target);
+        String promoJobName = "promo";
+        String targetJobName = "job";
+        String envVarName = "JOB_NAME";
+        target.getEnvVars().put(envVarName, targetJobName);
+        buildInfo.getCurrentBuildEnv().getEnvVars().put(envVarName, promoJobName);
+        assertNotSame(buildInfo, target);
+        BapPublisher publisher = new BapPublisher(null, false, null, false, true);
+        publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
+        assertSame(buildInfo.getTargetBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
+        assertSame(buildInfo.getCurrentBuildEnv().getBuildTime(), buildInfo.getBuildTime());
+        assertEquals(buildInfo.getEnvVars().get(envVarName), targetJobName);
+        assertEquals(buildInfo.getEnvVars().get(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX + envVarName), promoJobName);
+    }
+    
     
 }

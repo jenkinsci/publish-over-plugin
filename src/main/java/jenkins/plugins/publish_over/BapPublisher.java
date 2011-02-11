@@ -41,21 +41,35 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     private String configName;
     private boolean verbose;
 	private List<TRANSFER> transfers;
+    private boolean useWorkspaceInPromotion;
+    private boolean usePromotionTimestamp;
 
     public BapPublisher() {}
 
-	public BapPublisher(String configName, boolean verbose, List<TRANSFER> transfers) {
+    public BapPublisher(String configName, boolean verbose, List<TRANSFER> transfers) {
+        this(configName, verbose, transfers, false, false);
+    }
+    
+	public BapPublisher(String configName, boolean verbose, List<TRANSFER> transfers, boolean useWorkspaceInPromotion, boolean usePromotionTimestamp) {
 		this.configName = configName;
         this.verbose = verbose;
 		setTransfers(transfers);
+        this.useWorkspaceInPromotion = useWorkspaceInPromotion;
+        this.usePromotionTimestamp = usePromotionTimestamp;
 	}
 
     public String getConfigName() { return configName; }
     public void setConfigName(String configName) { this.configName = configName; }
 
+    public boolean isUseWorkspaceInPromotion() { return useWorkspaceInPromotion; }
+    public void setUseWorkspaceInPromotion(boolean useWorkspaceInPromotion) { this.useWorkspaceInPromotion = useWorkspaceInPromotion; }
+    
+    public boolean isUsePromotionTimestamp() { return usePromotionTimestamp; }
+    public void setUsePromotionTimestamp(boolean usePromotionTimestamp) { this.usePromotionTimestamp = usePromotionTimestamp; }
+    
     public boolean isVerbose() { return verbose; }
     public void setVerbose(boolean verbose) { this.verbose = verbose; }
-
+    
     public List<TRANSFER> getTransfers() {
         return transfers;
     }
@@ -85,6 +99,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     }
 
     public void setEffectiveEnvironmentInBuildInfo(BPBuildInfo buildInfo) {
+        buildInfo.setVerbose(verbose);
         BPBuildEnv current = buildInfo.getCurrentBuildEnv();
         BPBuildEnv target = buildInfo.getTargetBuildEnv();
         if (target == null) {
@@ -92,8 +107,8 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             buildInfo.setBaseDirectory(current.getBaseDirectory());
             buildInfo.setBuildTime(current.getBuildTime());
         } else {
-            buildInfo.setBaseDirectory(target.getBaseDirectory());
-            buildInfo.setBuildTime(target.getBuildTime());
+            buildInfo.setBaseDirectory(useWorkspaceInPromotion ? current.getBaseDirectory() : target.getBaseDirectory());
+            buildInfo.setBuildTime(usePromotionTimestamp ? current.getBuildTime() : target.getBuildTime());
             Map<String, String> effectiveEnvVars = current.getEnvVarsWithPrefix(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX);
             effectiveEnvVars.putAll(target.getEnvVars());
             buildInfo.setEnvVars(effectiveEnvVars);
@@ -101,7 +116,6 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     }
 
     public void perform(BPHostConfiguration hostConfig, BPBuildInfo buildInfo) throws Exception {
-        buildInfo.setVerbose(verbose);
         buildInfo.println(Messages.console_connecting(configName));
         BPClient client = hostConfig.createClient(buildInfo);
         List<Integer> transferred = new ArrayList<Integer>();
@@ -126,7 +140,8 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     }
     
     protected HashCodeBuilder addToHashCode(HashCodeBuilder builder) {
-        return builder.append(configName).append(verbose).append(transfers);
+        return builder.append(configName).append(verbose).append(transfers)
+            .append(useWorkspaceInPromotion).append(usePromotionTimestamp);
     }
     
     protected EqualsBuilder createEqualsBuilder(BapPublisher that) {
@@ -136,13 +151,17 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     protected EqualsBuilder addToEquals(EqualsBuilder builder, BapPublisher that) {
         return builder.append(configName, that.configName)
             .append(verbose, that.verbose)
-            .append(transfers, that.transfers);
+            .append(transfers, that.transfers)
+            .append(useWorkspaceInPromotion, that.useWorkspaceInPromotion)
+            .append(usePromotionTimestamp, that.usePromotionTimestamp);
     }
     
     protected ToStringBuilder addToToString(ToStringBuilder builder) {
         return builder.append("configName", configName)
             .append("verbose", verbose)
-            .append("transfers", transfers);
+            .append("transfers", transfers)
+            .append("useWorkspaceInPromotion", useWorkspaceInPromotion)
+            .append("usePromotionTimestamp", usePromotionTimestamp);
     }
     
     public boolean equals(Object o) {
