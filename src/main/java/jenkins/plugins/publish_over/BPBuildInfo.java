@@ -32,52 +32,34 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Map;
 
-public class BPBuildInfo implements Serializable {
+public class BPBuildInfo extends BPBuildEnv {
 
     static final long serialVersionUID = 1L;
     public static final String PROMOTION_ENV_VARS_PREFIX = "promotion_";
-    private static final String ENV_JOB_NAME = "JOB_NAME";
-    private static final String ENV_BUILD_NUMBER = "BUILD_NUMBER";
     
-    private Map<String, String> envVars;
     private FilePath configDir;
-    private FilePath baseDirectory;
-    private Calendar buildTime;
     private TaskListener listener;
     private boolean verbose;
     private String consoleMsgPrefix;
+    private BPBuildEnv currentBuildEnv;
+    private BPBuildEnv targetBuildEnv;
 
     public BPBuildInfo() {}
 
-    public BPBuildInfo(Map<String, String> envVars, FilePath baseDirectory, Calendar buildTime, TaskListener listener, String consoleMsgPrefix, FilePath configDir) {
-        this.envVars = envVars;
-        this.baseDirectory = baseDirectory;
-        this.buildTime = buildTime;
+    public BPBuildInfo(TaskListener listener, String consoleMsgPrefix, FilePath configDir, BPBuildEnv currentBuildEnv, BPBuildEnv targetBuildEnv) {
         this.listener = listener;
         this.consoleMsgPrefix = consoleMsgPrefix;
         this.configDir = configDir;
+        this.currentBuildEnv = currentBuildEnv;
+        this.targetBuildEnv = targetBuildEnv;
     }
-
-    public Map<String, String> getEnvVars() { return envVars; }
-    public void setEnvVars(Map<String, String> envVars) { this.envVars = envVars; }
 
     public FilePath getConfigDir() { return configDir; }
     public void setConfigDir(FilePath configDir) { this.configDir = configDir; }
     
-    public FilePath getBaseDirectory() { return baseDirectory; }
-    public void setBaseDirectory(FilePath baseDirectory) { this.baseDirectory = baseDirectory; }
-
-    public Calendar getBuildTime() { return buildTime; }
-    public void setBuildTime(Calendar buildTime) { this.buildTime = buildTime; }
-
     public TaskListener getListener() { return listener; }
     public void setListener(TaskListener listener) { this.listener = listener; }
 
@@ -87,6 +69,12 @@ public class BPBuildInfo implements Serializable {
     public boolean isVerbose() { return verbose; }
     public void setVerbose(boolean verbose) { this.verbose = verbose; }
     
+    public BPBuildEnv getCurrentBuildEnv() { return currentBuildEnv; }
+    public void setCurrentBuildEnv(BPBuildEnv currentBuildEnv) { this.currentBuildEnv = currentBuildEnv; }
+
+    public BPBuildEnv getTargetBuildEnv() { return targetBuildEnv; }
+    public void setTargetBuildEnv(BPBuildEnv targetBuildEnv) { this.targetBuildEnv = targetBuildEnv; }
+
     public byte[] readFileFromMaster(String filePath) {
         FilePath file = configDir.child(filePath);
         InputStream is = null;
@@ -97,14 +85,6 @@ public class BPBuildInfo implements Serializable {
             throw new BapPublisherException(Messages.exception_readFile(filePath, ioe.getLocalizedMessage()), ioe);
         } finally {
             IOUtils.closeQuietly(is);
-        }
-    }
-
-    public String getNormalizedBaseDirectory() {
-        try {
-            return baseDirectory.toURI().normalize().getPath();
-        } catch (Exception e) {
-            throw new RuntimeException(Messages.exception_normalizeDirectory(baseDirectory), e);
         }
     }
 
@@ -139,32 +119,12 @@ public class BPBuildInfo implements Serializable {
             println(message);
         }
     }
-    
-    private String safeGetNormalizedBaseDirectory() {
-        try {
-            return getNormalizedBaseDirectory();
-        } catch (RuntimeException re) {
-            return re.getLocalizedMessage();
-        }
-    }
-    
-    private String safeGetBuildTime() {
-        try {
-            return DateFormat.getDateTimeInstance().format(buildTime.getTime());
-        } catch (RuntimeException re) {
-            return re.getLocalizedMessage();
-        }
-    }
-    
+ 
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-               .append(ENV_JOB_NAME, envVars.get(ENV_JOB_NAME))
-               .append(ENV_BUILD_NUMBER, envVars.get(ENV_BUILD_NUMBER))
-               .append(PROMOTION_ENV_VARS_PREFIX + ENV_JOB_NAME, envVars.get(PROMOTION_ENV_VARS_PREFIX + ENV_JOB_NAME))
-               .append(PROMOTION_ENV_VARS_PREFIX + ENV_BUILD_NUMBER, envVars.get(PROMOTION_ENV_VARS_PREFIX + ENV_BUILD_NUMBER))
-               .append("baseDirectory", safeGetNormalizedBaseDirectory())
-               .append("buildTime", safeGetBuildTime())
-               .toString();
+        return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE))
+            .append("currentBuildEnv", currentBuildEnv)
+            .append("targetBuildEnv", targetBuildEnv)
+            .toString();
 	}
 
 }

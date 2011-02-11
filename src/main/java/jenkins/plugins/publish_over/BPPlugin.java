@@ -47,7 +47,8 @@ import java.util.Map;
 public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BPClient, COMMON_CONFIG> 
             extends Notifier implements BPHostConfigurationAccess<CLIENT, COMMON_CONFIG> {
 
-    private static final String PROMOTION_CLASS_NAME = "jenkins.plugins.promoted_builds.Promotion";
+    public static final String PROMOTION_JOB_TYPE = "hudson.plugins.promoted_builds.PromotionProcess";
+    public static final String PROMOTION_CLASS_NAME = "hudson.plugins.promoted_builds.Promotion";
 
     private BPInstanceConfig delegate;
     private String consolePrefix;
@@ -84,23 +85,11 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
 	}
 
     private Map<String, String> getEnvironmentVariables(AbstractBuild<?, ?> build, TaskListener listener) {
-        return getEnvironmentVariables(build, listener, null);
-    }
-
-    private Map<String, String> getEnvironmentVariables(AbstractBuild<?, ?> build, TaskListener listener, Map<String, String> promotionVars) {
-        Map<String, String> vars;
         try {
-            vars = build.getEnvironment(listener);
+            return build.getEnvironment(listener);
         } catch (Exception e) {
             throw new RuntimeException(Messages.exception_failedToGetEnvVars(), e);
         }
-        if (promotionVars != null) {
-            String prefix = BPBuildInfo.PROMOTION_ENV_VARS_PREFIX;
-            for (Map.Entry<String, String> entry : promotionVars.entrySet()) {
-                vars.put(prefix + entry.getKey(), entry.getValue());
-            }
-        }
-        return vars;
     }
 
 	@Override
@@ -110,9 +99,8 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
             console.println(Messages.console_notPerforming(build.getResult()));
             return true;
         }
-        Map<String, String> envVars = getEnvironmentVariables(build, listener);
-        FilePath baseDirectory;
-        AbstractBuild<?, ?> buildToUse = build;
+        BPBuildEnv currentBuildEnv = new BPBuildEnv(getEnvironmentVariables(build, listener), build.getWorkspace(), build.getTimestamp());
+        BPBuildEnv targetBuildEnv = null;
         if (PROMOTION_CLASS_NAME.equals(build.getClass().getCanonicalName())) {
             AbstractBuild<?, ?> promoted;
             try {
@@ -121,16 +109,10 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
             } catch (Exception e) {
                 throw new RuntimeException(Messages.exception_failedToGetPromotedBuild(), e);
             }
-            buildToUse = promoted;
-            baseDirectory = new FilePath(promoted.getArtifactsDir());
-            envVars = getEnvironmentVariables(promoted, listener, envVars);
-            console.println(Messages.console_promotion_yes());
-        } else {
-            baseDirectory = build.getWorkspace();
-            console.println(Messages.console_promotion_no());
+            targetBuildEnv = new BPBuildEnv(getEnvironmentVariables(promoted, listener), new FilePath(promoted.getArtifactsDir()), promoted.getTimestamp());
         }
 
-        Result result = delegate.perform(new BPBuildInfo(envVars, baseDirectory, buildToUse.getTimestamp(), listener, consolePrefix, Hudson.getInstance().getRootPath()));
+        Result result = delegate.perform(new BPBuildInfo(listener, consolePrefix, Hudson.getInstance().getRootPath(), currentBuildEnv, targetBuildEnv));
 
         if (build.getResult() != null)
             build.setResult(result.combine(build.getResult()));

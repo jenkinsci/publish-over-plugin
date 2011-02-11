@@ -24,7 +24,6 @@
 
 package jenkins.plugins.publish_over;
 
-import hudson.FilePath;
 import hudson.Util;
 import hudson.model.AbstractProject;
 import hudson.model.Hudson;
@@ -39,10 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import java.io.File;
-import java.util.Calendar;
 import java.util.List;
-import java.util.TreeMap;
 
 public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_CONFIG> 
             extends BuildStepDescriptor<Publisher> {
@@ -128,12 +124,11 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
 
     private BPBuildInfo createDummyBuildInfo() {
         return new BPBuildInfo(
-            new TreeMap<String, String>(),
-            new FilePath(new File("")),
-            Calendar.getInstance(),
             TaskListener.NULL,
             "",
-            Hudson.getInstance().getRootPath()
+            Hudson.getInstance().getRootPath(),
+            null,
+            null
         );
     }
 

@@ -26,6 +26,7 @@ package jenkins.plugins.publish_over;
 
 import hudson.FilePath;
 import hudson.model.TaskListener;
+import jenkins.plugins.publish_over.helper.BPBuildInfoFactory;
 import jenkins.plugins.publish_over.helper.RandomFile;
 import org.apache.commons.lang.StringUtils;
 import org.easymock.classextension.EasyMock;
@@ -44,9 +45,7 @@ import java.util.TreeMap;
 import static jenkins.plugins.publish_over.helper.InputStreamMatcher.streamContains;
 import static junit.framework.Assert.assertEquals;
 import static org.easymock.EasyMock.*;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class BPTransferTest {
     
@@ -58,7 +57,11 @@ public class BPTransferTest {
     
     @Before
     public void setUp() throws Exception {
-        buildInfo = new BPBuildInfo(envVars, new FilePath(baseDir.getRoot()), Calendar.getInstance(), TaskListener.NULL, "", new FilePath(new File("")));
+        BPBuildEnv current = new BPBuildInfoFactory().createEmptyBuildEnv();
+        buildInfo = new BPBuildInfo(TaskListener.NULL, "", new FilePath(new File("")), current, null);
+        buildInfo.setEnvVars(envVars);
+        buildInfo.setBaseDirectory(new FilePath(baseDir.getRoot()));
+        buildInfo.setBuildTime(Calendar.getInstance());
     }
 
     @Test public void testSingleFileInRootWithExplicitPath() throws Exception {

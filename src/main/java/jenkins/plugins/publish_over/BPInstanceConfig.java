@@ -24,7 +24,6 @@
 
 package jenkins.plugins.publish_over;
 
-import hudson.Util;
 import hudson.model.Result;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -36,13 +35,11 @@ import org.apache.commons.logging.LogFactory;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Serializable {
 
     static final long serialVersionUID = 1L;
 
-    public static final String ENV_NODE_NAME = "NODE_NAME";
     private static final Log LOG = LogFactory.getLog(BPInstanceConfig.class);
 
     private List<PUBLISHER> publishers;
@@ -96,37 +93,22 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         return config;
     }
 
-    private void logEnvVars(BPBuildInfo buildInfo) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug(Messages.log_envVars_head());
-            StringBuilder builder = new StringBuilder("\n");
-            for(Map.Entry var : buildInfo.getEnvVars().entrySet()) {
-                builder.append(Messages.log_envVars_pair(var.getKey(),var.getValue()));
-                builder.append("\n");
-            }
-            LOG.debug(builder.toString());
-        }
-    }
-    
-    private void fixEmptyButNotMissingEnvVar(BPBuildInfo buildInfo, String envVarName, String replacement) {
-        if (Util.fixEmptyAndTrim(replacement) == null) return;
-        Map<String, String> env = buildInfo.getEnvVars();
-        if (!env.containsKey(envVarName)) return;
-        if (Util.fixEmptyAndTrim(env.get(envVarName)) == null)
-            env.put(envVarName, replacement);
+    private void fixMasterNodeName(BPBuildInfo buildInfo, BPBuildEnv buildEnv) {
+        if (buildEnv != null)
+            buildEnv.fixMasterNodeName(masterNodeName);
     }
     
     private void fixMasterNodeName(BPBuildInfo buildInfo) {
-        fixEmptyButNotMissingEnvVar(buildInfo, ENV_NODE_NAME, masterNodeName);
-        fixEmptyButNotMissingEnvVar(buildInfo, BPBuildInfo.PROMOTION_ENV_VARS_PREFIX + ENV_NODE_NAME, masterNodeName);
+        fixMasterNodeName(buildInfo, buildInfo.getCurrentBuildEnv());
+        fixMasterNodeName(buildInfo, buildInfo.getTargetBuildEnv());
     }
     
     public Result perform(BPBuildInfo buildInfo) {
         Result toReturn = Result.SUCCESS;
         Result onError = failOnError ? Result.FAILURE : Result.UNSTABLE;
         fixMasterNodeName(buildInfo);
-        logEnvVars(buildInfo);
         for (PUBLISHER publisher : publishers) {
+            publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
             try {
                 BPHostConfiguration hostConfig = getConfiguration(publisher.getConfigName());
                 BPCallablePublisher callablePublisher = new BPCallablePublisher(publisher, hostConfig, buildInfo);

@@ -32,6 +32,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
@@ -81,6 +82,22 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             countString = total + " ( " + StringUtils.join(transferred, " + ") + " )";
         }
         buildInfo.println(Messages.console_transferredXFiles(countString));
+    }
+
+    public void setEffectiveEnvironmentInBuildInfo(BPBuildInfo buildInfo) {
+        BPBuildEnv current = buildInfo.getCurrentBuildEnv();
+        BPBuildEnv target = buildInfo.getTargetBuildEnv();
+        if (target == null) {
+            buildInfo.setEnvVars(current.getEnvVars());
+            buildInfo.setBaseDirectory(current.getBaseDirectory());
+            buildInfo.setBuildTime(current.getBuildTime());
+        } else {
+            buildInfo.setBaseDirectory(target.getBaseDirectory());
+            buildInfo.setBuildTime(target.getBuildTime());
+            Map<String, String> effectiveEnvVars = current.getEnvVarsWithPrefix(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX);
+            effectiveEnvVars.putAll(target.getEnvVars());
+            buildInfo.setEnvVars(effectiveEnvVars);
+        }
     }
 
     public void perform(BPHostConfiguration hostConfig, BPBuildInfo buildInfo) throws Exception {
