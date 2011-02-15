@@ -35,6 +35,7 @@ import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
@@ -102,6 +103,22 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
         hostConfigurations.replaceBy(newConfigurations);
         save();
         return true;
+    }
+    
+    public FormValidation doCheckName(@QueryParameter String value) {
+        return FormValidation.validateRequired(value);
+    }
+    public FormValidation doCheckHostname(@QueryParameter String value) {
+        return FormValidation.validateRequired(value);
+    }
+    public FormValidation doCheckUsername(@QueryParameter String value) {
+        return FormValidation.validateRequired(value);
+    }
+    public FormValidation doCheckPort(@QueryParameter String value) {
+        return FormValidation.validatePositiveInteger(value);
+    }
+    public FormValidation doCheckTimeout(@QueryParameter String value) {
+        return FormValidation.validateNonNegativeInteger(value);
     }
 
     public FormValidation doTestConnection(StaplerRequest request, StaplerResponse response) {
