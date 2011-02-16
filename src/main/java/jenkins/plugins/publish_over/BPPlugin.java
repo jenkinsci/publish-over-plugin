@@ -95,10 +95,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
 	@Override
 	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
         PrintStream console = listener.getLogger();
-        if ((build.getResult() != null) && !build.getResult().isBetterOrEqualTo(Result.UNSTABLE)) {
-            console.println(Messages.console_notPerforming(build.getResult()));
-            return true;
-        }
+        if (!isBuildGoodEnoughToRun(build, console)) return true;
         BPBuildEnv currentBuildEnv = new BPBuildEnv(getEnvironmentVariables(build, listener), build.getWorkspace(), build.getTimestamp());
         BPBuildEnv targetBuildEnv = null;
         if (PROMOTION_CLASS_NAME.equals(build.getClass().getCanonicalName())) {
@@ -121,6 +118,14 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         return result.isBetterOrEqualTo(Result.UNSTABLE);
 	}
     
+    protected boolean isBuildGoodEnoughToRun(AbstractBuild<?, ?> build, PrintStream console) {
+        if ((build.getResult() != null) && !build.getResult().isBetterOrEqualTo(Result.UNSTABLE)) {
+            console.println(Messages.console_notPerforming(build.getResult()));
+            return false;
+        }
+        return true;
+    }
+
     protected HashCodeBuilder createHashCodeBuilder() {
         return addToHashCode(new HashCodeBuilder());
     }
