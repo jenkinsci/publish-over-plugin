@@ -58,22 +58,9 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         delegate.setHostConfigurationAccess(this);
         this.consolePrefix = consolePrefix;
     }
-
-	public List<BapPublisher> getPublishers() { return delegate.getPublishers(); }
-	public void setPublishers(List<BapPublisher> publishers) { delegate.setPublishers(publishers); }
-
-    public boolean isContinueOnError() { return delegate.isContinueOnError(); }
-    public void setContinueOnError(boolean continueOnError) { delegate.setContinueOnError(continueOnError); }
-
-    public boolean isFailOnError() { return delegate.isFailOnError(); }
-    public void setFailOnError(boolean failOnError) { delegate.setFailOnError(failOnError); }
-
-    public boolean isAlwaysPublishFromMaster() { return delegate.isAlwaysPublishFromMaster(); }
-    public void setAlwaysPublishFromMaster(boolean alwaysPublishFromMaster) { delegate.setAlwaysPublishFromMaster(alwaysPublishFromMaster); }
-
-    public String getMasterNodeName() { return delegate.getMasterNodeName(); }
-    public void setMasterNodeName(String masterNodeName) { delegate.setMasterNodeName(masterNodeName); }
     
+    public BPInstanceConfig getInstanceConfig() { return delegate; }
+
     public BPInstanceConfig getDelegate() { return delegate; }
     public void setDelegate(BPInstanceConfig delegate) { this.delegate = delegate; delegate.setHostConfigurationAccess(this); }
 
