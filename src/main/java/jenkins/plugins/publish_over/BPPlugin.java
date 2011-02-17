@@ -86,7 +86,9 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
 
     private Map<String, String> getEnvironmentVariables(AbstractBuild<?, ?> build, TaskListener listener) {
         try {
-            return build.getEnvironment(listener);
+            Map<String, String> env = build.getEnvironment(listener);
+            env.putAll(build.getBuildVariables());
+            return env;
         } catch (Exception e) {
             throw new RuntimeException(Messages.exception_failedToGetEnvVars(), e);
         }
