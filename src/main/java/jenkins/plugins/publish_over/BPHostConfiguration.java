@@ -25,6 +25,7 @@
 package jenkins.plugins.publish_over;
 
 import hudson.Util;
+import hudson.util.Secret;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -39,6 +40,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
 	private String hostname;
     private String username;
     private String password;
+    private Secret secretPassword;
     private String remoteRootDir;
     private int port;
     private COMMON_CONFIG commonConfig;
@@ -49,7 +51,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
 		this.name = name;
 		this.hostname = hostname;
         this.username = username;
-        this.password = password;
+        setPassword(password);
         this.remoteRootDir = remoteRootDir;
         this.port = port;
 	}
@@ -63,8 +65,12 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getPassword() { return Secret.toString(secretPassword); }
+    public void setPassword(String password) { secretPassword = Secret.fromString(password); }
+    
+    public String getEncryptedPassword() {
+        return (secretPassword == null) ? null : secretPassword.getEncryptedValue();
+    }
 
     public String getRemoteRootDir() { return remoteRootDir; }
     public void setRemoteRootDir(String remoteRootDir) { this.remoteRootDir = remoteRootDir; }
@@ -103,7 +109,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
         return builder.append(name)
             .append(hostname)
             .append(username)
-            .append(password)
+            .append(secretPassword)
             .append(remoteRootDir)
             .append(commonConfig)
             .append(port);
@@ -117,7 +123,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
         return builder.append(name, that.name)
             .append(hostname, that.hostname)
             .append(username, that.username)
-            .append(password, that.password)
+            .append(secretPassword, that.secretPassword)
             .append(remoteRootDir, that.remoteRootDir)
             .append(commonConfig, that.commonConfig)
             .append(port, that.port);
@@ -127,7 +133,6 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
         return builder.append("name", name)
             .append("hostname", hostname)
             .append("username", username)
-            .append("password", "***")
             .append("remoteRootDir", remoteRootDir)
             .append("commonConfig", commonConfig)
             .append("port", port);
@@ -146,6 +151,12 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     
     public String toString() {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)).toString();
+    }
+
+    public Object readResolve() {
+        if (password != null)
+            setPassword(password);
+        return this;
     }
 
 }
