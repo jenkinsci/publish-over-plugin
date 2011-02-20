@@ -39,6 +39,10 @@
 	<name>Publish Over</name>
 	<version>0.5-SNAPSHOT</version>
 	<description>Send build artifacts somewhere.</description>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <licenses>
         <license>
