@@ -91,8 +91,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     
     protected void changeToRootDirectory(final BPClient client) throws IOException {
         String remoteRootDir = getRemoteRootDir();
-        if (Util.fixEmptyAndTrim(remoteRootDir) != null) {
-            if (!client.changeDirectory(remoteRootDir))
+        if ((Util.fixEmptyAndTrim(remoteRootDir) != null) && (!client.changeDirectory(remoteRootDir))) {
                 exception(client, Messages.exception_cwdRemoteRoot(remoteRootDir));
         }
     }

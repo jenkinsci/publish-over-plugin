@@ -33,8 +33,6 @@ import hudson.tasks.Publisher;
 import hudson.util.CopyOnWriteList;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -44,7 +42,6 @@ import java.util.List;
 public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_CONFIG> 
             extends BuildStepDescriptor<Publisher> {
 
-    private final transient Log log = LogFactory.getLog(BPPluginDescriptor.class);
     private BPDescriptorMessages msg;
     private Class<COMMON_CONFIG> commonConfigClass;
     private Class<HOST_CONFIG> hostConfigClass;

@@ -93,14 +93,14 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         return config;
     }
 
-    private void fixMasterNodeName(final BPBuildInfo buildInfo, final BPBuildEnv buildEnv) {
+    private void fixMasterNodeNameInEnv(final BPBuildEnv buildEnv) {
         if (buildEnv != null)
             buildEnv.fixMasterNodeName(masterNodeName);
     }
     
     private void fixMasterNodeName(final BPBuildInfo buildInfo) {
-        fixMasterNodeName(buildInfo, buildInfo.getCurrentBuildEnv());
-        fixMasterNodeName(buildInfo, buildInfo.getTargetBuildEnv());
+        fixMasterNodeNameInEnv(buildInfo.getCurrentBuildEnv());
+        fixMasterNodeNameInEnv(buildInfo.getTargetBuildEnv());
     }
     
     public Result perform(final BPBuildInfo buildInfo) {
