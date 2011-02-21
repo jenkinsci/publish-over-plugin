@@ -38,7 +38,7 @@ public class BPCallablePublisher implements FilePath.FileCallable<Void> {
 
     static final long serialVersionUID = 1L;
 
-    private static final transient Log LOG = LogFactory.getLog(BPCallablePublisher.class);
+    private static final Log LOG = LogFactory.getLog(BPCallablePublisher.class);
 
     private BapPublisher publisher;
     private BPHostConfiguration hostConfig;
