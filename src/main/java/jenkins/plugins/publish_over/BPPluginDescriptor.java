@@ -73,13 +73,13 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
     }
     
     public HOST_CONFIG getConfiguration(final String name) {
-		for (HOST_CONFIG configuration : hostConfigurations) {
-			if (configuration.getName().equals(name)) {
-				return configuration;
-			}
-		}
-		return null;
-	}
+        for (HOST_CONFIG configuration : hostConfigurations) {
+            if (configuration.getName().equals(name)) {
+                return configuration;
+            }
+        }
+        return null;
+    }
 
     public boolean configure(final StaplerRequest request, final JSONObject formData) {
         List<HOST_CONFIG> newConfigurations = request.bindJSONToList(hostConfigClass, formData.get("hostconfig"));

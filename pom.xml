@@ -24,20 +24,20 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>org.jvnet.hudson.plugins</groupId>
-		<artifactId>plugin</artifactId>
-		<version>1.388</version>
-	</parent>
+    <parent>
+        <groupId>org.jvnet.hudson.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>1.388</version>
+    </parent>
 
     <groupId>org.jenkins-ci.plugins</groupId>
-	<artifactId>publish-over</artifactId>
-	<packaging>jar</packaging>
-	<name>Publish Over</name>
-	<version>0.5-SNAPSHOT</version>
-	<description>Send build artifacts somewhere.</description>
+    <artifactId>publish-over</artifactId>
+    <packaging>jar</packaging>
+    <name>Publish Over</name>
+    <version>0.5-SNAPSHOT</version>
+    <description>Send build artifacts somewhere.</description>
     
     <properties>
         <java.net.id>bap</java.net.id>        
@@ -51,46 +51,46 @@
         </license>
     </licenses>
 
-	<developers>
-		<developer>
-			<id>bap</id>
-			<name>Bap</name>
-			<email>bap-jenkins@BapIT.co.uk</email>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <id>bap</id>
+            <name>Bap</name>
+            <email>bap-jenkins@BapIT.co.uk</email>
+        </developer>
+    </developers>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>1.8.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<version>2.4</version>
-			<scope>test</scope>
-		</dependency>
+    <dependencies>
         <dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymockclassextension</artifactId>
-			<version>2.4</version>
-			<scope>test</scope>
-		</dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.4</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.8.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>2.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymockclassextension</artifactId>
+            <version>2.4</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.4</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
     
     <scm>
         <connection>scm:git:git://github.com/jenkinsci/publish-over-plugin.git</connection>

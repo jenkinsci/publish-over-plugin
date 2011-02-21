@@ -50,15 +50,15 @@ public class BPTransfer implements Serializable {
     private String sourceFiles;
     private String removePrefix;
     private boolean remoteDirectorySDF;
-	private boolean flatten = true;
+    private boolean flatten = true;
 
-	public BPTransfer(final String sourceFiles, final String remoteDirectory, final String removePrefix, final boolean remoteDirectorySDF, final boolean flatten) {
-		this.sourceFiles = sourceFiles;
-		this.remoteDirectory = remoteDirectory;
+    public BPTransfer(final String sourceFiles, final String remoteDirectory, final String removePrefix, final boolean remoteDirectorySDF, final boolean flatten) {
+        this.sourceFiles = sourceFiles;
+        this.remoteDirectory = remoteDirectory;
         this.removePrefix = removePrefix;
         this.remoteDirectorySDF = remoteDirectorySDF;
         this.flatten = flatten;
-	}
+    }
 
     public String getRemoteDirectory() { return remoteDirectory; }
     public void setRemoteDirectory(final String remoteDirectory) { this.remoteDirectory = remoteDirectory; }

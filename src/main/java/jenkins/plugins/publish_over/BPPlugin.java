@@ -53,8 +53,8 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     private BPInstanceConfig delegate;
     private String consolePrefix;
 
-	public BPPlugin(final String consolePrefix, final List<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName) {
-		this.delegate = new BPInstanceConfig<PUBLISHER>(publishers, continueOnError, failOnError, alwaysPublishFromMaster, masterNodeName);
+    public BPPlugin(final String consolePrefix, final List<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName) {
+        this.delegate = new BPInstanceConfig<PUBLISHER>(publishers, continueOnError, failOnError, alwaysPublishFromMaster, masterNodeName);
         delegate.setHostConfigurationAccess(this);
         this.consolePrefix = consolePrefix;
     }
@@ -68,8 +68,8 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     public void setConsolePrefix(final String consolePrefix) { this.consolePrefix = consolePrefix; }
 
     public BuildStepMonitor getRequiredMonitorService() {
-		return BuildStepMonitor.BUILD;
-	}
+        return BuildStepMonitor.BUILD;
+    }
 
     private Map<String, String> getEnvironmentVariables(final AbstractBuild<?, ?> build, final TaskListener listener) {
         try {
@@ -81,8 +81,8 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         }
     }
 
-	@Override
-	public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener) throws InterruptedException, IOException {
+    @Override
+    public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener) throws InterruptedException, IOException {
         PrintStream console = listener.getLogger();
         if (!isBuildGoodEnoughToRun(build, console)) return true;
         BPBuildEnv currentBuildEnv = new BPBuildEnv(getEnvironmentVariables(build, listener), build.getWorkspace(), build.getTimestamp());
@@ -105,7 +105,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         else 
             build.setResult(result);
         return result.isBetterOrEqualTo(Result.UNSTABLE);
-	}
+    }
     
     protected boolean isBuildGoodEnoughToRun(final AbstractBuild<?, ?> build, final PrintStream console) {
         if ((build.getResult() != null) && !build.getResult().isBetterOrEqualTo(Result.UNSTABLE)) {

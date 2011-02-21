@@ -37,7 +37,7 @@ import java.io.Serializable;
 public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG> implements Serializable {
 
     private String name;
-	private String hostname;
+    private String hostname;
     private String username;
     private String password;
     private Secret secretPassword;
@@ -45,16 +45,16 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     private int port;
     private COMMON_CONFIG commonConfig;
 
-	public BPHostConfiguration() { }
+    public BPHostConfiguration() { }
 
-	public BPHostConfiguration(final String name, final String hostname, final String username, final String password, final String remoteRootDir, final int port) {
-		this.name = name;
-		this.hostname = hostname;
+    public BPHostConfiguration(final String name, final String hostname, final String username, final String password, final String remoteRootDir, final int port) {
+        this.name = name;
+        this.hostname = hostname;
         this.username = username;
         setPassword(password);
         this.remoteRootDir = remoteRootDir;
         this.port = port;
-	}
+    }
 
     public String getName() { return name; }
     public void setName(final String name) { this.name = name; }
@@ -75,8 +75,8 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     public String getRemoteRootDir() { return remoteRootDir; }
     public void setRemoteRootDir(final String remoteRootDir) { this.remoteRootDir = remoteRootDir; }
 
-	public int getPort() { return port; }
-	public void setPort(final int port) { this.port = port; }
+    public int getPort() { return port; }
+    public void setPort(final int port) { this.port = port; }
     
     public COMMON_CONFIG getCommonConfig() { return commonConfig; }
     public void setCommonConfig(final COMMON_CONFIG commonConfig) { this.commonConfig = commonConfig; }

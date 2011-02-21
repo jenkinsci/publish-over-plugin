@@ -40,7 +40,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     
     private String configName;
     private boolean verbose;
-	private List<TRANSFER> transfers;
+    private List<TRANSFER> transfers;
     private boolean useWorkspaceInPromotion;
     private boolean usePromotionTimestamp;
 
@@ -50,13 +50,13 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         this(configName, verbose, transfers, false, false);
     }
     
-	public BapPublisher(final String configName, final boolean verbose, final List<TRANSFER> transfers, final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp) {
-		this.configName = configName;
+    public BapPublisher(final String configName, final boolean verbose, final List<TRANSFER> transfers, final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp) {
+        this.configName = configName;
         this.verbose = verbose;
-		setTransfers(transfers);
+        setTransfers(transfers);
         this.useWorkspaceInPromotion = useWorkspaceInPromotion;
         this.usePromotionTimestamp = usePromotionTimestamp;
-	}
+    }
 
     public String getConfigName() { return configName; }
     public void setConfigName(final String configName) { this.configName = configName; }
@@ -133,7 +133,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             buildInfo.println(Messages.console_disconnecting(configName));
             client.disconnectQuietly();
         }
-	}
+    }
     
     protected HashCodeBuilder createHashCodeBuilder() {
         return addToHashCode(new HashCodeBuilder());

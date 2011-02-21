@@ -51,13 +51,13 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
 
     public BPInstanceConfig() { }
 
-	public BPInstanceConfig(final List<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName) {
+    public BPInstanceConfig(final List<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName) {
         setPublishers(publishers);
         this.continueOnError = continueOnError;
         this.failOnError = failOnError;
         this.alwaysPublishFromMaster = alwaysPublishFromMaster;
         this.masterNodeName = masterNodeName;
-	}
+    }
 
     public List<PUBLISHER> getPublishers() {
         return publishers;
@@ -125,7 +125,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
                     return onError;
             }
         }
-		return toReturn;
+        return toReturn;
     }
     
     protected HashCodeBuilder createHashCodeBuilder() {

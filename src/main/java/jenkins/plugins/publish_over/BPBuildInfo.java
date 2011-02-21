@@ -126,6 +126,6 @@ public class BPBuildInfo extends BPBuildEnv {
             .append("currentBuildEnv", currentBuildEnv)
             .append("targetBuildEnv", targetBuildEnv)
             .toString();
-	}
+    }
 
 }
