@@ -40,7 +40,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
 
     static final long serialVersionUID = 1L;
 
-    private static final Log LOG = LogFactory.getLog(BPInstanceConfig.class);
+    private static final transient Log LOG = LogFactory.getLog(BPInstanceConfig.class);
 
     private List<PUBLISHER> publishers;
     private boolean continueOnError;

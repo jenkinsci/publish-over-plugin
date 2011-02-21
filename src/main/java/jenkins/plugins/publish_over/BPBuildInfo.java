@@ -94,6 +94,7 @@ public class BPBuildInfo extends BPBuildEnv {
         if ((removePrefix != null) && !"".equals(removePrefix.trim())) {
             String expanded = Util.replaceMacro(removePrefix, envVars);
             String toRemove = FilenameUtils.separatorsToUnix(FilenameUtils.normalize(expanded + "/"));
+            // No, sorry FindBugs, I don't understand what your problem is ...
             if ((toRemove != null) && (toRemove.startsWith("/")))
                 toRemove = toRemove.substring(1);
             if (!relativePathToFile.startsWith(toRemove)) {
