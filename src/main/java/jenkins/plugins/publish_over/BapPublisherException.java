@@ -26,11 +26,11 @@ package jenkins.plugins.publish_over;
 
 public class BapPublisherException extends RuntimeException {
 
-    public static void exception(BPClient client, String message) {
+    public static void exception(final BPClient client, final String message) {
         exception(client, message, null);
     }
 
-    public static void exception(BPClient client, String message, Throwable throwable) {
+    public static void exception(final BPClient client, final String message, final Throwable throwable) {
         client.disconnectQuietly();
         if (throwable != null)
             throw new BapPublisherException(message, throwable);
@@ -38,11 +38,11 @@ public class BapPublisherException extends RuntimeException {
             throw new BapPublisherException(message);
     }
 
-    public BapPublisherException(String message) {
+    public BapPublisherException(final String message) {
         super(message);
     }
 
-    public BapPublisherException(String message, Throwable t) {
+    public BapPublisherException(final String message, Throwable t) {
         super(message, t);
     }
 

@@ -51,22 +51,22 @@ public class BPBuildEnv implements Serializable {
 
     public BPBuildEnv() { }
 
-    public BPBuildEnv(Map<String, String> envVars, FilePath baseDirectory, Calendar buildTime) {
+    public BPBuildEnv(final Map<String, String> envVars, final FilePath baseDirectory, final Calendar buildTime) {
         this.envVars = envVars;
         this.baseDirectory = baseDirectory;
         this.buildTime = buildTime;
     }
 
     public Map<String, String> getEnvVars() { return envVars; }
-    public void setEnvVars(Map<String, String> envVars) { this.envVars = envVars; }
+    public void setEnvVars(final Map<String, String> envVars) { this.envVars = envVars; }
     
     public FilePath getBaseDirectory() { return baseDirectory; }
-    public void setBaseDirectory(FilePath baseDirectory) { this.baseDirectory = baseDirectory; }
+    public void setBaseDirectory(final FilePath baseDirectory) { this.baseDirectory = baseDirectory; }
 
     public Calendar getBuildTime() { return buildTime; }
-    public void setBuildTime(Calendar buildTime) { this.buildTime = buildTime; }
+    public void setBuildTime(final Calendar buildTime) { this.buildTime = buildTime; }
     
-    public Map<String, String> getEnvVarsWithPrefix(String prefix) {
+    public Map<String, String> getEnvVarsWithPrefix(final String prefix) {
         Map<String, String> prefixed = new LinkedHashMap<String, String>();
         for (Map.Entry<String, String> entry : envVars.entrySet()) {
             prefixed.put(prefix + entry.getKey(), entry.getValue());
@@ -86,11 +86,11 @@ public class BPBuildEnv implements Serializable {
         }
     }
     
-    public void fixMasterNodeName(String masterNodeName) {
+    public void fixMasterNodeName(final String masterNodeName) {
         fixEmptyButNotMissingEnvVar(ENV_NODE_NAME, masterNodeName);
     }
     
-    private void fixEmptyButNotMissingEnvVar(String envVarName, String replacement) {
+    private void fixEmptyButNotMissingEnvVar(final String envVarName, final String replacement) {
         if (Util.fixEmptyAndTrim(replacement) == null) return;
         if (!envVars.containsKey(envVarName)) return;
         if (Util.fixEmptyAndTrim(envVars.get(envVarName)) == null)
@@ -123,7 +123,7 @@ public class BPBuildEnv implements Serializable {
         }
     }
     
-    protected ToStringBuilder addToToString(ToStringBuilder builder) {
+    protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         if (envVars != null) {
             builder.append(ENV_JOB_NAME, envVars.get(ENV_JOB_NAME))
                .append(ENV_BUILD_NUMBER, envVars.get(ENV_BUILD_NUMBER));

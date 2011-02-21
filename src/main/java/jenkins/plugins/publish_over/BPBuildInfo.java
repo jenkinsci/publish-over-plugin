@@ -47,9 +47,9 @@ public class BPBuildInfo extends BPBuildEnv {
     private BPBuildEnv currentBuildEnv;
     private BPBuildEnv targetBuildEnv;
 
-    public BPBuildInfo() {}
+    public BPBuildInfo() { }
 
-    public BPBuildInfo(TaskListener listener, String consoleMsgPrefix, FilePath configDir, BPBuildEnv currentBuildEnv, BPBuildEnv targetBuildEnv) {
+    public BPBuildInfo(final TaskListener listener, final String consoleMsgPrefix, final FilePath configDir, final BPBuildEnv currentBuildEnv, final BPBuildEnv targetBuildEnv) {
         this.listener = listener;
         this.consoleMsgPrefix = consoleMsgPrefix;
         this.configDir = configDir;
@@ -58,24 +58,24 @@ public class BPBuildInfo extends BPBuildEnv {
     }
 
     public FilePath getConfigDir() { return configDir; }
-    public void setConfigDir(FilePath configDir) { this.configDir = configDir; }
+    public void setConfigDir(final FilePath configDir) { this.configDir = configDir; }
     
     public TaskListener getListener() { return listener; }
-    public void setListener(TaskListener listener) { this.listener = listener; }
+    public void setListener(final TaskListener listener) { this.listener = listener; }
 
     public String getConsoleMsgPrefix() { return consoleMsgPrefix; }
-    public void setConsoleMsgPrefix(String consoleMsgPrefix) { this.consoleMsgPrefix = consoleMsgPrefix; }
+    public void setConsoleMsgPrefix(final String consoleMsgPrefix) { this.consoleMsgPrefix = consoleMsgPrefix; }
 
     public boolean isVerbose() { return verbose; }
-    public void setVerbose(boolean verbose) { this.verbose = verbose; }
+    public void setVerbose(final boolean verbose) { this.verbose = verbose; }
     
     public BPBuildEnv getCurrentBuildEnv() { return currentBuildEnv; }
-    public void setCurrentBuildEnv(BPBuildEnv currentBuildEnv) { this.currentBuildEnv = currentBuildEnv; }
+    public void setCurrentBuildEnv(final BPBuildEnv currentBuildEnv) { this.currentBuildEnv = currentBuildEnv; }
 
     public BPBuildEnv getTargetBuildEnv() { return targetBuildEnv; }
-    public void setTargetBuildEnv(BPBuildEnv targetBuildEnv) { this.targetBuildEnv = targetBuildEnv; }
+    public void setTargetBuildEnv(final BPBuildEnv targetBuildEnv) { this.targetBuildEnv = targetBuildEnv; }
 
-    public byte[] readFileFromMaster(String filePath) {
+    public byte[] readFileFromMaster(final String filePath) {
         FilePath file = configDir.child(filePath);
         InputStream is = null;
         try {
@@ -88,7 +88,7 @@ public class BPBuildInfo extends BPBuildEnv {
         }
     }
 
-    public String getRelativePath(FilePath filePath, String removePrefix) throws IOException, InterruptedException {
+    public String getRelativePath(final FilePath filePath, final String removePrefix) throws IOException, InterruptedException {
         String normalizedPathToFile = filePath.toURI().normalize().getPath();
         String relativePathToFile = normalizedPathToFile.replace(getNormalizedBaseDirectory(), "");
         if ((removePrefix != null) && !"".equals(removePrefix.trim())) {
@@ -108,13 +108,13 @@ public class BPBuildInfo extends BPBuildEnv {
             return relativePathToFile.substring(0, lastDirIdx);
     }
     
-    public void println(String message) {
+    public void println(final String message) {
         if (listener != null) {
             listener.getLogger().println(consoleMsgPrefix + message);
         }
     }
 
-    public void printIfVerbose(String message) {
+    public void printIfVerbose(final String message) {
         if (verbose) {
             println(message);
         }

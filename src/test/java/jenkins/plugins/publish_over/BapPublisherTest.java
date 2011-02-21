@@ -58,7 +58,7 @@ public class BapPublisherTest {
         mockControl.verify();
     }
     
-    private BPTransfer createHappyTransfer(int numberOfFilesTransferred) throws Exception {
+    private BPTransfer createHappyTransfer(final int numberOfFilesTransferred) throws Exception {
         BPTransfer transfer = mockControl.createMock(BPTransfer.class);
         mockClient.beginTransfers(transfer);
         expect(transfer.hasConfiguredSourceFiles()).andReturn(true);
@@ -107,7 +107,7 @@ public class BapPublisherTest {
         assertSame(buildInfo.getCurrentBuildEnv().getBuildTime(), buildInfo.getBuildTime());
     }
     
-    private void assertEffectiveBuildInfoNot(BPBuildInfo buildInfo, BPBuildEnv buildEnv) throws Exception {
+    private void assertEffectiveBuildInfoNot(final BPBuildInfo buildInfo, final BPBuildEnv buildEnv) throws Exception {
         assertNotSame(buildEnv.getEnvVars(), buildInfo.getEnvVars());
         assertNotSame(buildEnv.getBaseDirectory(), buildInfo.getBaseDirectory());
         assertNotSame(buildEnv.getBuildTime(), buildInfo.getBuildTime());

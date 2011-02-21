@@ -44,13 +44,13 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     private boolean useWorkspaceInPromotion;
     private boolean usePromotionTimestamp;
 
-    public BapPublisher() {}
+    public BapPublisher() { }
 
-    public BapPublisher(String configName, boolean verbose, List<TRANSFER> transfers) {
+    public BapPublisher(final String configName, final boolean verbose, final List<TRANSFER> transfers) {
         this(configName, verbose, transfers, false, false);
     }
     
-	public BapPublisher(String configName, boolean verbose, List<TRANSFER> transfers, boolean useWorkspaceInPromotion, boolean usePromotionTimestamp) {
+	public BapPublisher(final String configName, final boolean verbose, final List<TRANSFER> transfers, final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp) {
 		this.configName = configName;
         this.verbose = verbose;
 		setTransfers(transfers);
@@ -59,21 +59,21 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 	}
 
     public String getConfigName() { return configName; }
-    public void setConfigName(String configName) { this.configName = configName; }
+    public void setConfigName(final String configName) { this.configName = configName; }
 
     public boolean isUseWorkspaceInPromotion() { return useWorkspaceInPromotion; }
-    public void setUseWorkspaceInPromotion(boolean useWorkspaceInPromotion) { this.useWorkspaceInPromotion = useWorkspaceInPromotion; }
+    public void setUseWorkspaceInPromotion(final boolean useWorkspaceInPromotion) { this.useWorkspaceInPromotion = useWorkspaceInPromotion; }
     
     public boolean isUsePromotionTimestamp() { return usePromotionTimestamp; }
-    public void setUsePromotionTimestamp(boolean usePromotionTimestamp) { this.usePromotionTimestamp = usePromotionTimestamp; }
+    public void setUsePromotionTimestamp(final boolean usePromotionTimestamp) { this.usePromotionTimestamp = usePromotionTimestamp; }
     
     public boolean isVerbose() { return verbose; }
-    public void setVerbose(boolean verbose) { this.verbose = verbose; }
+    public void setVerbose(final boolean verbose) { this.verbose = verbose; }
     
     public List<TRANSFER> getTransfers() {
         return transfers;
     }
-    public void setTransfers(List<TRANSFER> transfers) {
+    public void setTransfers(final List<TRANSFER> transfers) {
         if (transfers == null) {
             this.transfers = new ArrayList<TRANSFER>();
         } else {
@@ -81,7 +81,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         }
     }
 
-    private int sumTransfers(List<Integer> transferred) {
+    private int sumTransfers(final List<Integer> transferred) {
         int total = 0;
         for (int tx : transferred) {
             total += tx;
@@ -89,7 +89,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         return total;
     }
 
-    private void printNumberOfFilesTransferred(BPBuildInfo buildInfo, List<Integer> transferred) {
+    private void printNumberOfFilesTransferred(final BPBuildInfo buildInfo, final List<Integer> transferred) {
         int total = sumTransfers(transferred);
         String countString = "" + total;
         if (transferred.size() > 1) {
@@ -98,7 +98,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         buildInfo.println(Messages.console_transferredXFiles(countString));
     }
 
-    public void setEffectiveEnvironmentInBuildInfo(BPBuildInfo buildInfo) {
+    public void setEffectiveEnvironmentInBuildInfo(final BPBuildInfo buildInfo) {
         buildInfo.setVerbose(verbose);
         BPBuildEnv current = buildInfo.getCurrentBuildEnv();
         BPBuildEnv target = buildInfo.getTargetBuildEnv();
@@ -115,7 +115,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         }
     }
 
-    public void perform(BPHostConfiguration hostConfig, BPBuildInfo buildInfo) throws Exception {
+    public void perform(final BPHostConfiguration hostConfig, final BPBuildInfo buildInfo) throws Exception {
         buildInfo.println(Messages.console_connecting(configName));
         BPClient client = hostConfig.createClient(buildInfo);
         List<Integer> transferred = new ArrayList<Integer>();
@@ -139,16 +139,16 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         return addToHashCode(new HashCodeBuilder());
     }
     
-    protected HashCodeBuilder addToHashCode(HashCodeBuilder builder) {
+    protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(configName).append(verbose).append(transfers)
             .append(useWorkspaceInPromotion).append(usePromotionTimestamp);
     }
     
-    protected EqualsBuilder createEqualsBuilder(BapPublisher that) {
+    protected EqualsBuilder createEqualsBuilder(final BapPublisher that) {
         return addToEquals(new EqualsBuilder(), that);
     }
     
-    protected EqualsBuilder addToEquals(EqualsBuilder builder, BapPublisher that) {
+    protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BapPublisher that) {
         return builder.append(configName, that.configName)
             .append(verbose, that.verbose)
             .append(transfers, that.transfers)
@@ -156,7 +156,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             .append(usePromotionTimestamp, that.usePromotionTimestamp);
     }
     
-    protected ToStringBuilder addToToString(ToStringBuilder builder) {
+    protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         return builder.append("configName", configName)
             .append("verbose", verbose)
             .append("transfers", transfers)
@@ -164,7 +164,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             .append("usePromotionTimestamp", usePromotionTimestamp);
     }
     
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         

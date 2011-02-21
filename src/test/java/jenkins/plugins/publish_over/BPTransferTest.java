@@ -100,7 +100,7 @@ public class BPTransferTest {
         testSingleFileInRoot("xxx", "**/*");
     }
 
-    private void testSingleFileInRoot(String filename, String pattern) throws Exception {
+    private void testSingleFileInRoot(final String filename, final String pattern) throws Exception {
         RandomFile toTransfer = new RandomFile(baseDir.getRoot(), filename);
         BPTransfer transfer = new BPTransfer(pattern, "", "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
@@ -186,7 +186,7 @@ public class BPTransferTest {
         testCreateMultipleDirectoriesFromRemoteDirectory("newDir\\and\\another\\", new String[] {"newDir", "and", "another"});
     }
 
-    private void testCreateMultipleDirectoriesFromRemoteDirectory(String remoteDir, String[] expectedDirs) throws Exception {
+    private void testCreateMultipleDirectoriesFromRemoteDirectory(final String remoteDir, final String[] expectedDirs) throws Exception {
         String normalizedDir = remoteDir.contains("\\") ? remoteDir.replaceAll("\\\\", "/") : remoteDir;
         RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
         BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), remoteDir, "", false, false);
@@ -209,7 +209,7 @@ public class BPTransferTest {
             new String[] {"bit", "of", "a", "trek", "to"});
     }
 
-    private void testCreateDirectories(RandomFile srcFile, String remoteDir, String[] expectedDirsRemoteDir,
+    private void testCreateDirectories(final RandomFile srcFile, final String remoteDir, final String[] expectedDirsRemoteDir,
             String[] expectedDirsSrcFiles) throws Exception {
         BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
@@ -451,13 +451,13 @@ public class BPTransferTest {
         }
     }
 
-    private void testTransfer(BPTransfer transfer, int expectedFileCount) throws Exception {
+    private void testTransfer(final BPTransfer transfer, final int expectedFileCount) throws Exception {
         mockControl.replay();
         assertEquals(expectedFileCount, transfer.transfer(buildInfo, mockClient));
         mockControl.verify();
     }
     
-    public void expectTransferFile(BPTransfer transfer, RandomFile... randomFiles) throws Exception {
+    public void expectTransferFile(final BPTransfer transfer, final RandomFile... randomFiles) throws Exception {
        for (RandomFile randomFile : randomFiles) {
            mockClient.transferFile(same(transfer), eq(new FilePath(randomFile.getFile())), streamContains(randomFile.getContents()));
        }

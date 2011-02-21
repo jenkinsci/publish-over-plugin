@@ -74,7 +74,7 @@ public class BPHostConfigurationTest {
     private static class ConcreteBPHostConfiguration extends BPHostConfiguration {
 
         @Override
-        public BPClient createClient(BPBuildInfo buildInfo) throws BapPublisherException {
+        public BPClient createClient(final BPBuildInfo buildInfo) throws BapPublisherException {
             return null;
         }
         

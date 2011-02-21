@@ -29,14 +29,14 @@ public abstract class BPDefaultClient<TRANSFER extends BPTransfer> implements BP
     private String absoluteRemoteRoot;
     
     public String getAbsoluteRemoteRoot() { return absoluteRemoteRoot; }
-    public void setAbsoluteRemoteRoot(String absoluteRemoteRoot) { this.absoluteRemoteRoot = absoluteRemoteRoot; }
+    public void setAbsoluteRemoteRoot(final String absoluteRemoteRoot) { this.absoluteRemoteRoot = absoluteRemoteRoot; }
 
     public boolean changeToInitialDirectory() {
         return changeDirectory(absoluteRemoteRoot);
     }
 
-    public void beginTransfers(TRANSFER transfer) { }
+    public void beginTransfers(final TRANSFER transfer) { }
 
-    public void endTransfers(TRANSFER transfer) { }
+    public void endTransfers(final TRANSFER transfer) { }
 
 }

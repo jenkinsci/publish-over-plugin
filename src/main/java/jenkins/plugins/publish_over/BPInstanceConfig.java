@@ -49,9 +49,9 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     private String masterNodeName;
     private BPHostConfigurationAccess hostConfigurationAccess;
 
-    public BPInstanceConfig() {}
+    public BPInstanceConfig() { }
 
-	public BPInstanceConfig(List<PUBLISHER> publishers, boolean continueOnError, boolean failOnError, boolean alwaysPublishFromMaster, String masterNodeName) {
+	public BPInstanceConfig(final List<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName) {
         setPublishers(publishers);
         this.continueOnError = continueOnError;
         this.failOnError = failOnError;
@@ -62,7 +62,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     public List<PUBLISHER> getPublishers() {
         return publishers;
     }
-    public void setPublishers(List<PUBLISHER> publishers) {
+    public void setPublishers(final List<PUBLISHER> publishers) {
         if (publishers == null) {
             this.publishers = new ArrayList<PUBLISHER>();
         } else {
@@ -71,39 +71,39 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     }
 
     public boolean isContinueOnError() { return continueOnError; }
-    public void setContinueOnError(boolean continueOnError) { this.continueOnError = continueOnError; }
+    public void setContinueOnError(final boolean continueOnError) { this.continueOnError = continueOnError; }
 
     public boolean isFailOnError() { return failOnError; }
-    public void setFailOnError(boolean failOnError) { this.failOnError = failOnError; }
+    public void setFailOnError(final boolean failOnError) { this.failOnError = failOnError; }
 
     public boolean isAlwaysPublishFromMaster() { return alwaysPublishFromMaster; }
-    public void setAlwaysPublishFromMaster(boolean alwaysPublishFromMaster) { this.alwaysPublishFromMaster = alwaysPublishFromMaster; }
+    public void setAlwaysPublishFromMaster(final boolean alwaysPublishFromMaster) { this.alwaysPublishFromMaster = alwaysPublishFromMaster; }
 
     public String getMasterNodeName() { return masterNodeName; }
-    public void setMasterNodeName(String masterNodeName) { this.masterNodeName = masterNodeName; }
+    public void setMasterNodeName(final String masterNodeName) { this.masterNodeName = masterNodeName; }
         
-    public void setHostConfigurationAccess(BPHostConfigurationAccess hostConfigurationAccess) {
+    public void setHostConfigurationAccess(final BPHostConfigurationAccess hostConfigurationAccess) {
         this.hostConfigurationAccess = hostConfigurationAccess;
     }
 
-    public BPHostConfiguration getConfiguration(String configName) {
+    public BPHostConfiguration getConfiguration(final String configName) {
         BPHostConfiguration config =  hostConfigurationAccess.getConfiguration(configName);
         if (config == null)
             throw new BapPublisherException(Messages.exception_failedToFindConfiguration(configName));
         return config;
     }
 
-    private void fixMasterNodeName(BPBuildInfo buildInfo, BPBuildEnv buildEnv) {
+    private void fixMasterNodeName(final BPBuildInfo buildInfo, final BPBuildEnv buildEnv) {
         if (buildEnv != null)
             buildEnv.fixMasterNodeName(masterNodeName);
     }
     
-    private void fixMasterNodeName(BPBuildInfo buildInfo) {
+    private void fixMasterNodeName(final BPBuildInfo buildInfo) {
         fixMasterNodeName(buildInfo, buildInfo.getCurrentBuildEnv());
         fixMasterNodeName(buildInfo, buildInfo.getTargetBuildEnv());
     }
     
-    public Result perform(BPBuildInfo buildInfo) {
+    public Result perform(final BPBuildInfo buildInfo) {
         Result toReturn = Result.SUCCESS;
         Result onError = failOnError ? Result.FAILURE : Result.UNSTABLE;
         fixMasterNodeName(buildInfo);
@@ -132,16 +132,16 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         return addToHashCode(new HashCodeBuilder());
     }
     
-    protected HashCodeBuilder addToHashCode(HashCodeBuilder builder) {
+    protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(publishers).append(continueOnError).append(failOnError)
             .append(alwaysPublishFromMaster).append(masterNodeName);
     }
     
-    protected EqualsBuilder createEqualsBuilder(BPInstanceConfig that) {
+    protected EqualsBuilder createEqualsBuilder(final BPInstanceConfig that) {
         return addToEquals(new EqualsBuilder(), that);
     }
     
-    protected EqualsBuilder addToEquals(EqualsBuilder builder, BPInstanceConfig that) {
+    protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPInstanceConfig that) {
         return builder.append(publishers, that.publishers)
             .append(continueOnError, that.continueOnError)
             .append(failOnError, that.failOnError)
@@ -149,7 +149,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
             .append(alwaysPublishFromMaster, that.alwaysPublishFromMaster);
     }
     
-    protected ToStringBuilder addToToString(ToStringBuilder builder) {
+    protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         return builder.append("publishers", publishers)
             .append("continueOnError", continueOnError)
             .append("failOnError", failOnError)
@@ -157,7 +157,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
             .append("alwaysPublishFromMaster", alwaysPublishFromMaster);
     }
     
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         

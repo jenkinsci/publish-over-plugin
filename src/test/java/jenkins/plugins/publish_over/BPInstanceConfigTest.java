@@ -139,7 +139,7 @@ public class BPInstanceConfigTest {
         assertResult(Result.FAILURE, instanceConfig);
     }
 
-    private BapPublisher createAndAddMockPublisher(String hostConfigurationName) {
+    private BapPublisher createAndAddMockPublisher(final String hostConfigurationName) {
         BapPublisher mockPublisher = mockControl.createMock(BapPublisher.class);
         if (hostConfigurationName != null) {
             mockPublisher.setEffectiveEnvironmentInBuildInfo((BPBuildInfo) EasyMock.anyObject());
@@ -149,7 +149,7 @@ public class BPInstanceConfigTest {
         return mockPublisher;
     }
     
-    private void assertResult(Result expectedResult, BPInstanceConfig instanceConfig) {
+    private void assertResult(final Result expectedResult, final BPInstanceConfig instanceConfig) {
         mockControl.replay();
         assertEquals(expectedResult, instanceConfig.perform(buildInfo));
         mockControl.verify();
@@ -175,7 +175,7 @@ public class BPInstanceConfigTest {
         assertFixNodeName("bob", "master", "bob");
     }
     
-    private void assertFixNodeName(String nodeName, String masterNodeName, String expectedNodeName) throws Exception {
+    private void assertFixNodeName(final String nodeName, final String masterNodeName, final String expectedNodeName) throws Exception {
         assertFixNodeName(buildInfo.getCurrentBuildEnv().getEnvVars(), nodeName, masterNodeName, expectedNodeName);
     }
     
@@ -199,13 +199,13 @@ public class BPInstanceConfigTest {
         assertFixPromotionNodeName("bob", "master", "bob");
     }
     
-    private void assertFixPromotionNodeName(String nodeName, String masterNodeName, String expectedNodeName) throws Exception {
+    private void assertFixPromotionNodeName(final String nodeName, final String masterNodeName, final String expectedNodeName) throws Exception {
         BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
         buildInfo.setTargetBuildEnv(target);
         assertFixNodeName(target.getEnvVars(), nodeName, masterNodeName, expectedNodeName);
     }
     
-    private void assertFixNodeName(Map<String, String> envVars, String nodeName, String masterNodeName, String expectedNodeName) throws Exception {
+    private void assertFixNodeName(final Map<String, String> envVars, final String nodeName, final String masterNodeName, final String expectedNodeName) throws Exception {
         envVars.put(BPBuildInfo.ENV_NODE_NAME, nodeName);
         BPInstanceConfig instanceConfig = new BPInstanceConfig(publishers, false, false, false, masterNodeName);
         instanceConfig.setHostConfigurationAccess(mockHostConfigurationAccess);

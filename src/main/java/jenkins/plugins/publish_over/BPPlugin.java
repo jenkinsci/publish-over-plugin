@@ -53,7 +53,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     private BPInstanceConfig delegate;
     private String consolePrefix;
 
-	public BPPlugin(String consolePrefix, List<PUBLISHER> publishers, boolean continueOnError, boolean failOnError, boolean alwaysPublishFromMaster, String masterNodeName) {
+	public BPPlugin(final String consolePrefix, final List<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName) {
 		this.delegate = new BPInstanceConfig<PUBLISHER>(publishers, continueOnError, failOnError, alwaysPublishFromMaster, masterNodeName);
         delegate.setHostConfigurationAccess(this);
         this.consolePrefix = consolePrefix;
@@ -62,16 +62,16 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     public BPInstanceConfig getInstanceConfig() { return delegate; }
 
     public BPInstanceConfig getDelegate() { return delegate; }
-    public void setDelegate(BPInstanceConfig delegate) { this.delegate = delegate; delegate.setHostConfigurationAccess(this); }
+    public void setDelegate(final BPInstanceConfig delegate) { this.delegate = delegate; delegate.setHostConfigurationAccess(this); }
 
     public String getConsolePrefix() { return consolePrefix; }
-    public void setConsolePrefix(String consolePrefix) { this.consolePrefix = consolePrefix; }
+    public void setConsolePrefix(final String consolePrefix) { this.consolePrefix = consolePrefix; }
 
     public BuildStepMonitor getRequiredMonitorService() {
 		return BuildStepMonitor.BUILD;
 	}
 
-    private Map<String, String> getEnvironmentVariables(AbstractBuild<?, ?> build, TaskListener listener) {
+    private Map<String, String> getEnvironmentVariables(final AbstractBuild<?, ?> build, final TaskListener listener) {
         try {
             Map<String, String> env = build.getEnvironment(listener);
             env.putAll(build.getBuildVariables());
@@ -82,7 +82,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     }
 
 	@Override
-	public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+	public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener) throws InterruptedException, IOException {
         PrintStream console = listener.getLogger();
         if (!isBuildGoodEnoughToRun(build, console)) return true;
         BPBuildEnv currentBuildEnv = new BPBuildEnv(getEnvironmentVariables(build, listener), build.getWorkspace(), build.getTimestamp());
@@ -107,7 +107,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         return result.isBetterOrEqualTo(Result.UNSTABLE);
 	}
     
-    protected boolean isBuildGoodEnoughToRun(AbstractBuild<?, ?> build, PrintStream console) {
+    protected boolean isBuildGoodEnoughToRun(final AbstractBuild<?, ?> build, final PrintStream console) {
         if ((build.getResult() != null) && !build.getResult().isBetterOrEqualTo(Result.UNSTABLE)) {
             console.println(Messages.console_notPerforming(build.getResult()));
             return false;
@@ -119,25 +119,25 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         return addToHashCode(new HashCodeBuilder());
     }
 
-    protected HashCodeBuilder addToHashCode(HashCodeBuilder builder) {
+    protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(delegate).append(consolePrefix);
     }
     
-    protected EqualsBuilder createEqualsBuilder(BPPlugin that) {
+    protected EqualsBuilder createEqualsBuilder(final BPPlugin that) {
         return addToEquals(new EqualsBuilder(), that);
     }
     
-    protected EqualsBuilder addToEquals(EqualsBuilder builder, BPPlugin that) {
+    protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPPlugin that) {
         return builder.append(delegate, that.delegate)
             .append(consolePrefix, that.consolePrefix);
     }
     
-    protected ToStringBuilder addToToString(ToStringBuilder builder) {
+    protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         return builder.append("consolePrefix", consolePrefix)
             .append("delegate", delegate);
     }
     
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         

@@ -45,9 +45,9 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     private int port;
     private COMMON_CONFIG commonConfig;
 
-	public BPHostConfiguration() {}
+	public BPHostConfiguration() { }
 
-	public BPHostConfiguration(String name, String hostname, String username, String password, String remoteRootDir, int port) {
+	public BPHostConfiguration(final String name, final String hostname, final String username, final String password, final String remoteRootDir, final int port) {
 		this.name = name;
 		this.hostname = hostname;
         this.username = username;
@@ -57,39 +57,39 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
 	}
 
     public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public void setName(final String name) { this.name = name; }
 
     public String getHostname() { return hostname; }
-    public void setHostname(String hostname) { this.hostname = hostname; }
+    public void setHostname(final String hostname) { this.hostname = hostname; }
 
     public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    public void setUsername(final String username) { this.username = username; }
 
     public String getPassword() { return Secret.toString(secretPassword); }
-    public void setPassword(String password) { secretPassword = Secret.fromString(password); }
+    public void setPassword(final String password) { secretPassword = Secret.fromString(password); }
     
     public String getEncryptedPassword() {
         return (secretPassword == null) ? null : secretPassword.getEncryptedValue();
     }
 
     public String getRemoteRootDir() { return remoteRootDir; }
-    public void setRemoteRootDir(String remoteRootDir) { this.remoteRootDir = remoteRootDir; }
+    public void setRemoteRootDir(final String remoteRootDir) { this.remoteRootDir = remoteRootDir; }
 
 	public int getPort() { return port; }
-	public void setPort(int port) { this.port = port; }
+	public void setPort(final int port) { this.port = port; }
     
     public COMMON_CONFIG getCommonConfig() { return commonConfig; }
-    public void setCommonConfig(COMMON_CONFIG commonConfig) { this.commonConfig = commonConfig; }
+    public void setCommonConfig(final COMMON_CONFIG commonConfig) { this.commonConfig = commonConfig; }
 
     public abstract CLIENT createClient(BPBuildInfo buildInfo) throws BapPublisherException;
 
-    protected boolean isDirectoryAbsolute(String directory) {
+    protected boolean isDirectoryAbsolute(final String directory) {
         if (directory == null)
             return false;
         return directory.startsWith("/") || directory.startsWith("\\");
     }
     
-    protected void changeToRootDirectory(BPClient client) throws IOException {
+    protected void changeToRootDirectory(final BPClient client) throws IOException {
         String remoteRootDir = getRemoteRootDir();
         if (Util.fixEmptyAndTrim(remoteRootDir) != null) {
             if (!client.changeDirectory(remoteRootDir))
@@ -97,7 +97,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
         }
     }
     
-    protected void exception(BPClient client, String message) {
+    protected void exception(final BPClient client, final String message) {
         BapPublisherException.exception(client, message);
     }
     
@@ -105,7 +105,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
         return addToHashCode(new HashCodeBuilder());
     }
 
-    protected HashCodeBuilder addToHashCode(HashCodeBuilder builder) {
+    protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(name)
             .append(hostname)
             .append(username)
@@ -115,11 +115,11 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
             .append(port);
     }
     
-    protected EqualsBuilder createEqualsBuilder(BPHostConfiguration that) {
+    protected EqualsBuilder createEqualsBuilder(final BPHostConfiguration that) {
         return addToEquals(new EqualsBuilder(), that);
     }
     
-    protected EqualsBuilder addToEquals(EqualsBuilder builder, BPHostConfiguration that) {
+    protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPHostConfiguration that) {
         return builder.append(name, that.name)
             .append(hostname, that.hostname)
             .append(username, that.username)
@@ -129,7 +129,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
             .append(port, that.port);
     }
     
-    protected ToStringBuilder addToToString(ToStringBuilder builder) {
+    protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         return builder.append("name", name)
             .append("hostname", hostname)
             .append("username", username)
@@ -138,7 +138,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
             .append("port", port);
     }
     
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         

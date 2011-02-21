@@ -44,21 +44,21 @@ public class BPCallablePublisher implements FilePath.FileCallable<Void> {
     private BPHostConfiguration hostConfig;
     private BPBuildInfo buildInfo;
 
-    public BPCallablePublisher() {}
+    public BPCallablePublisher() { }
 
-    public BPCallablePublisher(BapPublisher publisher, BPHostConfiguration hostConfig, BPBuildInfo buildInfo) {
+    public BPCallablePublisher(final BapPublisher publisher, final BPHostConfiguration hostConfig, final BPBuildInfo buildInfo) {
         this.publisher = publisher;
         this.hostConfig = hostConfig;
         this.buildInfo = buildInfo;
     }
 
     public BapPublisher getPublisher() { return publisher; }
-    public void setPublisher(BapPublisher publisher) { this.publisher = publisher; }
+    public void setPublisher(final BapPublisher publisher) { this.publisher = publisher; }
 
     public BPBuildInfo getBuildInfo() { return buildInfo; }
-    public void setBuildInfo(BPBuildInfo buildInfo) { this.buildInfo = buildInfo; }
+    public void setBuildInfo(final BPBuildInfo buildInfo) { this.buildInfo = buildInfo; }
 
-    public Void invoke(File f, VirtualChannel channel) throws IOException {
+    public Void invoke(final File f, final VirtualChannel channel) throws IOException {
         try {
             printHostName();
             publisher.perform(hostConfig, buildInfo);
