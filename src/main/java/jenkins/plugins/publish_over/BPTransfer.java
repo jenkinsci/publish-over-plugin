@@ -110,10 +110,10 @@ public class BPTransfer implements Serializable {
     private class DirectoryMaker {
 
         private String previousPath = null;
-        BPBuildInfo buildInfo;
-        BPClient client;
-        String relativeRemoteSubDirectory;
-        Set<String> flattenedFileNames = new LinkedHashSet<String>();
+        private BPBuildInfo buildInfo;
+        private BPClient client;
+        private String relativeRemoteSubDirectory;
+        private Set<String> flattenedFileNames = new LinkedHashSet<String>();
 
         DirectoryMaker(final BPBuildInfo buildInfo, final BPClient client) throws IOException {
             this.buildInfo = buildInfo;
@@ -250,7 +250,7 @@ public class BPTransfer implements Serializable {
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        
+
         return createEqualsBuilder((BPTransfer) o).isEquals();
     }
 

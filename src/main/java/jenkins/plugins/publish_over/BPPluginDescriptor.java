@@ -39,7 +39,7 @@ import org.kohsuke.stapler.StaplerResponse;
 
 import java.util.List;
 
-public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_CONFIG> 
+public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_CONFIG>
             extends BuildStepDescriptor<Publisher> {
 
     private BPDescriptorMessages msg;
@@ -48,7 +48,7 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
     private COMMON_CONFIG commonConfig;
     private CopyOnWriteList<HOST_CONFIG> hostConfigurations = new CopyOnWriteList<HOST_CONFIG>();
 
-    public BPPluginDescriptor(final BPDescriptorMessages messages, final Class pluginClass, final Class<HOST_CONFIG> hostConfigClass, 
+    public BPPluginDescriptor(final BPDescriptorMessages messages, final Class pluginClass, final Class<HOST_CONFIG> hostConfigClass,
                               final Class<COMMON_CONFIG> commonConfigClass) {
         super(pluginClass);
         load();

@@ -109,11 +109,11 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
 
         if (build.getResult() != null)
             build.setResult(result.combine(build.getResult()));
-        else 
+        else
             build.setResult(result);
         return result.isBetterOrEqualTo(Result.UNSTABLE);
     }
-    
+
     protected boolean isBuildGoodEnoughToRun(final AbstractBuild<?, ?> build, final PrintStream console) {
         if ((build.getResult() != null) && !build.getResult().isBetterOrEqualTo(Result.UNSTABLE)) {
             console.println(Messages.console_notPerforming(build.getResult()));
@@ -147,7 +147,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        
+
         return createEqualsBuilder((BPPlugin) o).isEquals();
     }
 

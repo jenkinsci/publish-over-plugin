@@ -69,7 +69,7 @@ public class BPBuildInfo extends BPBuildEnv {
 
     public boolean isVerbose() { return verbose; }
     public void setVerbose(final boolean verbose) { this.verbose = verbose; }
-    
+
     public BPBuildEnv getCurrentBuildEnv() { return currentBuildEnv; }
     public void setCurrentBuildEnv(final BPBuildEnv currentBuildEnv) { this.currentBuildEnv = currentBuildEnv; }
 

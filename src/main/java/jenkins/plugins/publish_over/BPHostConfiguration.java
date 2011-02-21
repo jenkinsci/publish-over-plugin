@@ -78,7 +78,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
 
     public int getPort() { return port; }
     public void setPort(final int port) { this.port = port; }
-    
+
     public COMMON_CONFIG getCommonConfig() { return commonConfig; }
     public void setCommonConfig(final COMMON_CONFIG commonConfig) { this.commonConfig = commonConfig; }
 
@@ -141,7 +141,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        
+
         return createEqualsBuilder((BPHostConfiguration) o).isEquals();
     }
 

@@ -40,8 +40,8 @@ import java.util.Map;
 public class BPBuildEnv implements Serializable {
 
     static final long serialVersionUID = 1L;
-    private static final transient Log LOG = LogFactory.getLog(BPBuildEnv.class); 
-    public static final String ENV_NODE_NAME = "NODE_NAME";    
+    private static final transient Log LOG = LogFactory.getLog(BPBuildEnv.class);
+    public static final String ENV_NODE_NAME = "NODE_NAME";
     public static final String ENV_JOB_NAME = "JOB_NAME";
     public static final String ENV_BUILD_NUMBER = "BUILD_NUMBER";
 
@@ -59,7 +59,7 @@ public class BPBuildEnv implements Serializable {
 
     public Map<String, String> getEnvVars() { return envVars; }
     public void setEnvVars(final Map<String, String> envVars) { this.envVars = envVars; }
-    
+
     public FilePath getBaseDirectory() { return baseDirectory; }
     public void setBaseDirectory(final FilePath baseDirectory) { this.baseDirectory = baseDirectory; }
 

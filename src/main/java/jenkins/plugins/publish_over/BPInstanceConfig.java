@@ -163,7 +163,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        
+
         return createEqualsBuilder((BPInstanceConfig) o).isEquals();
     }
 
