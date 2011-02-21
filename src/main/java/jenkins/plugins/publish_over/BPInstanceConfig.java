@@ -51,7 +51,8 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
 
     public BPInstanceConfig() { }
 
-    public BPInstanceConfig(final List<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName) {
+    public BPInstanceConfig(final List<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError,
+                            final boolean alwaysPublishFromMaster, final String masterNodeName) {
         setPublishers(publishers);
         this.continueOnError = continueOnError;
         this.failOnError = failOnError;
@@ -77,11 +78,13 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     public void setFailOnError(final boolean failOnError) { this.failOnError = failOnError; }
 
     public boolean isAlwaysPublishFromMaster() { return alwaysPublishFromMaster; }
-    public void setAlwaysPublishFromMaster(final boolean alwaysPublishFromMaster) { this.alwaysPublishFromMaster = alwaysPublishFromMaster; }
+    public void setAlwaysPublishFromMaster(final boolean alwaysPublishFromMaster) {
+        this.alwaysPublishFromMaster = alwaysPublishFromMaster;
+    }
 
     public String getMasterNodeName() { return masterNodeName; }
     public void setMasterNodeName(final String masterNodeName) { this.masterNodeName = masterNodeName; }
-        
+
     public void setHostConfigurationAccess(final BPHostConfigurationAccess hostConfigurationAccess) {
         this.hostConfigurationAccess = hostConfigurationAccess;
     }
@@ -97,12 +100,12 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         if (buildEnv != null)
             buildEnv.fixMasterNodeName(masterNodeName);
     }
-    
+
     private void fixMasterNodeName(final BPBuildInfo buildInfo) {
         fixMasterNodeNameInEnv(buildInfo.getCurrentBuildEnv());
         fixMasterNodeNameInEnv(buildInfo.getTargetBuildEnv());
     }
-    
+
     public Result perform(final BPBuildInfo buildInfo) {
         Result toReturn = Result.SUCCESS;
         Result onError = failOnError ? Result.FAILURE : Result.UNSTABLE;
@@ -127,20 +130,20 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         }
         return toReturn;
     }
-    
+
     protected HashCodeBuilder createHashCodeBuilder() {
         return addToHashCode(new HashCodeBuilder());
     }
-    
+
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(publishers).append(continueOnError).append(failOnError)
             .append(alwaysPublishFromMaster).append(masterNodeName);
     }
-    
+
     protected EqualsBuilder createEqualsBuilder(final BPInstanceConfig that) {
         return addToEquals(new EqualsBuilder(), that);
     }
-    
+
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPInstanceConfig that) {
         return builder.append(publishers, that.publishers)
             .append(continueOnError, that.continueOnError)
@@ -148,7 +151,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
             .append(masterNodeName, that.masterNodeName)
             .append(alwaysPublishFromMaster, that.alwaysPublishFromMaster);
     }
-    
+
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         return builder.append("publishers", publishers)
             .append("continueOnError", continueOnError)
@@ -156,7 +159,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
             .append("masterNodeName", masterNodeName)
             .append("alwaysPublishFromMaster", alwaysPublishFromMaster);
     }
-    
+
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -167,7 +170,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     public int hashCode() {
         return createHashCodeBuilder().toHashCode();
     }
-    
+
     public String toString() {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)).toString();
     }

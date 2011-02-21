@@ -47,7 +47,8 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
 
     public BPHostConfiguration() { }
 
-    public BPHostConfiguration(final String name, final String hostname, final String username, final String password, final String remoteRootDir, final int port) {
+    public BPHostConfiguration(final String name, final String hostname, final String username, final String password,
+                               final String remoteRootDir, final int port) {
         this.name = name;
         this.hostname = hostname;
         this.username = username;
@@ -67,7 +68,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
 
     public String getPassword() { return Secret.toString(secretPassword); }
     public void setPassword(final String password) { secretPassword = Secret.fromString(password); }
-    
+
     public String getEncryptedPassword() {
         return (secretPassword == null) ? null : secretPassword.getEncryptedValue();
     }
@@ -81,25 +82,25 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     public COMMON_CONFIG getCommonConfig() { return commonConfig; }
     public void setCommonConfig(final COMMON_CONFIG commonConfig) { this.commonConfig = commonConfig; }
 
-    public abstract CLIENT createClient(BPBuildInfo buildInfo) throws BapPublisherException;
+    public abstract CLIENT createClient(BPBuildInfo buildInfo);
 
     protected boolean isDirectoryAbsolute(final String directory) {
         if (directory == null)
             return false;
         return directory.startsWith("/") || directory.startsWith("\\");
     }
-    
+
     protected void changeToRootDirectory(final BPClient client) throws IOException {
         String remoteRootDir = getRemoteRootDir();
         if ((Util.fixEmptyAndTrim(remoteRootDir) != null) && (!client.changeDirectory(remoteRootDir))) {
                 exception(client, Messages.exception_cwdRemoteRoot(remoteRootDir));
         }
     }
-    
+
     protected void exception(final BPClient client, final String message) {
         BapPublisherException.exception(client, message);
     }
-    
+
     protected HashCodeBuilder createHashCodeBuilder() {
         return addToHashCode(new HashCodeBuilder());
     }
@@ -113,11 +114,11 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
             .append(commonConfig)
             .append(port);
     }
-    
+
     protected EqualsBuilder createEqualsBuilder(final BPHostConfiguration that) {
         return addToEquals(new EqualsBuilder(), that);
     }
-    
+
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPHostConfiguration that) {
         return builder.append(name, that.name)
             .append(hostname, that.hostname)
@@ -127,7 +128,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
             .append(commonConfig, that.commonConfig)
             .append(port, that.port);
     }
-    
+
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         return builder.append("name", name)
             .append("hostname", hostname)
@@ -136,7 +137,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
             .append("commonConfig", commonConfig)
             .append("port", port);
     }
-    
+
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -147,7 +148,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     public int hashCode() {
         return createHashCodeBuilder().toHashCode();
     }
-    
+
     public String toString() {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)).toString();
     }

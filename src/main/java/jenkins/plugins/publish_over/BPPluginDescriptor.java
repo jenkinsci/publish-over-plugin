@@ -56,7 +56,7 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
         this.commonConfigClass = commonConfigClass;
         this.msg = messages;
     }
-    
+
     public COMMON_CONFIG getCommonConfig() { return commonConfig; }
     public void setCommonConfig(final COMMON_CONFIG commonConfig) { this.commonConfig = commonConfig; }
 
@@ -71,7 +71,7 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
     public List<HOST_CONFIG> getHostConfigurations() {
         return hostConfigurations.getView();
     }
-    
+
     public HOST_CONFIG getConfiguration(final String name) {
         for (HOST_CONFIG configuration : hostConfigurations) {
             if (configuration.getName().equals(name)) {
@@ -93,7 +93,7 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
         save();
         return true;
     }
-    
+
     public FormValidation doCheckName(@QueryParameter final String value) {
         return FormValidation.validateRequired(value);
     }

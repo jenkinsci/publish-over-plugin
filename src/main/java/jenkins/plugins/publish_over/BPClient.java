@@ -31,7 +31,7 @@ import java.io.InputStream;
 public interface BPClient<TRANSFER extends BPTransfer> {
 
     void setAbsoluteRemoteRoot(String absoluteRemoteRoot);
-    
+
     boolean changeToInitialDirectory();
 
     boolean changeDirectory(String directory);

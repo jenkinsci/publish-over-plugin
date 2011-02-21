@@ -44,10 +44,10 @@ public class BPBuildEnv implements Serializable {
     public static final String ENV_NODE_NAME = "NODE_NAME";    
     public static final String ENV_JOB_NAME = "JOB_NAME";
     public static final String ENV_BUILD_NUMBER = "BUILD_NUMBER";
-    
-    protected Map<String, String> envVars;
-    protected FilePath baseDirectory;
-    protected Calendar buildTime;
+
+    private Map<String, String> envVars;
+    private FilePath baseDirectory;
+    private Calendar buildTime;
 
     public BPBuildEnv() { }
 
@@ -65,7 +65,7 @@ public class BPBuildEnv implements Serializable {
 
     public Calendar getBuildTime() { return buildTime; }
     public void setBuildTime(final Calendar buildTime) { this.buildTime = buildTime; }
-    
+
     public Map<String, String> getEnvVarsWithPrefix(final String prefix) {
         Map<String, String> prefixed = new LinkedHashMap<String, String>();
         for (Map.Entry<String, String> entry : envVars.entrySet()) {
@@ -73,30 +73,30 @@ public class BPBuildEnv implements Serializable {
         }
         return prefixed;
     }
-    
+
     public void logEnvVars() {
         if (LOG.isDebugEnabled()) {
             LOG.debug(Messages.log_envVars_head());
             StringBuilder builder = new StringBuilder("\n");
-            for(Map.Entry var : envVars.entrySet()) {
-                builder.append(Messages.log_envVars_pair(var.getKey(),var.getValue()));
+            for (Map.Entry var : envVars.entrySet()) {
+                builder.append(Messages.log_envVars_pair(var.getKey(), var.getValue()));
                 builder.append("\n");
             }
             LOG.debug(builder.toString());
         }
     }
-    
+
     public void fixMasterNodeName(final String masterNodeName) {
         fixEmptyButNotMissingEnvVar(ENV_NODE_NAME, masterNodeName);
     }
-    
+
     private void fixEmptyButNotMissingEnvVar(final String envVarName, final String replacement) {
         if (Util.fixEmptyAndTrim(replacement) == null) return;
         if (!envVars.containsKey(envVarName)) return;
         if (Util.fixEmptyAndTrim(envVars.get(envVarName)) == null)
             envVars.put(envVarName, replacement);
     }
-    
+
     public String getNormalizedBaseDirectory() {
         try {
             return baseDirectory.toURI().normalize().getPath();
@@ -104,7 +104,7 @@ public class BPBuildEnv implements Serializable {
             throw new RuntimeException(Messages.exception_normalizeDirectory(baseDirectory), e);
         }
     }
-    
+
     private String safeGetNormalizedBaseDirectory() {
         if (baseDirectory == null) return null;
         try {
@@ -113,7 +113,7 @@ public class BPBuildEnv implements Serializable {
             return re.getLocalizedMessage();
         }
     }
-    
+
     private String safeGetBuildTime() {
         if (buildTime == null) return null;
         try {
@@ -122,7 +122,7 @@ public class BPBuildEnv implements Serializable {
             return re.getLocalizedMessage();
         }
     }
-    
+
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         if (envVars != null) {
             builder.append(ENV_JOB_NAME, envVars.get(ENV_JOB_NAME))
@@ -131,9 +131,9 @@ public class BPBuildEnv implements Serializable {
         return builder.append("baseDirectory", safeGetNormalizedBaseDirectory())
                .append("buildTime", safeGetBuildTime());
     }
-    
+
     public String toString() {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)).toString();
     }
-    
+
 }

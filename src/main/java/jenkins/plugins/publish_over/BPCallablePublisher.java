@@ -36,10 +36,10 @@ import java.net.UnknownHostException;
 
 public class BPCallablePublisher implements FilePath.FileCallable<Void> {
 
-    private static Log LOG = LogFactory.getLog(BPCallablePublisher.class);
-
     static final long serialVersionUID = 1L;
-    
+
+    private static final transient Log LOG = LogFactory.getLog(BPCallablePublisher.class);
+
     private BapPublisher publisher;
     private BPHostConfiguration hostConfig;
     private BPBuildInfo buildInfo;
@@ -76,4 +76,5 @@ public class BPCallablePublisher implements FilePath.FileCallable<Void> {
             buildInfo.println(Messages.console_publishFromHost_unknown(uhe.getLocalizedMessage()));
         }
     }
+
 }

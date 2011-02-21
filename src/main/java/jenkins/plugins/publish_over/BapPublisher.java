@@ -37,7 +37,7 @@ import java.util.Map;
 public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
     static final long serialVersionUID = 1L;
-    
+
     private String configName;
     private boolean verbose;
     private List<TRANSFER> transfers;
@@ -49,8 +49,9 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     public BapPublisher(final String configName, final boolean verbose, final List<TRANSFER> transfers) {
         this(configName, verbose, transfers, false, false);
     }
-    
-    public BapPublisher(final String configName, final boolean verbose, final List<TRANSFER> transfers, final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp) {
+
+    public BapPublisher(final String configName, final boolean verbose, final List<TRANSFER> transfers,
+                        final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp) {
         this.configName = configName;
         this.verbose = verbose;
         setTransfers(transfers);
@@ -58,18 +59,34 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         this.usePromotionTimestamp = usePromotionTimestamp;
     }
 
-    public String getConfigName() { return configName; }
-    public void setConfigName(final String configName) { this.configName = configName; }
+    public String getConfigName() {
+        return configName;
+    }
+    public void setConfigName(final String configName) {
+        this.configName = configName;
+    }
 
-    public boolean isUseWorkspaceInPromotion() { return useWorkspaceInPromotion; }
-    public void setUseWorkspaceInPromotion(final boolean useWorkspaceInPromotion) { this.useWorkspaceInPromotion = useWorkspaceInPromotion; }
-    
-    public boolean isUsePromotionTimestamp() { return usePromotionTimestamp; }
-    public void setUsePromotionTimestamp(final boolean usePromotionTimestamp) { this.usePromotionTimestamp = usePromotionTimestamp; }
-    
-    public boolean isVerbose() { return verbose; }
-    public void setVerbose(final boolean verbose) { this.verbose = verbose; }
-    
+    public boolean isUseWorkspaceInPromotion() {
+        return useWorkspaceInPromotion;
+    }
+    public void setUseWorkspaceInPromotion(final boolean useWorkspaceInPromotion) {
+        this.useWorkspaceInPromotion = useWorkspaceInPromotion;
+    }
+
+    public boolean isUsePromotionTimestamp() {
+        return usePromotionTimestamp;
+    }
+    public void setUsePromotionTimestamp(final boolean usePromotionTimestamp) {
+        this.usePromotionTimestamp = usePromotionTimestamp;
+    }
+
+    public boolean isVerbose() {
+        return verbose;
+    }
+    public void setVerbose(final boolean verbose) {
+        this.verbose = verbose;
+    }
+
     public List<TRANSFER> getTransfers() {
         return transfers;
     }
@@ -134,20 +151,20 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             client.disconnectQuietly();
         }
     }
-    
+
     protected HashCodeBuilder createHashCodeBuilder() {
         return addToHashCode(new HashCodeBuilder());
     }
-    
+
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(configName).append(verbose).append(transfers)
             .append(useWorkspaceInPromotion).append(usePromotionTimestamp);
     }
-    
+
     protected EqualsBuilder createEqualsBuilder(final BapPublisher that) {
         return addToEquals(new EqualsBuilder(), that);
     }
-    
+
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BapPublisher that) {
         return builder.append(configName, that.configName)
             .append(verbose, that.verbose)
@@ -155,7 +172,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             .append(useWorkspaceInPromotion, that.useWorkspaceInPromotion)
             .append(usePromotionTimestamp, that.usePromotionTimestamp);
     }
-    
+
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         return builder.append("configName", configName)
             .append("verbose", verbose)
@@ -163,7 +180,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             .append("useWorkspaceInPromotion", useWorkspaceInPromotion)
             .append("usePromotionTimestamp", usePromotionTimestamp);
     }
-    
+
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

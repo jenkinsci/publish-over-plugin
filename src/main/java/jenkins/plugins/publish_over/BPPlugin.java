@@ -44,7 +44,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BPClient, COMMON_CONFIG> 
+public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BPClient, COMMON_CONFIG>
             extends Notifier implements BPHostConfigurationAccess<CLIENT, COMMON_CONFIG> {
 
     public static final String PROMOTION_JOB_TYPE = "hudson.plugins.promoted_builds.PromotionProcess";
@@ -53,16 +53,20 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     private BPInstanceConfig delegate;
     private String consolePrefix;
 
-    public BPPlugin(final String consolePrefix, final List<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName) {
+    public BPPlugin(final String consolePrefix, final List<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError,
+                    final boolean alwaysPublishFromMaster, final String masterNodeName) {
         this.delegate = new BPInstanceConfig<PUBLISHER>(publishers, continueOnError, failOnError, alwaysPublishFromMaster, masterNodeName);
         delegate.setHostConfigurationAccess(this);
         this.consolePrefix = consolePrefix;
     }
-    
+
     public BPInstanceConfig getInstanceConfig() { return delegate; }
 
     public BPInstanceConfig getDelegate() { return delegate; }
-    public void setDelegate(final BPInstanceConfig delegate) { this.delegate = delegate; delegate.setHostConfigurationAccess(this); }
+    public void setDelegate(final BPInstanceConfig delegate) {
+        this.delegate = delegate;
+        delegate.setHostConfigurationAccess(this);
+    }
 
     public String getConsolePrefix() { return consolePrefix; }
     public void setConsolePrefix(final String consolePrefix) { this.consolePrefix = consolePrefix; }
@@ -82,7 +86,8 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     }
 
     @Override
-    public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener) throws InterruptedException, IOException {
+    public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener)
+                    throws InterruptedException, IOException {
         PrintStream console = listener.getLogger();
         if (!isBuildGoodEnoughToRun(build, console)) return true;
         BPBuildEnv currentBuildEnv = new BPBuildEnv(getEnvironmentVariables(build, listener), build.getWorkspace(), build.getTimestamp());
@@ -90,15 +95,17 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         if (PROMOTION_CLASS_NAME.equals(build.getClass().getCanonicalName())) {
             AbstractBuild<?, ?> promoted;
             try {
-                Method getTarget = build.getClass().getMethod("getTarget", (Class<?>[])null);
-                promoted = (AbstractBuild) getTarget.invoke(build, (Object[])null);
+                Method getTarget = build.getClass().getMethod("getTarget", (Class<?>[]) null);
+                promoted = (AbstractBuild) getTarget.invoke(build, (Object[]) null);
             } catch (Exception e) {
                 throw new RuntimeException(Messages.exception_failedToGetPromotedBuild(), e);
             }
-            targetBuildEnv = new BPBuildEnv(getEnvironmentVariables(promoted, listener), new FilePath(promoted.getArtifactsDir()), promoted.getTimestamp());
+            targetBuildEnv = new BPBuildEnv(getEnvironmentVariables(promoted, listener),
+                    new FilePath(promoted.getArtifactsDir()), promoted.getTimestamp());
         }
 
-        Result result = delegate.perform(new BPBuildInfo(listener, consolePrefix, Hudson.getInstance().getRootPath(), currentBuildEnv, targetBuildEnv));
+        Result result = delegate.perform(new BPBuildInfo(listener, consolePrefix, Hudson.getInstance().getRootPath(),
+                currentBuildEnv, targetBuildEnv));
 
         if (build.getResult() != null)
             build.setResult(result.combine(build.getResult()));
@@ -122,21 +129,21 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(delegate).append(consolePrefix);
     }
-    
+
     protected EqualsBuilder createEqualsBuilder(final BPPlugin that) {
         return addToEquals(new EqualsBuilder(), that);
     }
-    
+
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPPlugin that) {
         return builder.append(delegate, that.delegate)
             .append(consolePrefix, that.consolePrefix);
     }
-    
+
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         return builder.append("consolePrefix", consolePrefix)
             .append("delegate", delegate);
     }
-    
+
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -147,7 +154,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     public int hashCode() {
         return createHashCodeBuilder().toHashCode();
     }
-    
+
     public String toString() {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)).toString();
     }

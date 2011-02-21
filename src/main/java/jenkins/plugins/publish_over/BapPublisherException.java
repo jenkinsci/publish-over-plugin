@@ -42,7 +42,7 @@ public class BapPublisherException extends RuntimeException {
         super(message);
     }
 
-    public BapPublisherException(final String message, Throwable t) {
+    public BapPublisherException(final String message, final Throwable t) {
         super(message, t);
     }
 

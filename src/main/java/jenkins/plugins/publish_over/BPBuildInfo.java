@@ -39,7 +39,7 @@ public class BPBuildInfo extends BPBuildEnv {
 
     static final long serialVersionUID = 1L;
     public static final String PROMOTION_ENV_VARS_PREFIX = "promotion_";
-    
+
     private FilePath configDir;
     private TaskListener listener;
     private boolean verbose;
@@ -49,7 +49,8 @@ public class BPBuildInfo extends BPBuildEnv {
 
     public BPBuildInfo() { }
 
-    public BPBuildInfo(final TaskListener listener, final String consoleMsgPrefix, final FilePath configDir, final BPBuildEnv currentBuildEnv, final BPBuildEnv targetBuildEnv) {
+    public BPBuildInfo(final TaskListener listener, final String consoleMsgPrefix, final FilePath configDir,
+                       final BPBuildEnv currentBuildEnv, final BPBuildEnv targetBuildEnv) {
         this.listener = listener;
         this.consoleMsgPrefix = consoleMsgPrefix;
         this.configDir = configDir;
@@ -59,7 +60,7 @@ public class BPBuildInfo extends BPBuildEnv {
 
     public FilePath getConfigDir() { return configDir; }
     public void setConfigDir(final FilePath configDir) { this.configDir = configDir; }
-    
+
     public TaskListener getListener() { return listener; }
     public void setListener(final TaskListener listener) { this.listener = listener; }
 
@@ -92,7 +93,7 @@ public class BPBuildInfo extends BPBuildEnv {
         String normalizedPathToFile = filePath.toURI().normalize().getPath();
         String relativePathToFile = normalizedPathToFile.replace(getNormalizedBaseDirectory(), "");
         if ((removePrefix != null) && !"".equals(removePrefix.trim())) {
-            String expanded = Util.replaceMacro(removePrefix, envVars);
+            String expanded = Util.replaceMacro(removePrefix, getEnvVars());
             String toRemove = FilenameUtils.separatorsToUnix(FilenameUtils.normalize(expanded + "/"));
             // No, sorry FindBugs, I don't understand what your problem is ...
             if ((toRemove != null) && (toRemove.startsWith("/")))
@@ -108,7 +109,7 @@ public class BPBuildInfo extends BPBuildEnv {
         else
             return relativePathToFile.substring(0, lastDirIdx);
     }
-    
+
     public void println(final String message) {
         if (listener != null) {
             listener.getLogger().println(consoleMsgPrefix + message);
@@ -120,7 +121,7 @@ public class BPBuildInfo extends BPBuildEnv {
             println(message);
         }
     }
- 
+
     public String toString() {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE))
             .append("currentBuildEnv", currentBuildEnv)

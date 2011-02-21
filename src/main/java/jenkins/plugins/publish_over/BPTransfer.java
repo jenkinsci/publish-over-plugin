@@ -52,7 +52,8 @@ public class BPTransfer implements Serializable {
     private boolean remoteDirectorySDF;
     private boolean flatten = true;
 
-    public BPTransfer(final String sourceFiles, final String remoteDirectory, final String removePrefix, final boolean remoteDirectorySDF, final boolean flatten) {
+    public BPTransfer(final String sourceFiles, final String remoteDirectory, final String removePrefix,
+                      final boolean remoteDirectorySDF, final boolean flatten) {
         this.sourceFiles = sourceFiles;
         this.remoteDirectory = remoteDirectory;
         this.removePrefix = removePrefix;
@@ -96,7 +97,7 @@ public class BPTransfer implements Serializable {
         }
         return transferred;
     }
-    
+
     public void transferFile(final BPClient client, final FilePath filePath) throws Exception {
         InputStream is = filePath.read();
         try {
@@ -113,7 +114,7 @@ public class BPTransfer implements Serializable {
         BPClient client;
         String relativeRemoteSubDirectory;
         Set<String> flattenedFileNames = new LinkedHashSet<String>();
-        
+
         DirectoryMaker(final BPBuildInfo buildInfo, final BPClient client) throws IOException {
             this.buildInfo = buildInfo;
             this.client = client;
@@ -187,9 +188,9 @@ public class BPTransfer implements Serializable {
         }
 
         private void chdir(final String directory) throws IOException {
-            if(!changeOrMakeAndChangeDirectory(directory)) {
+            if (!changeOrMakeAndChangeDirectory(directory)) {
                 for (String dir : getDirectories(directory)) {
-                    if(!changeOrMakeAndChangeDirectory(dir)) {
+                    if (!changeOrMakeAndChangeDirectory(dir)) {
                         throw new BapPublisherException(Messages.exception_failedToCreateDirectory(dir));
                     }
                 }
@@ -216,7 +217,7 @@ public class BPTransfer implements Serializable {
         }
 
     }
-    
+
     protected HashCodeBuilder createHashCodeBuilder() {
         return addToHashCode(new HashCodeBuilder());
     }
@@ -225,11 +226,11 @@ public class BPTransfer implements Serializable {
         return builder.append(sourceFiles).append(removePrefix).append(remoteDirectory)
             .append(remoteDirectorySDF).append(flatten);
     }
-    
+
     protected EqualsBuilder createEqualsBuilder(final BPTransfer that) {
         return addToEquals(new EqualsBuilder(), that);
     }
-    
+
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPTransfer that) {
         return builder.append(sourceFiles, that.sourceFiles)
             .append(removePrefix, that.removePrefix)
@@ -237,7 +238,7 @@ public class BPTransfer implements Serializable {
             .append(remoteDirectorySDF, that.remoteDirectorySDF)
             .append(flatten, that.flatten);
     }
-    
+
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         return builder.append("sourceFiles", sourceFiles)
             .append("removePrefix", removePrefix)
@@ -245,7 +246,7 @@ public class BPTransfer implements Serializable {
             .append("remoteDirectorySDF", remoteDirectorySDF)
             .append("flatten", flatten);
     }
-    
+
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -256,7 +257,7 @@ public class BPTransfer implements Serializable {
     public int hashCode() {
         return createHashCodeBuilder().toHashCode();
     }
-    
+
     public String toString() {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)).toString();
     }
