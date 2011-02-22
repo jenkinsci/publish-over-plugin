@@ -32,7 +32,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
 public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
@@ -126,7 +126,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         } else {
             buildInfo.setBaseDirectory(useWorkspaceInPromotion ? current.getBaseDirectory() : target.getBaseDirectory());
             buildInfo.setBuildTime(usePromotionTimestamp ? current.getBuildTime() : target.getBuildTime());
-            Map<String, String> effectiveEnvVars = current.getEnvVarsWithPrefix(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX);
+            TreeMap<String, String> effectiveEnvVars = current.getEnvVarsWithPrefix(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX);
             effectiveEnvVars.putAll(target.getEnvVars());
             buildInfo.setEnvVars(effectiveEnvVars);
         }

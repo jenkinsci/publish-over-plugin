@@ -39,18 +39,22 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Map;
 import java.util.TreeMap;
 
 import static jenkins.plugins.publish_over.helper.InputStreamMatcher.streamContains;
 import static junit.framework.Assert.assertEquals;
-import static org.easymock.EasyMock.*;
-import static org.junit.Assert.*;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.same;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class BPTransferTest {
 
     @Rule public TemporaryFolder baseDir = new TemporaryFolder();
-    private Map<String, String> envVars = new TreeMap<String, String>();
+    private TreeMap<String, String> envVars = new TreeMap<String, String>();
     private BPBuildInfo buildInfo;
     private IMocksControl mockControl = EasyMock.createStrictControl();
     private BPClient mockClient = mockControl.createMock(BPClient.class);

@@ -31,12 +31,12 @@ import jenkins.plugins.publish_over.BPBuildInfo;
 
 import java.io.File;
 import java.util.Calendar;
-import java.util.LinkedHashMap;
+import java.util.TreeMap;
 
 public class BPBuildInfoFactory {
 
     public BPBuildEnv createEmptyBuildEnv() {
-        return new BPBuildEnv(new LinkedHashMap<String, String>(), new FilePath(new File("")), Calendar.getInstance());
+        return new BPBuildEnv(new TreeMap<String, String>(), new FilePath(new File("")), Calendar.getInstance());
     }
 
     public BPBuildInfo createEmpty() {

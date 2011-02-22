@@ -33,13 +33,13 @@ import static org.mockito.Mockito.mock;
 
 public class BPHostConfigurationFactory {
 
-    public BPHostConfiguration create(String configName) {
+    public BPHostConfiguration create(final String configName) {
         BPHostConfiguration config = new ConcreteBPHostConfiguration();
         config.setName(configName);
         return config;
     }
 
-    public BPHostConfiguration create(String configName, BPClient client) {
+    public BPHostConfiguration create(final String configName, final BPClient client) {
         BPHostConfiguration config = new ConcreteBPHostConfiguration(client);
         config.setName(configName);
         return config;
@@ -56,12 +56,12 @@ public class BPHostConfigurationFactory {
             this((CLIENT) mock(BPClient.class));
         }
 
-        public ConcreteBPHostConfiguration(CLIENT client) {
+        public ConcreteBPHostConfiguration(final CLIENT client) {
             this.client = client;
         }
 
         @Override
-        public CLIENT createClient(BPBuildInfo buildInfo) throws BapPublisherException {
+        public CLIENT createClient(final BPBuildInfo buildInfo) {
             return client;
         }
     }

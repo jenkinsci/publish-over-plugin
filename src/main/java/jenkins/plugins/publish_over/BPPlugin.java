@@ -42,7 +42,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Map;
+import java.util.TreeMap;
 
 public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BPClient, COMMON_CONFIG>
             extends Notifier implements BPHostConfigurationAccess<CLIENT, COMMON_CONFIG> {
@@ -75,9 +75,9 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         return BuildStepMonitor.BUILD;
     }
 
-    private Map<String, String> getEnvironmentVariables(final AbstractBuild<?, ?> build, final TaskListener listener) {
+    private TreeMap<String, String> getEnvironmentVariables(final AbstractBuild<?, ?> build, final TaskListener listener) {
         try {
-            Map<String, String> env = build.getEnvironment(listener);
+            TreeMap<String, String> env = build.getEnvironment(listener);
             env.putAll(build.getBuildVariables());
             return env;
         } catch (Exception e) {

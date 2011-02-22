@@ -92,16 +92,17 @@ public class BPBuildInfo extends BPBuildEnv {
     public String getRelativePath(final FilePath filePath, final String removePrefix) throws IOException, InterruptedException {
         String normalizedPathToFile = filePath.toURI().normalize().getPath();
         String relativePathToFile = normalizedPathToFile.replace(getNormalizedBaseDirectory(), "");
-        if ((removePrefix != null) && !"".equals(removePrefix.trim())) {
-            String expanded = Util.replaceMacro(removePrefix, getEnvVars());
-            String toRemove = FilenameUtils.separatorsToUnix(FilenameUtils.normalize(expanded + "/"));
-            // No, sorry FindBugs, I don't understand what your problem is ...
-            if ((toRemove != null) && (toRemove.startsWith("/")))
-                toRemove = toRemove.substring(1);
-            if (!relativePathToFile.startsWith(toRemove)) {
-                throw new BapPublisherException(Messages.exception_removePrefix_noMatch(relativePathToFile, toRemove));
+        if (Util.fixEmptyAndTrim(removePrefix) != null) {
+            String expanded = Util.fixEmptyAndTrim(Util.replaceMacro(removePrefix.trim(), getEnvVars()));
+            if (expanded != null) {
+                String toRemove = FilenameUtils.separatorsToUnix(FilenameUtils.normalize(expanded + "/"));
+                if ((toRemove != null) && (toRemove.startsWith("/")))
+                    toRemove = toRemove.substring(1);
+                if (!relativePathToFile.startsWith(toRemove)) {
+                    throw new BapPublisherException(Messages.exception_removePrefix_noMatch(relativePathToFile, toRemove));
+                }
+                relativePathToFile = relativePathToFile.substring(toRemove.length());
             }
-            relativePathToFile = relativePathToFile.substring(toRemove.length());
         }
         int lastDirIdx = relativePathToFile.lastIndexOf("/");
         if (lastDirIdx == -1)

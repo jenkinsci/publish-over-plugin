@@ -34,8 +34,8 @@ import org.apache.commons.logging.LogFactory;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class BPBuildEnv implements Serializable {
 
@@ -45,20 +45,20 @@ public class BPBuildEnv implements Serializable {
     public static final String ENV_JOB_NAME = "JOB_NAME";
     public static final String ENV_BUILD_NUMBER = "BUILD_NUMBER";
 
-    private Map<String, String> envVars;
+    private TreeMap<String, String> envVars;
     private FilePath baseDirectory;
     private Calendar buildTime;
 
     public BPBuildEnv() { }
 
-    public BPBuildEnv(final Map<String, String> envVars, final FilePath baseDirectory, final Calendar buildTime) {
+    public BPBuildEnv(final TreeMap<String, String> envVars, final FilePath baseDirectory, final Calendar buildTime) {
         this.envVars = envVars;
         this.baseDirectory = baseDirectory;
         this.buildTime = buildTime;
     }
 
-    public Map<String, String> getEnvVars() { return envVars; }
-    public void setEnvVars(final Map<String, String> envVars) { this.envVars = envVars; }
+    public TreeMap<String, String> getEnvVars() { return envVars; }
+    public void setEnvVars(final TreeMap<String, String> envVars) { this.envVars = envVars; }
 
     public FilePath getBaseDirectory() { return baseDirectory; }
     public void setBaseDirectory(final FilePath baseDirectory) { this.baseDirectory = baseDirectory; }
@@ -66,8 +66,8 @@ public class BPBuildEnv implements Serializable {
     public Calendar getBuildTime() { return buildTime; }
     public void setBuildTime(final Calendar buildTime) { this.buildTime = buildTime; }
 
-    public Map<String, String> getEnvVarsWithPrefix(final String prefix) {
-        Map<String, String> prefixed = new LinkedHashMap<String, String>();
+    public TreeMap<String, String> getEnvVarsWithPrefix(final String prefix) {
+        TreeMap<String, String> prefixed = new TreeMap<String, String>();
         for (Map.Entry<String, String> entry : envVars.entrySet()) {
             prefixed.put(prefix + entry.getKey(), entry.getValue());
         }

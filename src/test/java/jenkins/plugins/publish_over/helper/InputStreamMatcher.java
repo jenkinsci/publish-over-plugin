@@ -39,23 +39,23 @@ public class InputStreamMatcher implements IArgumentMatcher {
 
     public static final Log LOG = LogFactory.getLog(InputStreamMatcher.class);
 
-    public static InputStream streamContains(byte[] expectedContents) {
+    public static InputStream streamContains(final byte[] expectedContents) {
         EasyMock.reportMatcher(new InputStreamMatcher(expectedContents));
         return null;
     }
 
     private byte[] expectedContents;
 
-    public InputStreamMatcher(byte[] expectedContents) {
+    public InputStreamMatcher(final byte[] expectedContents) {
         this.expectedContents = expectedContents;
     }
 
-    public boolean matches(Object o) {
+    public boolean matches(final Object o) {
         if (!(o instanceof InputStream))
             return false;
 
         try {
-            byte[] actual = IOUtils.toByteArray((InputStream)o);
+            byte[] actual = IOUtils.toByteArray((InputStream) o);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Expected (md5) = " + DigestUtils.md5Hex(expectedContents));
                 LOG.debug("Actual   (md5) = " + DigestUtils.md5Hex(actual));
@@ -66,7 +66,7 @@ public class InputStreamMatcher implements IArgumentMatcher {
         }
     }
 
-    public void appendTo(StringBuffer stringBuffer) {
+    public void appendTo(final StringBuffer stringBuffer) {
         stringBuffer.append("Expected InputStream with contents (md5) = " + DigestUtils.md5Hex(expectedContents));
     }
 }

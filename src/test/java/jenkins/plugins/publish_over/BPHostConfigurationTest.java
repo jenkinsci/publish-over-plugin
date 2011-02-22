@@ -39,42 +39,44 @@ public class BPHostConfigurationTest {
         hostConfig = new ConcreteBPHostConfiguration();
     }
 
-    @Test public void testIsAbsolute_falseForNull() throws Exception {
+    @Test public void testIsAbsoluteFalseForNull() throws Exception {
         assertFalse(hostConfig.isDirectoryAbsolute(null));
     }
 
-    @Test public void testIsAbsolute_falseForEmpty() throws Exception {
+    @Test public void testIsAbsoluteFalseForEmpty() throws Exception {
         assertFalse(hostConfig.isDirectoryAbsolute(""));
     }
 
-    @Test public void testIsAbsolute_falseForRelativeWin() throws Exception {
+    @Test public void testIsAbsoluteFalseForRelativeWin() throws Exception {
         assertFalse(hostConfig.isDirectoryAbsolute("some\\file\\path"));
     }
 
-    @Test public void testIsAbsolute_falseForRelativeUnix() throws Exception {
+    @Test public void testIsAbsoluteFalseForRelativeUnix() throws Exception {
         assertFalse(hostConfig.isDirectoryAbsolute("some/file/path"));
     }
 
-    @Test public void testIsAbsolute_trueForWin() throws Exception {
+    @Test public void testIsAbsoluteTrueForWin() throws Exception {
         assertTrue(hostConfig.isDirectoryAbsolute("\\some\\file\\path"));
     }
 
-    @Test public void testIsAbsolute_trueForUnix() throws Exception {
+    @Test public void testIsAbsoluteTrueForUnix() throws Exception {
         assertTrue(hostConfig.isDirectoryAbsolute("/some/file/path"));
     }
 
-    @Test public void testIsAbsolute_trueForWinRoot() throws Exception {
+    @Test public void testIsAbsoluteTrueForWinRoot() throws Exception {
         assertTrue(hostConfig.isDirectoryAbsolute("\\"));
     }
 
-    @Test public void testIsAbsolute_trueForUnixRoot() throws Exception {
+    @Test public void testIsAbsoluteTrueForUnixRoot() throws Exception {
         assertTrue(hostConfig.isDirectoryAbsolute("/"));
     }
 
     private static class ConcreteBPHostConfiguration extends BPHostConfiguration {
 
+        static final long serialVersionUID = 1L;
+        
         @Override
-        public BPClient createClient(final BPBuildInfo buildInfo) throws BapPublisherException {
+        public BPClient createClient(final BPBuildInfo buildInfo) {
             return null;
         }
 
