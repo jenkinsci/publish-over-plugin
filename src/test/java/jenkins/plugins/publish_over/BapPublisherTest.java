@@ -38,7 +38,7 @@ import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.*;
 
 public class BapPublisherTest {
-    
+
     private BPBuildInfo buildInfo = new BPBuildInfoFactory().createEmpty();
     private IMocksControl mockControl = EasyMock.createStrictControl();
     private BPClient mockClient = mockControl.createMock(BPClient.class);
@@ -52,12 +52,12 @@ public class BapPublisherTest {
         transfers.addAll(Arrays.asList(new BPTransfer[]{transfer1, transfer2, transfer3}));
         BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
         mockClient.disconnectQuietly();
-        
+
         mockControl.replay();
         publisher.perform(hostConfiguration, buildInfo);
         mockControl.verify();
     }
-    
+
     private BPTransfer createHappyTransfer(final int numberOfFilesTransferred) throws Exception {
         BPTransfer transfer = mockControl.createMock(BPTransfer.class);
         mockClient.beginTransfers(transfer);
@@ -72,13 +72,13 @@ public class BapPublisherTest {
         BPTransfer transfer2 = mockControl.createMock(BPTransfer.class);
         transfers.addAll(Arrays.asList(new BPTransfer[]{transfer1, transfer2}));
         BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
-        RuntimeException toThrow = new RuntimeException("xxx");        
+        RuntimeException toThrow = new RuntimeException("xxx");
         mockClient.beginTransfers(transfer1);
         expect(transfer1.hasConfiguredSourceFiles()).andReturn(true);
         expect(transfer1.transfer(buildInfo, mockClient)).andThrow(toThrow);
-        
+
         mockClient.disconnectQuietly();
-        
+
         mockControl.replay();
         try {
             publisher.perform(hostConfiguration, buildInfo);
@@ -88,7 +88,7 @@ public class BapPublisherTest {
         }
         mockControl.verify();
     }
-    
+
     @Test public void testVerbositySetInBuildInfo() throws Exception {
         BapPublisher publisher = new BapPublisher(null, false, null);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
@@ -97,7 +97,7 @@ public class BapPublisherTest {
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertTrue(buildInfo.isVerbose());
     }
-    
+
     @Test public void testEnvironmentUntouchedIfNotPromotion() {
         assertNotSame(buildInfo, buildInfo.getCurrentBuildEnv());
         BapPublisher publisher = new BapPublisher(null, false, null);
@@ -106,13 +106,13 @@ public class BapPublisherTest {
         assertSame(buildInfo.getCurrentBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
         assertSame(buildInfo.getCurrentBuildEnv().getBuildTime(), buildInfo.getBuildTime());
     }
-    
+
     private void assertEffectiveBuildInfoNot(final BPBuildInfo buildInfo, final BPBuildEnv buildEnv) throws Exception {
         assertNotSame(buildEnv.getEnvVars(), buildInfo.getEnvVars());
         assertNotSame(buildEnv.getBaseDirectory(), buildInfo.getBaseDirectory());
         assertNotSame(buildEnv.getBuildTime(), buildInfo.getBuildTime());
     }
-    
+
     @Test public void testEnvironmentIsTargetBuildIfInPromotion() {
         BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
         buildInfo.setTargetBuildEnv(target);
@@ -129,7 +129,7 @@ public class BapPublisherTest {
         assertEquals(buildInfo.getEnvVars().get(envVarName), targetJobName);
         assertEquals(buildInfo.getEnvVars().get(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX + envVarName), promoJobName);
     }
-    
+
     @Test public void testEnvironmentCanSelectWorkspaceForPromotion() {
         BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
         buildInfo.setTargetBuildEnv(target);
@@ -146,7 +146,7 @@ public class BapPublisherTest {
         assertEquals(buildInfo.getEnvVars().get(envVarName), targetJobName);
         assertEquals(buildInfo.getEnvVars().get(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX + envVarName), promoJobName);
     }
-    
+
     @Test public void testEnvironmentCanSelectPromotionTimestampForRemoteDir() {
         BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
         buildInfo.setTargetBuildEnv(target);
@@ -163,6 +163,6 @@ public class BapPublisherTest {
         assertEquals(buildInfo.getEnvVars().get(envVarName), targetJobName);
         assertEquals(buildInfo.getEnvVars().get(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX + envVarName), promoJobName);
     }
-    
-    
+
+
 }

@@ -50,7 +50,7 @@ import static org.mockito.Mockito.*;
 public class BPInstanceConfigTest {
 
     private static Level originalLogLevel;
-    
+
     @BeforeClass public static void before() {
         String packageName = getLoggerName();
         originalLogLevel = Logger.getLogger(packageName).getLevel();
@@ -83,7 +83,7 @@ public class BPInstanceConfigTest {
         instanceConfig.setHostConfigurationAccess(mockHostConfigurationAccess);
         BapPublisher mockPublisher = createAndAddMockPublisher(hostConfiguration.getName());
         mockPublisher.perform(hostConfiguration, buildInfo);
-        
+
         assertResult(Result.SUCCESS, instanceConfig);
     }
 
@@ -92,50 +92,50 @@ public class BPInstanceConfigTest {
         mockPub1.perform(hostConfiguration, buildInfo);
         expectLastCall().andThrow(new RuntimeException("Bad stuff here!"));
         createAndAddMockPublisher(null);
-        
+
         BPInstanceConfig instanceConfig = new BPInstanceConfig(publishers, false, false, false, null);
         instanceConfig.setHostConfigurationAccess(mockHostConfigurationAccess);
-        
+
         assertResult(Result.UNSTABLE, instanceConfig);
     }
-    
+
     @Test public void testPerformReturnsUnstableAndInvokesOtherPublishersWhenContinueOnErrorSet() throws Exception {
         BapPublisher mockPub1 = createAndAddMockPublisher(hostConfiguration.getName());
         mockPub1.perform(hostConfiguration, buildInfo);
         expectLastCall().andThrow(new RuntimeException("Bad stuff here!"));
         BapPublisher mockPub2 = createAndAddMockPublisher(hostConfiguration.getName());
         mockPub2.perform(hostConfiguration, buildInfo);
-        
+
         BPInstanceConfig instanceConfig = new BPInstanceConfig(publishers, true, false, false, null);
         instanceConfig.setHostConfigurationAccess(mockHostConfigurationAccess);
-        
+
         assertResult(Result.UNSTABLE, instanceConfig);
     }
-    
+
     @Test public void testPerformReturnsUnstableWhenNoHostConfigFound() throws Exception {
         BapPublisher mockPublisher = createAndAddMockPublisher(null);
         mockPublisher.setEffectiveEnvironmentInBuildInfo((BPBuildInfo) EasyMock.anyObject());
         expect(mockPublisher.getConfigName()).andReturn(hostConfiguration.getName());
-       
+
         reset(mockHostConfigurationAccess);
         when(mockHostConfigurationAccess.getConfiguration(hostConfiguration.getName())).thenReturn(null);
-        
+
         BPInstanceConfig instanceConfig = new BPInstanceConfig(publishers, false, false, false, null);
         instanceConfig.setHostConfigurationAccess(mockHostConfigurationAccess);
-        
+
         assertResult(Result.UNSTABLE, instanceConfig);
         verify(mockHostConfigurationAccess).getConfiguration(hostConfiguration.getName());
     }
-    
+
     @Test public void testPerformReturnsFailureIfFailOnError() throws Exception {
         BapPublisher mockPub1 = createAndAddMockPublisher(hostConfiguration.getName());
         mockPub1.perform(hostConfiguration, buildInfo);
         expectLastCall().andThrow(new RuntimeException("Bad stuff here!"));
         createAndAddMockPublisher(null);
-        
+
         BPInstanceConfig instanceConfig = new BPInstanceConfig(publishers, false, true, false, null);
         instanceConfig.setHostConfigurationAccess(mockHostConfigurationAccess);
-        
+
         assertResult(Result.FAILURE, instanceConfig);
     }
 
@@ -148,63 +148,63 @@ public class BPInstanceConfigTest {
         publishers.add(mockPublisher);
         return mockPublisher;
     }
-    
+
     private void assertResult(final Result expectedResult, final BPInstanceConfig instanceConfig) {
         mockControl.replay();
         assertEquals(expectedResult, instanceConfig.perform(buildInfo));
         mockControl.verify();
     }
-    
+
     @Test public void testGiveMasterANodeName() throws Exception {
         assertFixNodeName("", "MASTER", "MASTER");
     }
-    
+
     @Test public void testGiveMasterANodeName_wasNull() throws Exception {
         assertFixNodeName(null, "MASTER", "MASTER");
     }
-    
+
     @Test public void testDoNotAffectNodeNameIfMasterNodeNameNotSet() throws Exception {
         assertFixNodeName("", null, "");
     }
-    
+
     @Test public void testDoNotAffectNodeNameIfMasterNodeNameNotSet_null() throws Exception {
         assertFixNodeName(null, "", null);
     }
-    
+
     @Test public void testDoNotAffectNodeNameIfHasValue() throws Exception {
         assertFixNodeName("bob", "master", "bob");
     }
-    
+
     private void assertFixNodeName(final String nodeName, final String masterNodeName, final String expectedNodeName) throws Exception {
         assertFixNodeName(buildInfo.getCurrentBuildEnv().getEnvVars(), nodeName, masterNodeName, expectedNodeName);
     }
-    
+
     @Test public void testGiveMasterANodeName_forPromotion() throws Exception {
         assertFixPromotionNodeName("", "MASTER", "MASTER");
     }
-    
+
     @Test public void testGiveMasterANodeName_wasNull_forPromotion() throws Exception {
         assertFixPromotionNodeName(null, "MASTER", "MASTER");
     }
-    
+
     @Test public void testDoNotAffectNodeNameIfMasterNodeNameNotSet_forPromotion() throws Exception {
         assertFixPromotionNodeName("", null, "");
     }
-    
+
     @Test public void testDoNotAffectNodeNameIfMasterNodeNameNotSet_null_forPromotion() throws Exception {
         assertFixPromotionNodeName(null, "", null);
     }
-    
+
     @Test public void testDoNotAffectNodeNameIfHasValue_forPromotion() throws Exception {
         assertFixPromotionNodeName("bob", "master", "bob");
     }
-    
+
     private void assertFixPromotionNodeName(final String nodeName, final String masterNodeName, final String expectedNodeName) throws Exception {
         BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
         buildInfo.setTargetBuildEnv(target);
         assertFixNodeName(target.getEnvVars(), nodeName, masterNodeName, expectedNodeName);
     }
-    
+
     private void assertFixNodeName(final Map<String, String> envVars, final String nodeName, final String masterNodeName, final String expectedNodeName) throws Exception {
         envVars.put(BPBuildInfo.ENV_NODE_NAME, nodeName);
         BPInstanceConfig instanceConfig = new BPInstanceConfig(publishers, false, false, false, masterNodeName);
@@ -212,17 +212,17 @@ public class BPInstanceConfigTest {
         BapPublisher mockPublisher = createAndAddMockPublisher(hostConfiguration.getName());
         mockPublisher.perform(hostConfiguration, buildInfo);
         assertResult(Result.SUCCESS, instanceConfig);
-        
+
         assertEquals(expectedNodeName, envVars.get(BPBuildInfo.ENV_NODE_NAME));
     }
-    
+
     @Test public void testDoNotCreateNodeName() throws Exception {
         BPInstanceConfig instanceConfig = new BPInstanceConfig(publishers, false, false, false, "master");
         instanceConfig.setHostConfigurationAccess(mockHostConfigurationAccess);
         BapPublisher mockPublisher = createAndAddMockPublisher(hostConfiguration.getName());
         mockPublisher.perform(hostConfiguration, buildInfo);
         assertResult(Result.SUCCESS, instanceConfig);
-        
+
         assertFalse(buildInfo.getCurrentBuildEnv().getEnvVars().containsKey(BPBuildInfo.ENV_NODE_NAME));
     }
 

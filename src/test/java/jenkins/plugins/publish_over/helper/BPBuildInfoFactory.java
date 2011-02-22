@@ -34,13 +34,13 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 
 public class BPBuildInfoFactory {
-    
+
     public BPBuildEnv createEmptyBuildEnv() {
         return new BPBuildEnv(new LinkedHashMap<String, String>(), new FilePath(new File("")), Calendar.getInstance());
     }
-    
+
     public BPBuildInfo createEmpty() {
         return new BPBuildInfo(TaskListener.NULL, "", new FilePath(new File("")), createEmptyBuildEnv(), null);
     }
-    
+
 }
