@@ -74,7 +74,7 @@ public class BPHostConfigurationTest {
     private static class ConcreteBPHostConfiguration extends BPHostConfiguration {
 
         static final long serialVersionUID = 1L;
-        
+
         @Override
         public BPClient createClient(final BPBuildInfo buildInfo) {
             return null;

@@ -27,7 +27,6 @@ package jenkins.plugins.publish_over.helper;
 import jenkins.plugins.publish_over.BPBuildInfo;
 import jenkins.plugins.publish_over.BPClient;
 import jenkins.plugins.publish_over.BPHostConfiguration;
-import jenkins.plugins.publish_over.BapPublisherException;
 
 import static org.mockito.Mockito.mock;
 

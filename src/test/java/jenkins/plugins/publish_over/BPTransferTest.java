@@ -42,11 +42,11 @@ import java.util.Calendar;
 import java.util.TreeMap;
 
 import static jenkins.plugins.publish_over.helper.InputStreamMatcher.streamContains;
-import static junit.framework.Assert.assertEquals;
 import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.same;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
