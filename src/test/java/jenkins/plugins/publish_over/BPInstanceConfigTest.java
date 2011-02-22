@@ -45,24 +45,24 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class BPInstanceConfigTest {
 
     private static Level originalLogLevel;
+    private static Logger logger;
 
     @BeforeClass public static void before() {
-        String packageName = getLoggerName();
-        originalLogLevel = Logger.getLogger(packageName).getLevel();
-        Logger.getLogger(packageName).setLevel(Level.OFF);
+        logger = Logger.getLogger(BPInstanceConfig.class.getCanonicalName());
+        originalLogLevel = logger.getLevel();
+        logger.setLevel(Level.OFF);
     }
 
     @AfterClass public static void after() {
-        Logger.getLogger(getLoggerName()).setLevel(originalLogLevel);
-    }
-
-    private static String getLoggerName() {
-        return BPInstanceConfig.class.getCanonicalName();
+        logger.setLevel(originalLogLevel);
     }
 
     private BPBuildInfo buildInfo = new BPBuildInfoFactory().createEmpty();
@@ -159,7 +159,7 @@ public class BPInstanceConfigTest {
         assertFixNodeName("", "MASTER", "MASTER");
     }
 
-    @Test public void testGiveMasterANodeName_wasNull() throws Exception {
+    @Test public void testGiveMasterANodeNameWasNull() throws Exception {
         assertFixNodeName(null, "MASTER", "MASTER");
     }
 
@@ -167,7 +167,7 @@ public class BPInstanceConfigTest {
         assertFixNodeName("", null, "");
     }
 
-    @Test public void testDoNotAffectNodeNameIfMasterNodeNameNotSet_null() throws Exception {
+    @Test public void testDoNotAffectNodeNameIfMasterNodeNameNotSetNull() throws Exception {
         assertFixNodeName(null, "", null);
     }
 
@@ -183,19 +183,19 @@ public class BPInstanceConfigTest {
         assertFixPromotionNodeName("", "MASTER", "MASTER");
     }
 
-    @Test public void testGiveMasterANodeName_wasNull_forPromotion() throws Exception {
+    @Test public void testGiveMasterANodeNameWasNullForPromotion() throws Exception {
         assertFixPromotionNodeName(null, "MASTER", "MASTER");
     }
 
-    @Test public void testDoNotAffectNodeNameIfMasterNodeNameNotSet_forPromotion() throws Exception {
+    @Test public void testDoNotAffectNodeNameIfMasterNodeNameNotSetForPromotion() throws Exception {
         assertFixPromotionNodeName("", null, "");
     }
 
-    @Test public void testDoNotAffectNodeNameIfMasterNodeNameNotSet_null_forPromotion() throws Exception {
+    @Test public void testDoNotAffectNodeNameIfMasterNodeNameNotSetNullForPromotion() throws Exception {
         assertFixPromotionNodeName(null, "", null);
     }
 
-    @Test public void testDoNotAffectNodeNameIfHasValue_forPromotion() throws Exception {
+    @Test public void testDoNotAffectNodeNameIfHasValueForPromotion() throws Exception {
         assertFixPromotionNodeName("bob", "master", "bob");
     }
 

@@ -46,9 +46,12 @@ public class BapPublisherTest {
     private List<BPTransfer> transfers = new LinkedList<BPTransfer>();
 
     @Test public void testTransfersExecutedAndClientNotified() throws Exception {
-        BPTransfer transfer1 = createHappyTransfer(2);
-        BPTransfer transfer2 = createHappyTransfer(3);
-        BPTransfer transfer3 = createHappyTransfer(4);
+        int numberOfFilesTransferred1 = 2;
+        int numberOfFilesTransferred2 = 3;
+        int numberOfFilesTransferred3 = 4;
+        BPTransfer transfer1 = createHappyTransfer(numberOfFilesTransferred1);
+        BPTransfer transfer2 = createHappyTransfer(numberOfFilesTransferred2);
+        BPTransfer transfer3 = createHappyTransfer(numberOfFilesTransferred3);
         transfers.addAll(Arrays.asList(new BPTransfer[]{transfer1, transfer2, transfer3}));
         BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
         mockClient.disconnectQuietly();
@@ -105,12 +108,6 @@ public class BapPublisherTest {
         assertSame(buildInfo.getCurrentBuildEnv().getEnvVars(), buildInfo.getEnvVars());
         assertSame(buildInfo.getCurrentBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
         assertSame(buildInfo.getCurrentBuildEnv().getBuildTime(), buildInfo.getBuildTime());
-    }
-
-    private void assertEffectiveBuildInfoNot(final BPBuildInfo buildInfo, final BPBuildEnv buildEnv) throws Exception {
-        assertNotSame(buildEnv.getEnvVars(), buildInfo.getEnvVars());
-        assertNotSame(buildEnv.getBaseDirectory(), buildInfo.getBaseDirectory());
-        assertNotSame(buildEnv.getBuildTime(), buildInfo.getBuildTime());
     }
 
     @Test public void testEnvironmentIsTargetBuildIfInPromotion() {

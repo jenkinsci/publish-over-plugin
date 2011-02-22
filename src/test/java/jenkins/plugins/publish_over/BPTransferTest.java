@@ -50,10 +50,10 @@ import static org.junit.Assert.*;
 public class BPTransferTest {
 
     @Rule public TemporaryFolder baseDir = new TemporaryFolder();
-    protected Map<String, String> envVars = new TreeMap<String, String>();
-    protected BPBuildInfo buildInfo;
-    protected IMocksControl mockControl = EasyMock.createStrictControl();
-    protected BPClient mockClient = mockControl.createMock(BPClient.class);
+    private Map<String, String> envVars = new TreeMap<String, String>();
+    private BPBuildInfo buildInfo;
+    private IMocksControl mockControl = EasyMock.createStrictControl();
+    private BPClient mockClient = mockControl.createMock(BPClient.class);
 
     @Before
     public void setUp() throws Exception {
@@ -113,10 +113,11 @@ public class BPTransferTest {
         BPTransfer transfer = new BPTransfer("*", "", "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         Exception someException = new Exception("meh");
-        mockClient.transferFile(EasyMock.same(transfer), EasyMock.eq(new FilePath(toTransfer.getFile())), streamContains(toTransfer.getContents()));
+        mockClient.transferFile(EasyMock.same(transfer),
+                EasyMock.eq(new FilePath(toTransfer.getFile())), streamContains(toTransfer.getContents()));
         expectLastCall().andThrow(someException);
         try {
-            testTransfer(transfer, 99);
+            replayAndTransfer(transfer);
             fail();
         } catch (Exception e) {
             assertSame(someException, e);
@@ -133,7 +134,8 @@ public class BPTransferTest {
         mockControl.checkOrder(false);
         expectTransferFile(transfer, log1, log2, log3);
         mockControl.checkOrder(true);
-        testTransfer(transfer, 3);
+        int expectedFileCount = 3;
+        testTransfer(transfer, expectedFileCount);
     }
 
     @Test public void testEnvVarInPattern() throws Exception {
@@ -210,7 +212,7 @@ public class BPTransferTest {
     }
 
     private void testCreateDirectories(final RandomFile srcFile, final String remoteDir, final String[] expectedDirsRemoteDir,
-            String[] expectedDirsSrcFiles) throws Exception {
+            final String[] expectedDirsSrcFiles) throws Exception {
         BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(remoteDir)).andReturn(false);
@@ -309,16 +311,16 @@ public class BPTransferTest {
     public void testFlattenThrowsExceptionIfTwoFilesHaveSameName() throws Exception {
         String srcPath1 = "bit/of/a/trek/to";
         String srcPath2 = "file/somewhere";
-        RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), srcPath1 + "/my.file");
-        RandomFile srcFile2 = new RandomFile(baseDir.getRoot(), srcPath2 + "/my.file");
+        String duplicateFileName = "my.file";
+        RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), srcPath1 + "/" + duplicateFileName);
+        new RandomFile(baseDir.getRoot(), srcPath2 + "/" + duplicateFileName);
         String remoteDir = "remote/root";
         BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, true);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(remoteDir)).andReturn(true);
 
-
         expectTransferFile(transfer, srcFile1);
-        testTransfer(transfer, 99);
+        replayAndTransfer(transfer);
     }
 
     @Test public void testRemovePrefix() throws Exception {
@@ -383,7 +385,7 @@ public class BPTransferTest {
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
 
         try {
-            testTransfer(transfer, 99);
+            replayAndTransfer(transfer);
             fail();
         } catch (BapPublisherException bpe) {
             assertTrue(bpe.getMessage().contains(prefix));
@@ -444,11 +446,16 @@ public class BPTransferTest {
         BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), dir, "", true, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         try {
-            testTransfer(transfer, 99);
+            replayAndTransfer(transfer);
             fail();
         } catch (BapPublisherException bpe) {
             assertTrue(bpe.getLocalizedMessage().contains(dir));
         }
+    }
+
+    private void replayAndTransfer(final BPTransfer transfer) throws Exception {
+        mockControl.replay();
+        transfer.transfer(buildInfo, mockClient);
     }
 
     private void testTransfer(final BPTransfer transfer, final int expectedFileCount) throws Exception {

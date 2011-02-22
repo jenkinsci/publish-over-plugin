@@ -47,6 +47,8 @@ public class BPHostConfigurationFactory {
 
     public static class ConcreteBPHostConfiguration<CLIENT extends BPClient> extends BPHostConfiguration<CLIENT, Object> {
 
+        static final long serialVersionUID = 1L;
+
         private CLIENT client;
 
         public ConcreteBPHostConfiguration() {
