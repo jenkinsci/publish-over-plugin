@@ -46,9 +46,9 @@ public class BapPublisherTest {
     private List<BPTransfer> transfers = new LinkedList<BPTransfer>();
 
     @Test public void testTransfersExecutedAndClientNotified() throws Exception {
-        int numberOfFilesTransferred1 = 2;
-        int numberOfFilesTransferred2 = 3;
-        int numberOfFilesTransferred3 = 4;
+        final int numberOfFilesTransferred1 = 2;
+        final int numberOfFilesTransferred2 = 3;
+        final int numberOfFilesTransferred3 = 4;
         BPTransfer transfer1 = createHappyTransfer(numberOfFilesTransferred1);
         BPTransfer transfer2 = createHappyTransfer(numberOfFilesTransferred2);
         BPTransfer transfer3 = createHappyTransfer(numberOfFilesTransferred3);

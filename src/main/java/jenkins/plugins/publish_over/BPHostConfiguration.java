@@ -37,7 +37,7 @@ import java.io.Serializable;
 public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG> implements Serializable {
 
     static final long serialVersionUID = 1L;
-    
+
     private String name;
     private String hostname;
     private String username;

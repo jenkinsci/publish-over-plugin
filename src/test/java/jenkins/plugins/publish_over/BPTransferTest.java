@@ -53,7 +53,8 @@ import static org.junit.Assert.fail;
 
 public class BPTransferTest {
 
-    @Rule public TemporaryFolder baseDir = new TemporaryFolder();
+    @Rule // FindBugs: must be public for the @Rule to work
+    public TemporaryFolder baseDir = new TemporaryFolder();
     private TreeMap<String, String> envVars = new TreeMap<String, String>();
     private BPBuildInfo buildInfo;
     private IMocksControl mockControl = EasyMock.createStrictControl();
@@ -138,7 +139,7 @@ public class BPTransferTest {
         mockControl.checkOrder(false);
         expectTransferFile(transfer, log1, log2, log3);
         mockControl.checkOrder(true);
-        int expectedFileCount = 3;
+        final int expectedFileCount = 3;
         testTransfer(transfer, expectedFileCount);
     }
 
