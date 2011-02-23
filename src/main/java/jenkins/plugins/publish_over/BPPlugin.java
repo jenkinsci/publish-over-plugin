@@ -44,6 +44,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.TreeMap;
 
+@SuppressWarnings("PMD.LooseCoupling") // serializable ... Map ...
 public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BPClient, COMMON_CONFIG>
             extends Notifier implements BPHostConfigurationAccess<CLIENT, COMMON_CONFIG> {
 
@@ -77,7 +78,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
 
     private TreeMap<String, String> getEnvironmentVariables(final AbstractBuild<?, ?> build, final TaskListener listener) {
         try {
-            TreeMap<String, String> env = build.getEnvironment(listener);
+            final TreeMap<String, String> env = build.getEnvironment(listener);
             env.putAll(build.getBuildVariables());
             return env;
         } catch (Exception e) {
@@ -88,14 +89,14 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     @Override
     public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener)
                     throws InterruptedException, IOException {
-        PrintStream console = listener.getLogger();
+        final PrintStream console = listener.getLogger();
         if (!isBuildGoodEnoughToRun(build, console)) return true;
-        BPBuildEnv currentBuildEnv = new BPBuildEnv(getEnvironmentVariables(build, listener), build.getWorkspace(), build.getTimestamp());
+        final BPBuildEnv currentBuildEnv = new BPBuildEnv(getEnvironmentVariables(build, listener), build.getWorkspace(), build.getTimestamp());
         BPBuildEnv targetBuildEnv = null;
         if (PROMOTION_CLASS_NAME.equals(build.getClass().getCanonicalName())) {
             AbstractBuild<?, ?> promoted;
             try {
-                Method getTarget = build.getClass().getMethod("getTarget", (Class<?>[]) null);
+                final Method getTarget = build.getClass().getMethod("getTarget", (Class<?>[]) null);
                 promoted = (AbstractBuild) getTarget.invoke(build, (Object[]) null);
             } catch (Exception e) {
                 throw new RuntimeException(Messages.exception_failedToGetPromotedBuild(), e);
@@ -104,13 +105,13 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
                     new FilePath(promoted.getArtifactsDir()), promoted.getTimestamp());
         }
 
-        Result result = delegate.perform(new BPBuildInfo(listener, consolePrefix, Hudson.getInstance().getRootPath(),
+        final Result result = delegate.perform(new BPBuildInfo(listener, consolePrefix, Hudson.getInstance().getRootPath(),
                 currentBuildEnv, targetBuildEnv));
 
-        if (build.getResult() != null)
-            build.setResult(result.combine(build.getResult()));
-        else
+        if (build.getResult() == null)
             build.setResult(result);
+        else
+            build.setResult(result.combine(build.getResult()));
         return result.isBetterOrEqualTo(Result.UNSTABLE);
     }
 
@@ -144,11 +145,11 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
             .append("delegate", delegate);
     }
 
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object that) {
+        if (this == that) return true;
+        if (that == null || getClass() != that.getClass()) return false;
 
-        return createEqualsBuilder((BPPlugin) o).isEquals();
+        return createEqualsBuilder((BPPlugin) that).isEquals();
     }
 
     public int hashCode() {

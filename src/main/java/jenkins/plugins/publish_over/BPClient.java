@@ -40,10 +40,12 @@ public interface BPClient<TRANSFER extends BPTransfer> {
 
     void beginTransfers(TRANSFER transfer);
 
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     void transferFile(TRANSFER transfer, FilePath filePath, InputStream fileContent) throws Exception;
 
     void endTransfers(TRANSFER transfer);
 
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     void disconnect() throws Exception;
 
     void disconnectQuietly();

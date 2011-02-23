@@ -34,6 +34,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import java.io.IOException;
 import java.io.Serializable;
 
+@SuppressWarnings("PMD.TooManyMethods")
 public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG> implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -87,13 +88,14 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     public abstract CLIENT createClient(BPBuildInfo buildInfo);
 
     protected boolean isDirectoryAbsolute(final String directory) {
-        if (directory == null)
+        if ((directory == null) || (directory.length() < 1))
             return false;
-        return directory.startsWith("/") || directory.startsWith("\\");
+        final char first = directory.charAt(0);
+        return (first == '/') || (first == '\\');
     }
 
     protected void changeToRootDirectory(final BPClient client) throws IOException {
-        String remoteRootDir = getRemoteRootDir();
+        final String remoteRootDir = getRemoteRootDir();
         if ((Util.fixEmptyAndTrim(remoteRootDir) != null) && (!client.changeDirectory(remoteRootDir))) {
                 exception(client, Messages.exception_cwdRemoteRoot(remoteRootDir));
         }
@@ -140,11 +142,11 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
             .append("port", port);
     }
 
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object that) {
+        if (this == that) return true;
+        if (that == null || getClass() != that.getClass()) return false;
 
-        return createEqualsBuilder((BPHostConfiguration) o).isEquals();
+        return createEqualsBuilder((BPHostConfiguration) that).isEquals();
     }
 
     public int hashCode() {

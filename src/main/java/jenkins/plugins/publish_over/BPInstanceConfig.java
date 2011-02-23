@@ -36,6 +36,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("PMD.TooManyMethods") // only actually 4 "real" methods in here all rest accessors and boiler str/has/eq 
 public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -90,7 +91,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     }
 
     public BPHostConfiguration getConfiguration(final String configName) {
-        BPHostConfiguration config =  hostConfigurationAccess.getConfiguration(configName);
+        final BPHostConfiguration config =  hostConfigurationAccess.getConfiguration(configName);
         if (config == null)
             throw new BapPublisherException(Messages.exception_failedToFindConfiguration(configName));
         return config;
@@ -108,13 +109,13 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
 
     public Result perform(final BPBuildInfo buildInfo) {
         Result toReturn = Result.SUCCESS;
-        Result onError = failOnError ? Result.FAILURE : Result.UNSTABLE;
+        final Result onError = failOnError ? Result.FAILURE : Result.UNSTABLE;
         fixMasterNodeName(buildInfo);
         for (PUBLISHER publisher : publishers) {
             publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
             try {
-                BPHostConfiguration hostConfig = getConfiguration(publisher.getConfigName());
-                BPCallablePublisher callablePublisher = new BPCallablePublisher(publisher, hostConfig, buildInfo);
+                final BPHostConfiguration hostConfig = getConfiguration(publisher.getConfigName());
+                final BPCallablePublisher callablePublisher = new BPCallablePublisher(publisher, hostConfig, buildInfo);
                 if (alwaysPublishFromMaster)
                     callablePublisher.invoke(null, null);
                 else
@@ -160,11 +161,11 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
             .append("alwaysPublishFromMaster", alwaysPublishFromMaster);
     }
 
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object that) {
+        if (this == that) return true;
+        if (that == null || getClass() != that.getClass()) return false;
 
-        return createEqualsBuilder((BPInstanceConfig) o).isEquals();
+        return createEqualsBuilder((BPInstanceConfig) that).isEquals();
     }
 
     public int hashCode() {

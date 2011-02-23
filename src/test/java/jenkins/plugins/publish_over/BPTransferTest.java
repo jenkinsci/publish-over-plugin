@@ -51,18 +51,19 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+@SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods", "AvoidDuplicateLiterals" })
 public class BPTransferTest {
 
     @Rule // FindBugs: must be public for the @Rule to work
     public TemporaryFolder baseDir = new TemporaryFolder();
-    private TreeMap<String, String> envVars = new TreeMap<String, String>();
+    private final TreeMap<String, String> envVars = new TreeMap<String, String>(); // NOPMD
+    private final IMocksControl mockControl = EasyMock.createStrictControl();
+    private final BPClient mockClient = mockControl.createMock(BPClient.class);
     private BPBuildInfo buildInfo;
-    private IMocksControl mockControl = EasyMock.createStrictControl();
-    private BPClient mockClient = mockControl.createMock(BPClient.class);
 
     @Before
     public void setUp() throws Exception {
-        BPBuildEnv current = new BPBuildInfoFactory().createEmptyBuildEnv();
+        final BPBuildEnv current = new BPBuildInfoFactory().createEmptyBuildEnv();
         buildInfo = new BPBuildInfo(TaskListener.NULL, "", new FilePath(new File("")), current, null);
         buildInfo.setEnvVars(envVars);
         buildInfo.setBaseDirectory(new FilePath(baseDir.getRoot()));
@@ -70,54 +71,54 @@ public class BPTransferTest {
     }
 
     @Test public void testSingleFileInRootWithExplicitPath() throws Exception {
-        testSingleFileInRoot("xxx.log", "xxx.log");
+        assertSingleFileInRoot("xxx.log", "xxx.log");
     }
 
     @Test public void testSingleFileInRootWithExtensionGlob() throws Exception {
-        testSingleFileInRoot("xxx.log", "xxx.*");
+        assertSingleFileInRoot("xxx.log", "xxx.*");
     }
 
     @Test public void testSingleFileNoExtensionInRootWithMatchAnyFile() throws Exception {
-        testSingleFileInRoot("xxx", "*");
+        assertSingleFileInRoot("xxx", "*");
     }
 
     @Test public void testSingleFileInRootWithMatchAnyFile() throws Exception {
-        testSingleFileInRoot("xxx.log", "*");
+        assertSingleFileInRoot("xxx.log", "*");
     }
 
     @Test public void testSingleFileInRootWithMatchAnyFileWithAnyExtension() throws Exception {
-        testSingleFileInRoot("xxx.log", "*.*");
+        assertSingleFileInRoot("xxx.log", "*.*");
     }
 
     @Test public void testSingleFileInRootWithMatchAnyFileWithAnyPathAndExtension() throws Exception {
-        testSingleFileInRoot("xxx.log", "**/*.*");
+        assertSingleFileInRoot("xxx.log", "**/*.*");
     }
 
     @Test public void testSingleFileInRootWithMatchAnyFileWithAnyPathAndFile() throws Exception {
-        testSingleFileInRoot("xxx.log", "**/*");
+        assertSingleFileInRoot("xxx.log", "**/*");
     }
 
     @Test public void testSingleFileInRootWithMatchAnyFileWithAnyPathAndFileWin() throws Exception {
-        testSingleFileInRoot("xxx.log", "**\\*");
+        assertSingleFileInRoot("xxx.log", "**\\*");
     }
 
     @Test public void testSingleFileNoExtensionInRootWithMatchAnyFileWithAnyPathAndFile() throws Exception {
-        testSingleFileInRoot("xxx", "**/*");
+        assertSingleFileInRoot("xxx", "**/*");
     }
 
-    private void testSingleFileInRoot(final String filename, final String pattern) throws Exception {
-        RandomFile toTransfer = new RandomFile(baseDir.getRoot(), filename);
-        BPTransfer transfer = new BPTransfer(pattern, "", "", false, false);
+    private void assertSingleFileInRoot(final String filename, final String pattern) throws Exception {
+        final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), filename);
+        final BPTransfer transfer = new BPTransfer(pattern, "", "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expectTransferFile(transfer, toTransfer);
         testTransfer(transfer, 1);
     }
 
     @Test public void testExceptionPropagatesWhenFailToTransferFile() throws Exception {
-        RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "abc.jpg");
-        BPTransfer transfer = new BPTransfer("*", "", "", false, false);
+        final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "abc.jpg");
+        final BPTransfer transfer = new BPTransfer("*", "", "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
-        Exception someException = new Exception("meh");
+        final Exception someException = new Exception("meh");
         mockClient.transferFile(EasyMock.same(transfer),
                 EasyMock.eq(new FilePath(toTransfer.getFile())), streamContains(toTransfer.getContents()));
         expectLastCall().andThrow(someException);
@@ -130,11 +131,11 @@ public class BPTransferTest {
     }
 
     @Test public void testMultipleFiles() throws Exception {
-        RandomFile log1 = new RandomFile(baseDir.getRoot(), "one.log");
-        RandomFile log2 = new RandomFile(baseDir.getRoot(), "two.log");
-        RandomFile log3 = new RandomFile(baseDir.getRoot(), "three.log");
+        final RandomFile log1 = new RandomFile(baseDir.getRoot(), "one.log");
+        final RandomFile log2 = new RandomFile(baseDir.getRoot(), "two.log");
+        final RandomFile log3 = new RandomFile(baseDir.getRoot(), "three.log");
         new RandomFile(baseDir.getRoot(), "notALog.txt");
-        BPTransfer transfer = new BPTransfer("*.log", "", "", false, false);
+        final BPTransfer transfer = new BPTransfer("*.log", "", "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         mockControl.checkOrder(false);
         expectTransferFile(transfer, log1, log2, log3);
@@ -144,8 +145,8 @@ public class BPTransferTest {
     }
 
     @Test public void testEnvVarInPattern() throws Exception {
-        RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello_123.txt");
-        BPTransfer transfer = new BPTransfer("hello_${BUILD_NUMBER}.*", "", "", false, false);
+        final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello_123.txt");
+        final BPTransfer transfer = new BPTransfer("hello_${BUILD_NUMBER}.*", "", "", false, false);
         envVars.put("BUILD_NUMBER", "123");
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expectTransferFile(transfer, toTransfer);
@@ -153,9 +154,9 @@ public class BPTransferTest {
     }
 
     @Test public void testCreateSingleDirectoryFromRemoteDirectory() throws Exception {
-        RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
-        String dir = "newDir";
-        BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), dir, "", false, false);
+        final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
+        final String dir = "newDir";
+        final BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), dir, "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(dir)).andReturn(false);
         expect(mockClient.makeDirectory(dir)).andReturn(true);
@@ -165,10 +166,10 @@ public class BPTransferTest {
     }
 
     @Test public void testCreateSingleDirectoryFromRemoteDirectoryWithEnvVar() throws Exception {
-        RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
+        final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
         envVars.put("BUILD_NUMBER", "123");
-        String expandedDir = "newDir-123";
-        BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), "newDir-${BUILD_NUMBER}", "", false, false);
+        final String expandedDir = "newDir-123";
+        final BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), "newDir-${BUILD_NUMBER}", "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(expandedDir)).andReturn(false);
         expect(mockClient.makeDirectory(expandedDir)).andReturn(true);
@@ -194,9 +195,9 @@ public class BPTransferTest {
     }
 
     private void testCreateMultipleDirectoriesFromRemoteDirectory(final String remoteDir, final String[] expectedDirs) throws Exception {
-        String normalizedDir = remoteDir.contains("\\") ? remoteDir.replaceAll("\\\\", "/") : remoteDir;
-        RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
-        BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), remoteDir, "", false, false);
+        final String normalizedDir = remoteDir.contains("\\") ? remoteDir.replaceAll("\\\\", "/") : remoteDir;
+        final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
+        final BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), remoteDir, "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(normalizedDir)).andReturn(false);
         expect(mockClient.makeDirectory(normalizedDir)).andReturn(false);
@@ -211,14 +212,14 @@ public class BPTransferTest {
 
 
     @Test public void testCreateDirectoriesFromSrcFileAndRemoteDirectory() throws Exception {
-        RandomFile srcFile = new RandomFile(baseDir.getRoot(), "bit/of/a/trek/to/my.file");
+        final RandomFile srcFile = new RandomFile(baseDir.getRoot(), "bit/of/a/trek/to/my.file");
         testCreateDirectories(srcFile, "my/remote/dir", new String[] {"my", "remote", "dir"},
             new String[] {"bit", "of", "a", "trek", "to"});
     }
 
     private void testCreateDirectories(final RandomFile srcFile, final String remoteDir, final String[] expectedDirsRemoteDir,
             final String[] expectedDirsSrcFiles) throws Exception {
-        BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, false);
+        final BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(remoteDir)).andReturn(false);
         expect(mockClient.makeDirectory(remoteDir)).andReturn(false);
@@ -227,7 +228,7 @@ public class BPTransferTest {
             expect(mockClient.makeDirectory(subDir)).andReturn(true);
             expect(mockClient.changeDirectory(subDir)).andReturn(true);
         }
-        String srcPath = StringUtils.join(expectedDirsSrcFiles, '/');
+        final String srcPath = StringUtils.join(expectedDirsSrcFiles, '/');
         expect(mockClient.changeDirectory(srcPath)).andReturn(false);
         expect(mockClient.makeDirectory(srcPath)).andReturn(false);
         for (String subDir : expectedDirsSrcFiles) {
@@ -240,9 +241,9 @@ public class BPTransferTest {
     }
 
     @Test public void testCreateSingleDirectoryFromRemoteDirectoryAbsolute() throws Exception {
-        RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
-        String dir = "newDir";
-        BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), "/" + dir, "", false, false);
+        final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
+        final String dir = "newDir";
+        final BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), "/" + dir, "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(dir)).andReturn(false);
         expect(mockClient.makeDirectory(dir)).andReturn(true);
@@ -252,9 +253,9 @@ public class BPTransferTest {
     }
 
     @Test public void testCreateSingleDirectoryFromRemoteDirectoryAbsoluteWin() throws Exception {
-        RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
-        String dir = "newDir";
-        BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), "\\" + dir, "", false, false);
+        final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
+        final String dir = "newDir";
+        final BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), "\\" + dir, "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(dir)).andReturn(false);
         expect(mockClient.makeDirectory(dir)).andReturn(true);
@@ -264,12 +265,12 @@ public class BPTransferTest {
     }
 
     @Test public void testCreateMultipleFilesWithDirectories() throws Exception {
-        String srcPath1 = "bit/of/a/trek/to";
-        String srcPath2 = "file/somewhere";
-        RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), srcPath1 + "/my.file");
-        RandomFile srcFile2 = new RandomFile(baseDir.getRoot(), srcPath2 + "/else.log");
-        String remoteDir = "remote/root";
-        BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, false);
+        final String srcPath1 = "bit/of/a/trek/to";
+        final String srcPath2 = "file/somewhere";
+        final RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), srcPath1 + "/my.file");
+        final RandomFile srcFile2 = new RandomFile(baseDir.getRoot(), srcPath2 + "/else.log");
+        final String remoteDir = "remote/root";
+        final BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, false);
 
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(remoteDir)).andReturn(false);
@@ -295,12 +296,12 @@ public class BPTransferTest {
     }
 
     @Test public void testFlatten() throws Exception {
-        String srcPath1 = "bit/of/a/trek/to";
-        String srcPath2 = "file/somewhere";
-        RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), srcPath1 + "/my.file");
-        RandomFile srcFile2 = new RandomFile(baseDir.getRoot(), srcPath2 + "/else.log");
-        String remoteDir = "remote/root";
-        BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, true);
+        final String srcPath1 = "bit/of/a/trek/to";
+        final String srcPath2 = "file/somewhere";
+        final RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), srcPath1 + "/my.file");
+        final RandomFile srcFile2 = new RandomFile(baseDir.getRoot(), srcPath2 + "/else.log");
+        final String remoteDir = "remote/root";
+        final BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, true);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(remoteDir)).andReturn(false);
         expect(mockClient.makeDirectory(remoteDir)).andReturn(true);
@@ -314,13 +315,13 @@ public class BPTransferTest {
 
     @Test(expected = BapPublisherException.class)
     public void testFlattenThrowsExceptionIfTwoFilesHaveSameName() throws Exception {
-        String srcPath1 = "bit/of/a/trek/to";
-        String srcPath2 = "file/somewhere";
-        String duplicateFileName = "my.file";
-        RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), srcPath1 + "/" + duplicateFileName);
+        final String srcPath1 = "bit/of/a/trek/to";
+        final String srcPath2 = "file/somewhere";
+        final String duplicateFileName = "my.file";
+        final RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), srcPath1 + "/" + duplicateFileName);
         new RandomFile(baseDir.getRoot(), srcPath2 + "/" + duplicateFileName);
         String remoteDir = "remote/root";
-        BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, true);
+        final BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, true);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(remoteDir)).andReturn(true);
 
@@ -329,13 +330,13 @@ public class BPTransferTest {
     }
 
     @Test public void testRemovePrefix() throws Exception {
-        String prefix = "gonna/remove";
-        String srcPath1 = "but/not/this";
-        String srcPath2 = "not/this/one/neither";
-        RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), prefix + "/" + srcPath1 + "/my.file");
-        RandomFile srcFile2 = new RandomFile(baseDir.getRoot(), prefix + "/" + srcPath2 + "/else.log");
+        final String prefix = "gonna/remove";
+        final String srcPath1 = "but/not/this";
+        final String srcPath2 = "not/this/one/neither";
+        final RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), prefix + "/" + srcPath1 + "/my.file");
+        final RandomFile srcFile2 = new RandomFile(baseDir.getRoot(), prefix + "/" + srcPath2 + "/else.log");
 
-        BPTransfer transfer = new BPTransfer("**/*", "", prefix, false, false);
+        final BPTransfer transfer = new BPTransfer("**/*", "", prefix, false, false);
 
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(srcPath1)).andReturn(true);
@@ -349,13 +350,13 @@ public class BPTransferTest {
     }
 
     @Test public void testRemovePrefixTrailingSlash() throws Exception {
-        String prefix = "gonna/remove/";
-        String srcPath1 = "but/not/this";
-        String srcPath2 = "not/this/one/neither";
-        RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), prefix + srcPath1 + "/my.file");
-        RandomFile srcFile2 = new RandomFile(baseDir.getRoot(), prefix + srcPath2 + "/else.log");
+        final String prefix = "gonna/remove/";
+        final String srcPath1 = "but/not/this";
+        final String srcPath2 = "not/this/one/neither";
+        final RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), prefix + srcPath1 + "/my.file");
+        final RandomFile srcFile2 = new RandomFile(baseDir.getRoot(), prefix + srcPath2 + "/else.log");
 
-        BPTransfer transfer = new BPTransfer("**/*", "", prefix, false, false);
+        final BPTransfer transfer = new BPTransfer("**/*", "", prefix, false, false);
 
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(srcPath1)).andReturn(true);
@@ -369,11 +370,11 @@ public class BPTransferTest {
     }
 
     @Test public void testRemovePrefixPrecedingSlash() throws Exception {
-        String prefix = "\\gonna\\remove\\";
-        String expected = "but/not/this";
-        RandomFile srcFile = new RandomFile(baseDir.getRoot(), "gonna/remove/but/not/this/my.file");
+        final String prefix = "\\gonna\\remove\\";
+        final String expected = "but/not/this";
+        final RandomFile srcFile = new RandomFile(baseDir.getRoot(), "gonna/remove/but/not/this/my.file");
 
-        BPTransfer transfer = new BPTransfer("**\\*", "", prefix, false, false);
+        final BPTransfer transfer = new BPTransfer("**\\*", "", prefix, false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(expected)).andReturn(true);
         expectTransferFile(transfer, srcFile);
@@ -382,11 +383,11 @@ public class BPTransferTest {
     }
 
     @Test public void testRemovePrefixThrowsExceptionIfPathDoesNotHavePrefix() throws Exception {
-        String prefix = "gonna/remove";
-        String srcPath = "but/not/this";
+        final String prefix = "gonna/remove";
+        final String srcPath = "but/not/this";
         new RandomFile(baseDir.getRoot(), srcPath + "/my.file");
 
-        BPTransfer transfer = new BPTransfer("**/*", "", prefix, false, false);
+        final BPTransfer transfer = new BPTransfer("**/*", "", prefix, false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
 
         try {
@@ -399,10 +400,10 @@ public class BPTransferTest {
 
     @Test public void testRemovePrefixCanUseEnvVars() throws Exception {
         envVars.put("BUILD_NUMBER", "123");
-        String prefix = "dir/$BUILD_NUMBER/hello";
-        String srcPath = "dir/123/hello/world";
-        RandomFile srcFile = new RandomFile(baseDir.getRoot(), srcPath + "/my.file");
-        BPTransfer transfer = new BPTransfer("**/*", "", prefix, false, false);
+        final String prefix = "dir/$BUILD_NUMBER/hello";
+        final String srcPath = "dir/123/hello/world";
+        final RandomFile srcFile = new RandomFile(baseDir.getRoot(), srcPath + "/my.file");
+        final BPTransfer transfer = new BPTransfer("**/*", "", prefix, false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory("world")).andReturn(true);
         expectTransferFile(transfer, srcFile);
@@ -411,13 +412,13 @@ public class BPTransferTest {
     }
 
     @Test public void testRemoteDirectoryCanBeSimpleDateFormat() throws Exception {
-        RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
-        Calendar buildTime = Calendar.getInstance();
+        final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
+        final Calendar buildTime = Calendar.getInstance();
         buildTime.setTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse("25/11/2010 13:14:15"));
         buildInfo.setBuildTime(buildTime);
-        String dir = "'/myBuild-'yyyyMMdd-HHmmss";
-        String expected = "myBuild-20101125-131415";
-        BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), dir, "", true, false);
+        final String dir = "'/myBuild-'yyyyMMdd-HHmmss";
+        final String expected = "myBuild-20101125-131415";
+        final BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), dir, "", true, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(expected)).andReturn(true);
         expectTransferFile(transfer, toTransfer);
@@ -426,14 +427,14 @@ public class BPTransferTest {
     }
 
     @Test public void testRemoteDirectoryCanBeSimpleDateFormatAndUseEnvVars() throws Exception {
-        RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
-        Calendar buildTime = Calendar.getInstance();
+        final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
+        final Calendar buildTime = Calendar.getInstance();
         buildTime.setTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse("25/11/2010 13:14:15"));
         buildInfo.setBuildTime(buildTime);
         envVars.put("NODE_NAME", "slave1");
-        String dir = "'${NODE_NAME}-'yyyyMMdd";
-        String expected = "slave1-20101125";
-        BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), dir, "", true, false);
+        final String dir = "'${NODE_NAME}-'yyyyMMdd";
+        final String expected = "slave1-20101125";
+        final BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), dir, "", true, false);
 
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(expected)).andReturn(true);
@@ -443,12 +444,12 @@ public class BPTransferTest {
     }
 
     @Test public void testExceptionIfBadSDFInRemoteDirectory() throws Exception {
-        RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
-        Calendar buildTime = Calendar.getInstance();
+        final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
+        final Calendar buildTime = Calendar.getInstance();
         buildTime.setTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse("25/11/2010 13:14:15"));
         buildInfo.setBuildTime(buildTime);
-        String dir = "/myBuild-yyyyMMdd-HHmmss";
-        BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), dir, "", true, false);
+        final String dir = "/myBuild-yyyyMMdd-HHmmss";
+        final BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), dir, "", true, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         try {
             replayAndTransfer(transfer);

@@ -42,11 +42,11 @@ import java.util.List;
 public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_CONFIG>
             extends BuildStepDescriptor<Publisher> {
 
-    private BPDescriptorMessages msg;
-    private Class<COMMON_CONFIG> commonConfigClass;
-    private Class<HOST_CONFIG> hostConfigClass;
+    private final BPDescriptorMessages msg;
+    private final Class<COMMON_CONFIG> commonConfigClass;
+    private final Class<HOST_CONFIG> hostConfigClass;
+    private final CopyOnWriteList<HOST_CONFIG> hostConfigurations = new CopyOnWriteList<HOST_CONFIG>();
     private COMMON_CONFIG commonConfig;
-    private CopyOnWriteList<HOST_CONFIG> hostConfigurations = new CopyOnWriteList<HOST_CONFIG>();
 
     public BPPluginDescriptor(final BPDescriptorMessages messages, final Class pluginClass, final Class<HOST_CONFIG> hostConfigClass,
                               final Class<COMMON_CONFIG> commonConfigClass) {
@@ -82,7 +82,7 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
     }
 
     public boolean configure(final StaplerRequest request, final JSONObject formData) {
-        List<HOST_CONFIG> newConfigurations = request.bindJSONToList(hostConfigClass, formData.get("hostconfig"));
+        final List<HOST_CONFIG> newConfigurations = request.bindJSONToList(hostConfigClass, formData.get("hostconfig"));
         if (commonConfigClass != null) {
             commonConfig = request.bindJSON(commonConfigClass, formData.getJSONObject("common"));
             for (HOST_CONFIG hostConfig : newConfigurations) {
@@ -111,12 +111,12 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
     }
 
     public FormValidation doTestConnection(final StaplerRequest request, final StaplerResponse response) {
-        HOST_CONFIG hostConfig = request.bindParameters(hostConfigClass, "bap-pub.");
+        final HOST_CONFIG hostConfig = request.bindParameters(hostConfigClass, "bap-pub.");
         if (commonConfigClass != null) {
-            COMMON_CONFIG commonConfig = request.bindParameters(commonConfigClass, "common.");
+            final COMMON_CONFIG commonConfig = request.bindParameters(commonConfigClass, "common.");
             hostConfig.setCommonConfig(commonConfig);
         }
-        BPBuildInfo buildInfo = createDummyBuildInfo();
+        final BPBuildInfo buildInfo = createDummyBuildInfo();
         try {
             hostConfig.createClient(buildInfo).disconnect();
             return FormValidation.ok(msg.connectionOK());
@@ -138,7 +138,7 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
         );
     }
 
-    public static interface BPDescriptorMessages {
+    public interface BPDescriptorMessages {
         String displayName();
         String connectionOK();
         String connectionErr();

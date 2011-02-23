@@ -81,15 +81,16 @@ public class BPTransfer implements Serializable {
     }
 
     public FilePath[] getSourceFiles(final BPBuildInfo buildInfo) throws IOException, InterruptedException {
-        String expanded = Util.replaceMacro(sourceFiles, buildInfo.getEnvVars());
+        final String expanded = Util.replaceMacro(sourceFiles, buildInfo.getEnvVars());
         if (LOG.isDebugEnabled())
             LOG.debug(Messages.log_sourceFiles(sourceFiles, expanded));
         return buildInfo.getBaseDirectory().list(expanded);
     }
 
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public int transfer(final BPBuildInfo buildInfo, final BPClient client) throws Exception {
         int transferred = 0;
-        DirectoryMaker dirMaker = new DirectoryMaker(buildInfo, client);
+        final DirectoryMaker dirMaker = new DirectoryMaker(buildInfo, client);
         for (FilePath filePath : getSourceFiles(buildInfo)) {
             dirMaker.changeAndMakeDirs(filePath);
             transferFile(client, filePath);
@@ -98,22 +99,23 @@ public class BPTransfer implements Serializable {
         return transferred;
     }
 
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public void transferFile(final BPClient client, final FilePath filePath) throws Exception {
-        InputStream is = filePath.read();
+        InputStream inputStream = filePath.read();
         try {
-            client.transferFile(this, filePath, is);
+            client.transferFile(this, filePath, inputStream);
         } finally {
-            is.close();
+            inputStream.close();
         }
     }
 
     private class DirectoryMaker {
 
-        private String previousPath = null;
-        private BPBuildInfo buildInfo;
-        private BPClient client;
+        private final BPBuildInfo buildInfo;
+        private final BPClient client;
+        private final Set<String> flattenedFileNames = new LinkedHashSet<String>();
+        private String previousPath;
         private String relativeRemoteSubDirectory;
-        private Set<String> flattenedFileNames = new LinkedHashSet<String>();
 
         DirectoryMaker(final BPBuildInfo buildInfo, final BPClient client) throws IOException {
             this.buildInfo = buildInfo;
@@ -126,7 +128,7 @@ public class BPTransfer implements Serializable {
         public void changeAndMakeDirs(final FilePath filePath) throws IOException, InterruptedException {
             if (flatten)
                 assertNotDuplicateFileName(filePath);
-            String relPath = buildInfo.getRelativePath(filePath, removePrefix);
+            final String relPath = buildInfo.getRelativePath(filePath, removePrefix);
             if (LOG.isDebugEnabled())
                 LOG.debug(Messages.log_pathToFile(filePath.getName(), relPath));
             if (!relPath.equals(previousPath) && !flatten) {
@@ -137,7 +139,7 @@ public class BPTransfer implements Serializable {
         }
 
         private void assertNotDuplicateFileName(final FilePath filePath) {
-            String fileName = filePath.getName();
+            final String fileName = filePath.getName();
             if (flattenedFileNames.contains(fileName))
                 throw new BapPublisherException(Messages.exception_flattenModeDuplicateFileName(fileName));
             flattenedFileNames.add(fileName);
@@ -162,16 +164,17 @@ public class BPTransfer implements Serializable {
                 return "";
             if (remoteDirectorySDF)
                 relative = buildTimeFormat(relative);
-            if (relative.startsWith("/"))
-                relative = relative.substring(1);
-            if ("".equals(relative.trim()))
-                relative = "";
+            relative = Util.fixEmptyAndTrim(relative);
+            if (relative == null)
+                return "";
+            if (relative.charAt(0) == '/')
+                return relative.substring(1);
             return relative;
         }
 
         private String buildTimeFormat(final String simpleDateFormatString) {
             try {
-                SimpleDateFormat sdf = new SimpleDateFormat(simpleDateFormatString);
+                final SimpleDateFormat sdf = new SimpleDateFormat(simpleDateFormatString);
                 return sdf.format(buildInfo.getBuildTime().getTime());
             } catch (IllegalArgumentException iae) {
                 throw new BapPublisherException(Messages.exception_badDateFormat(simpleDateFormatString, iae.getLocalizedMessage()), iae);
@@ -206,7 +209,7 @@ public class BPTransfer implements Serializable {
         private void changeToTargetDirectory(final FilePath filePath) throws IOException, InterruptedException {
             if (flatten)
                 return;
-            String relativePath = buildInfo.getRelativePath(filePath, removePrefix);
+            final String relativePath = buildInfo.getRelativePath(filePath, removePrefix);
             if (!"".equals(relativePath))
                 chdir(relativePath);
         }
@@ -247,11 +250,11 @@ public class BPTransfer implements Serializable {
             .append("flatten", flatten);
     }
 
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object that) {
+        if (this == that) return true;
+        if (that == null || getClass() != that.getClass()) return false;
 
-        return createEqualsBuilder((BPTransfer) o).isEquals();
+        return createEqualsBuilder((BPTransfer) that).isEquals();
     }
 
     public int hashCode() {

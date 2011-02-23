@@ -32,18 +32,18 @@ public class BapPublisherException extends RuntimeException {
 
     public static void exception(final BPClient client, final String message, final Throwable throwable) {
         client.disconnectQuietly();
-        if (throwable != null)
-            throw new BapPublisherException(message, throwable);
-        else
+        if (throwable == null)
             throw new BapPublisherException(message);
+        else
+            throw new BapPublisherException(message, throwable);
     }
 
     public BapPublisherException(final String message) {
         super(message);
     }
 
-    public BapPublisherException(final String message, final Throwable t) {
-        super(message, t);
+    public BapPublisherException(final String message, final Throwable throwable) {
+        super(message, throwable);
     }
 
 }

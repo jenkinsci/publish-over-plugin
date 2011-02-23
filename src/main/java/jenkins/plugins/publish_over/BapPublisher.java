@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
+@SuppressWarnings("PMD.TooManyMethods") // only actually 4 "real" methods in here all rest accessors and boiler str/has/eq 
 public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -107,8 +108,8 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     }
 
     private void printNumberOfFilesTransferred(final BPBuildInfo buildInfo, final List<Integer> transferred) {
-        int total = sumTransfers(transferred);
-        String countString = "" + total;
+        final int total = sumTransfers(transferred);
+        String countString = Integer.toString(total);
         if (transferred.size() > 1) {
             countString = total + " ( " + StringUtils.join(transferred, " + ") + " )";
         }
@@ -117,8 +118,8 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
     public void setEffectiveEnvironmentInBuildInfo(final BPBuildInfo buildInfo) {
         buildInfo.setVerbose(verbose);
-        BPBuildEnv current = buildInfo.getCurrentBuildEnv();
-        BPBuildEnv target = buildInfo.getTargetBuildEnv();
+        final BPBuildEnv current = buildInfo.getCurrentBuildEnv();
+        final BPBuildEnv target = buildInfo.getTargetBuildEnv();
         if (target == null) {
             buildInfo.setEnvVars(current.getEnvVars());
             buildInfo.setBaseDirectory(current.getBaseDirectory());
@@ -126,16 +127,17 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         } else {
             buildInfo.setBaseDirectory(useWorkspaceInPromotion ? current.getBaseDirectory() : target.getBaseDirectory());
             buildInfo.setBuildTime(usePromotionTimestamp ? current.getBuildTime() : target.getBuildTime());
-            TreeMap<String, String> effectiveEnvVars = current.getEnvVarsWithPrefix(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX);
+            final TreeMap<String, String> effectiveEnvVars = current.getEnvVarsWithPrefix(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX);
             effectiveEnvVars.putAll(target.getEnvVars());
             buildInfo.setEnvVars(effectiveEnvVars);
         }
     }
 
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public void perform(final BPHostConfiguration hostConfig, final BPBuildInfo buildInfo) throws Exception {
         buildInfo.println(Messages.console_connecting(configName));
-        BPClient client = hostConfig.createClient(buildInfo);
-        List<Integer> transferred = new ArrayList<Integer>();
+        final BPClient client = hostConfig.createClient(buildInfo);
+        final List<Integer> transferred = new ArrayList<Integer>();
         try {
             for (TRANSFER transfer : transfers) {
                 client.beginTransfers(transfer);
@@ -181,11 +183,11 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             .append("usePromotionTimestamp", usePromotionTimestamp);
     }
 
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(final Object that) {
+        if (this == that) return true;
+        if (that == null || getClass() != that.getClass()) return false;
 
-        return createEqualsBuilder((BapPublisher) o).isEquals();
+        return createEqualsBuilder((BapPublisher) that).isEquals();
     }
 
     public int hashCode() {

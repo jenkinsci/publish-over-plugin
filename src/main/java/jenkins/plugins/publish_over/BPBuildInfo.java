@@ -77,40 +77,44 @@ public class BPBuildInfo extends BPBuildEnv {
     public void setTargetBuildEnv(final BPBuildEnv targetBuildEnv) { this.targetBuildEnv = targetBuildEnv; }
 
     public byte[] readFileFromMaster(final String filePath) {
-        FilePath file = configDir.child(filePath);
-        InputStream is = null;
+        final FilePath file = configDir.child(filePath);
+        InputStream inputStream = null;
         try {
-            is = file.read();
-            return IOUtils.toByteArray(is);
+            inputStream = file.read();
+            return IOUtils.toByteArray(inputStream);
         } catch (IOException ioe) {
             throw new BapPublisherException(Messages.exception_readFile(filePath, ioe.getLocalizedMessage()), ioe);
         } finally {
-            IOUtils.closeQuietly(is);
+            IOUtils.closeQuietly(inputStream);
         }
     }
 
     public String getRelativePath(final FilePath filePath, final String removePrefix) throws IOException, InterruptedException {
-        String normalizedPathToFile = filePath.toURI().normalize().getPath();
+        final String normalizedPathToFile = filePath.toURI().normalize().getPath();
         String relativePathToFile = normalizedPathToFile.replace(getNormalizedBaseDirectory(), "");
         if (Util.fixEmptyAndTrim(removePrefix) != null) {
-            String expanded = Util.fixEmptyAndTrim(Util.replaceMacro(removePrefix.trim(), getEnvVars()));
-            if (expanded != null) {
-                String toRemove = FilenameUtils.separatorsToUnix(FilenameUtils.normalize(expanded + "/"));
-                if (toRemove != null) {
-                    if (toRemove.startsWith("/"))
-                        toRemove = toRemove.substring(1);
-                    if (!relativePathToFile.startsWith(toRemove)) {
-                        throw new BapPublisherException(Messages.exception_removePrefix_noMatch(relativePathToFile, toRemove));
-                    }
-                    relativePathToFile = relativePathToFile.substring(toRemove.length());
-                }
-            }
+            final String expanded = Util.fixEmptyAndTrim(Util.replaceMacro(removePrefix.trim(), getEnvVars()));
+            relativePathToFile = removePrefix(relativePathToFile, expanded);
         }
-        int lastDirIdx = relativePathToFile.lastIndexOf("/");
+        final int lastDirIdx = relativePathToFile.lastIndexOf('/');
         if (lastDirIdx == -1)
             return "";
         else
             return relativePathToFile.substring(0, lastDirIdx);
+    }
+
+    private String removePrefix(final String relativePathToFile, final String expandedPrefix) {
+        if (expandedPrefix == null) return relativePathToFile;
+        String toRemove = Util.fixEmptyAndTrim(FilenameUtils.separatorsToUnix(FilenameUtils.normalize(expandedPrefix + "/")));
+        if (toRemove != null) {
+            if (toRemove.charAt(0) == '/')
+                toRemove = toRemove.substring(1);
+            if (!relativePathToFile.startsWith(toRemove)) {
+                throw new BapPublisherException(Messages.exception_removePrefix_noMatch(relativePathToFile, toRemove));
+            }
+            return relativePathToFile.substring(toRemove.length());
+        }
+        return relativePathToFile;
     }
 
     public void println(final String message) {

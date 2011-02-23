@@ -33,13 +33,13 @@ import static org.mockito.Mockito.mock;
 public class BPHostConfigurationFactory {
 
     public BPHostConfiguration create(final String configName) {
-        BPHostConfiguration config = new ConcreteBPHostConfiguration();
+        final BPHostConfiguration config = new ConcreteBPHostConfiguration();
         config.setName(configName);
         return config;
     }
 
     public BPHostConfiguration create(final String configName, final BPClient client) {
-        BPHostConfiguration config = new ConcreteBPHostConfiguration(client);
+        final BPHostConfiguration config = new ConcreteBPHostConfiguration(client);
         config.setName(configName);
         return config;
     }
@@ -48,7 +48,7 @@ public class BPHostConfigurationFactory {
 
         private static final long serialVersionUID = 1L;
 
-        private CLIENT client;
+        private final CLIENT client;
 
         public ConcreteBPHostConfiguration() {
             // beautiful :-(

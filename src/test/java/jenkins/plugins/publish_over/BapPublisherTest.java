@@ -35,25 +35,31 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+@SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods" })
 public class BapPublisherTest {
 
-    private BPBuildInfo buildInfo = new BPBuildInfoFactory().createEmpty();
-    private IMocksControl mockControl = EasyMock.createStrictControl();
-    private BPClient mockClient = mockControl.createMock(BPClient.class);
-    private BPHostConfiguration hostConfiguration = new BPHostConfigurationFactory().create("TEST-CONFIG", mockClient);
-    private List<BPTransfer> transfers = new LinkedList<BPTransfer>();
+    private final BPBuildInfo buildInfo = new BPBuildInfoFactory().createEmpty();
+    private final IMocksControl mockControl = EasyMock.createStrictControl();
+    private final BPClient mockClient = mockControl.createMock(BPClient.class);
+    private final BPHostConfiguration hostConfiguration = new BPHostConfigurationFactory().create("TEST-CONFIG", mockClient);
+    private final List<BPTransfer> transfers = new LinkedList<BPTransfer>();
 
     @Test public void testTransfersExecutedAndClientNotified() throws Exception {
         final int numberOfFilesTransferred1 = 2;
         final int numberOfFilesTransferred2 = 3;
         final int numberOfFilesTransferred3 = 4;
-        BPTransfer transfer1 = createHappyTransfer(numberOfFilesTransferred1);
-        BPTransfer transfer2 = createHappyTransfer(numberOfFilesTransferred2);
-        BPTransfer transfer3 = createHappyTransfer(numberOfFilesTransferred3);
+        final BPTransfer transfer1 = createHappyTransfer(numberOfFilesTransferred1);
+        final BPTransfer transfer2 = createHappyTransfer(numberOfFilesTransferred2);
+        final BPTransfer transfer3 = createHappyTransfer(numberOfFilesTransferred3);
         transfers.addAll(Arrays.asList(new BPTransfer[]{transfer1, transfer2, transfer3}));
-        BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
+        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
         mockClient.disconnectQuietly();
 
         mockControl.replay();
@@ -62,7 +68,7 @@ public class BapPublisherTest {
     }
 
     private BPTransfer createHappyTransfer(final int numberOfFilesTransferred) throws Exception {
-        BPTransfer transfer = mockControl.createMock(BPTransfer.class);
+        final BPTransfer transfer = mockControl.createMock(BPTransfer.class);
         mockClient.beginTransfers(transfer);
         expect(transfer.hasConfiguredSourceFiles()).andReturn(true);
         expect(transfer.transfer(buildInfo, mockClient)).andReturn(numberOfFilesTransferred);
@@ -71,11 +77,11 @@ public class BapPublisherTest {
     }
 
     @Test public void testExceptionPropagatedAndClientDisconnected() throws Exception {
-        BPTransfer transfer1 = mockControl.createMock(BPTransfer.class);
-        BPTransfer transfer2 = mockControl.createMock(BPTransfer.class);
+        final BPTransfer transfer1 = mockControl.createMock(BPTransfer.class);
+        final BPTransfer transfer2 = mockControl.createMock(BPTransfer.class);
         transfers.addAll(Arrays.asList(new BPTransfer[]{transfer1, transfer2}));
-        BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
-        RuntimeException toThrow = new RuntimeException("xxx");
+        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
+        final RuntimeException toThrow = new RuntimeException("xxx");
         mockClient.beginTransfers(transfer1);
         expect(transfer1.hasConfiguredSourceFiles()).andReturn(true);
         expect(transfer1.transfer(buildInfo, mockClient)).andThrow(toThrow);
@@ -93,7 +99,7 @@ public class BapPublisherTest {
     }
 
     @Test public void testVerbositySetInBuildInfo() throws Exception {
-        BapPublisher publisher = new BapPublisher(null, false, null);
+        final BapPublisher publisher = new BapPublisher(null, false, null);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertFalse(buildInfo.isVerbose());
         publisher.setVerbose(true);
@@ -103,7 +109,7 @@ public class BapPublisherTest {
 
     @Test public void testEnvironmentUntouchedIfNotPromotion() {
         assertNotSame(buildInfo, buildInfo.getCurrentBuildEnv());
-        BapPublisher publisher = new BapPublisher(null, false, null);
+        final BapPublisher publisher = new BapPublisher(null, false, null);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertSame(buildInfo.getCurrentBuildEnv().getEnvVars(), buildInfo.getEnvVars());
         assertSame(buildInfo.getCurrentBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
@@ -111,15 +117,15 @@ public class BapPublisherTest {
     }
 
     @Test public void testEnvironmentIsTargetBuildIfInPromotion() {
-        BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
+        final BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
         buildInfo.setTargetBuildEnv(target);
-        String promoJobName = "promo";
-        String targetJobName = "job";
-        String envVarName = "JOB_NAME";
+        final String promoJobName = "promo";
+        final String targetJobName = "job";
+        final String envVarName = "JOB_NAME";
         target.getEnvVars().put(envVarName, targetJobName);
         buildInfo.getCurrentBuildEnv().getEnvVars().put(envVarName, promoJobName);
         assertNotSame(buildInfo, target);
-        BapPublisher publisher = new BapPublisher(null, false, null);
+        final BapPublisher publisher = new BapPublisher(null, false, null);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertSame(buildInfo.getTargetBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
         assertSame(buildInfo.getTargetBuildEnv().getBuildTime(), buildInfo.getBuildTime());
@@ -128,15 +134,15 @@ public class BapPublisherTest {
     }
 
     @Test public void testEnvironmentCanSelectWorkspaceForPromotion() {
-        BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
+        final BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
         buildInfo.setTargetBuildEnv(target);
-        String promoJobName = "promo";
-        String targetJobName = "job";
-        String envVarName = "JOB_NAME";
+        final String promoJobName = "promo";
+        final String targetJobName = "job";
+        final String envVarName = "JOB_NAME";
         target.getEnvVars().put(envVarName, targetJobName);
         buildInfo.getCurrentBuildEnv().getEnvVars().put(envVarName, promoJobName);
         assertNotSame(buildInfo, target);
-        BapPublisher publisher = new BapPublisher(null, false, null, true, false);
+        final BapPublisher publisher = new BapPublisher(null, false, null, true, false);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertSame(buildInfo.getCurrentBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
         assertSame(buildInfo.getTargetBuildEnv().getBuildTime(), buildInfo.getBuildTime());
@@ -145,21 +151,20 @@ public class BapPublisherTest {
     }
 
     @Test public void testEnvironmentCanSelectPromotionTimestampForRemoteDir() {
-        BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
+        final BPBuildEnv target = new BPBuildInfoFactory().createEmptyBuildEnv();
         buildInfo.setTargetBuildEnv(target);
-        String promoJobName = "promo";
-        String targetJobName = "job";
-        String envVarName = "JOB_NAME";
+        final String promoJobName = "promo";
+        final String targetJobName = "job";
+        final String envVarName = "JOB_NAME";
         target.getEnvVars().put(envVarName, targetJobName);
         buildInfo.getCurrentBuildEnv().getEnvVars().put(envVarName, promoJobName);
         assertNotSame(buildInfo, target);
-        BapPublisher publisher = new BapPublisher(null, false, null, false, true);
+        final BapPublisher publisher = new BapPublisher(null, false, null, false, true);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertSame(buildInfo.getTargetBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
         assertSame(buildInfo.getCurrentBuildEnv().getBuildTime(), buildInfo.getBuildTime());
         assertEquals(buildInfo.getEnvVars().get(envVarName), targetJobName);
         assertEquals(buildInfo.getEnvVars().get(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX + envVarName), promoJobName);
     }
-
 
 }

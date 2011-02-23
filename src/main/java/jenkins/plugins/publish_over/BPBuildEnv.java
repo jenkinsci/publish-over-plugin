@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Map;
 import java.util.TreeMap;
 
+@SuppressWarnings("PMD.LooseCoupling") // serializable ... Map ...
 public class BPBuildEnv implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -67,7 +68,7 @@ public class BPBuildEnv implements Serializable {
     public void setBuildTime(final Calendar buildTime) { this.buildTime = buildTime; }
 
     public TreeMap<String, String> getEnvVarsWithPrefix(final String prefix) {
-        TreeMap<String, String> prefixed = new TreeMap<String, String>();
+        final TreeMap<String, String> prefixed = new TreeMap<String, String>();
         for (Map.Entry<String, String> entry : envVars.entrySet()) {
             prefixed.put(prefix + entry.getKey(), entry.getValue());
         }
@@ -77,7 +78,7 @@ public class BPBuildEnv implements Serializable {
     public void logEnvVars() {
         if (LOG.isDebugEnabled()) {
             LOG.debug(Messages.log_envVars_head());
-            StringBuilder builder = new StringBuilder("\n");
+            final StringBuilder builder = new StringBuilder("\n");
             for (Map.Entry var : envVars.entrySet()) {
                 builder.append(Messages.log_envVars_pair(var.getKey(), var.getValue()));
                 builder.append("\n");

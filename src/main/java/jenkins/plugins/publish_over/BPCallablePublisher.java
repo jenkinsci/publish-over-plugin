@@ -58,7 +58,7 @@ public class BPCallablePublisher implements FilePath.FileCallable<Void> {
     public BPBuildInfo getBuildInfo() { return buildInfo; }
     public void setBuildInfo(final BPBuildInfo buildInfo) { this.buildInfo = buildInfo; }
 
-    public Void invoke(final File f, final VirtualChannel channel) throws IOException {
+    public Void invoke(final File file, final VirtualChannel channel) throws IOException {
         try {
             printHostName();
             publisher.perform(hostConfig, buildInfo);
