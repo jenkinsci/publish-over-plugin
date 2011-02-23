@@ -24,7 +24,6 @@
 
 package jenkins.plugins.publish_over;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -33,11 +32,7 @@ import static org.junit.Assert.assertTrue;
 
 public class BPHostConfigurationTest {
 
-    private BPHostConfiguration hostConfig;
-
-    @Before public void setUp() {
-        hostConfig = new ConcreteBPHostConfiguration();
-    }
+    private BPHostConfiguration hostConfig = new ConcreteBPHostConfiguration();
 
     @Test public void testIsAbsoluteFalseForNull() throws Exception {
         assertFalse(hostConfig.isDirectoryAbsolute(null));

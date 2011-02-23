@@ -96,12 +96,14 @@ public class BPBuildInfo extends BPBuildEnv {
             String expanded = Util.fixEmptyAndTrim(Util.replaceMacro(removePrefix.trim(), getEnvVars()));
             if (expanded != null) {
                 String toRemove = FilenameUtils.separatorsToUnix(FilenameUtils.normalize(expanded + "/"));
-                if ((toRemove != null) && (toRemove.startsWith("/")))
-                    toRemove = toRemove.substring(1);
-                if (!relativePathToFile.startsWith(toRemove)) {
-                    throw new BapPublisherException(Messages.exception_removePrefix_noMatch(relativePathToFile, toRemove));
+                if (toRemove != null) {
+                    if (toRemove.startsWith("/"))
+                        toRemove = toRemove.substring(1);
+                    if (!relativePathToFile.startsWith(toRemove)) {
+                        throw new BapPublisherException(Messages.exception_removePrefix_noMatch(relativePathToFile, toRemove));
+                    }
+                    relativePathToFile = relativePathToFile.substring(toRemove.length());
                 }
-                relativePathToFile = relativePathToFile.substring(toRemove.length());
             }
         }
         int lastDirIdx = relativePathToFile.lastIndexOf("/");

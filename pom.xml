@@ -42,6 +42,7 @@
     <properties>
         <java.net.id>bap</java.net.id>        
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <licenses>
@@ -129,6 +130,7 @@
                             <threshold>Low</threshold>
                             <xmlOutput>true</xmlOutput>
                             <includeTests>true</includeTests>
+                            <excludeFilterFile>src/metrics/findBugs_excludes.xml</excludeFilterFile>
                         </configuration>
                     </plugin>
                     <plugin>
@@ -138,6 +140,9 @@
                         <configuration>
                             <targetJdk>1.5</targetJdk>
                             <includeTests>true</includeTests>
+                            <rulesets>
+                                <ruleset>src/metrics/pmd_rules.xml</ruleset>
+                            </rulesets>
                         </configuration>
                     </plugin>
                     <plugin>
