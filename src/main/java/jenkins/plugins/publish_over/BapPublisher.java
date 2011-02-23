@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-@SuppressWarnings("PMD.TooManyMethods") // only actually 4 "real" methods in here all rest accessors and boiler str/has/eq 
+@SuppressWarnings("PMD.TooManyMethods") // only actually 4 "real" methods in here all rest accessors and boiler str/has/eq
 public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
     private static final long serialVersionUID = 1L;

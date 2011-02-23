@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-@SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods" })
+@SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods", "PMD.AvoidDuplicateLiterals" })
 public class BPInstanceConfigTest {
 
     private static final Logger INSTANCE_CONFIG_LOGGER = Logger.getLogger(BPInstanceConfig.class.getCanonicalName());
@@ -150,11 +150,11 @@ public class BPInstanceConfigTest {
     }
 
     @Test public void testGiveMasterANodeName() throws Exception {
-        assertFixNodeName("", "MASTER", "MASTER"); // NOPMD - nn config, test expectation
+        assertFixNodeName("", "MASTER", "MASTER");
     }
 
     @Test public void testGiveMasterANodeNameWasNull() throws Exception {
-        assertFixNodeName(null, "MASTER", "MASTER"); // NOPMD - nn config, test expectation
+        assertFixNodeName(null, "MASTER", "MASTER");
     }
 
     @Test public void testDoNotAffectNodeNameIfMasterNodeNameNotSet() throws Exception {
@@ -174,11 +174,11 @@ public class BPInstanceConfigTest {
     }
 
     @Test public void testGiveMasterANodeNameForPromotion() throws Exception {
-        assertFixPromotionNodeName("", "MASTER", "MASTER"); // NOPMD - nn config, test expectation
+        assertFixPromotionNodeName("", "MASTER", "MASTER");
     }
 
     @Test public void testGiveMasterANodeNameWasNullForPromotion() throws Exception {
-        assertFixPromotionNodeName(null, "MASTER", "MASTER"); // NOPMD - nn config, test expectation
+        assertFixPromotionNodeName(null, "MASTER", "MASTER");
     }
 
     @Test public void testDoNotAffectNodeNameIfMasterNodeNameNotSetForPromotion() throws Exception {

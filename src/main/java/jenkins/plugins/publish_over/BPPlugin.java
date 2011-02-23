@@ -91,7 +91,8 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
                     throws InterruptedException, IOException {
         final PrintStream console = listener.getLogger();
         if (!isBuildGoodEnoughToRun(build, console)) return true;
-        final BPBuildEnv currentBuildEnv = new BPBuildEnv(getEnvironmentVariables(build, listener), build.getWorkspace(), build.getTimestamp());
+        final BPBuildEnv currentBuildEnv = new BPBuildEnv(getEnvironmentVariables(build, listener), build.getWorkspace(),
+                                                                                                    build.getTimestamp());
         BPBuildEnv targetBuildEnv = null;
         if (PROMOTION_CLASS_NAME.equals(build.getClass().getCanonicalName())) {
             AbstractBuild<?, ?> promoted;

@@ -37,8 +37,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TreeMap;
 
 import static jenkins.plugins.publish_over.helper.InputStreamMatcher.streamContains;
@@ -51,7 +53,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods", "AvoidDuplicateLiterals" })
+@SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods", "PMD.AvoidDuplicateLiterals" })
 public class BPTransferTest {
 
     @Rule // FindBugs: must be public for the @Rule to work
@@ -111,7 +113,7 @@ public class BPTransferTest {
         final BPTransfer transfer = new BPTransfer(pattern, "", "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expectTransferFile(transfer, toTransfer);
-        testTransfer(transfer, 1);
+        assertTransfer(transfer, 1);
     }
 
     @Test public void testExceptionPropagatesWhenFailToTransferFile() throws Exception {
@@ -141,7 +143,7 @@ public class BPTransferTest {
         expectTransferFile(transfer, log1, log2, log3);
         mockControl.checkOrder(true);
         final int expectedFileCount = 3;
-        testTransfer(transfer, expectedFileCount);
+        assertTransfer(transfer, expectedFileCount);
     }
 
     @Test public void testEnvVarInPattern() throws Exception {
@@ -150,7 +152,7 @@ public class BPTransferTest {
         envVars.put("BUILD_NUMBER", "123");
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expectTransferFile(transfer, toTransfer);
-        testTransfer(transfer, 1);
+        assertTransfer(transfer, 1);
     }
 
     @Test public void testCreateSingleDirectoryFromRemoteDirectory() throws Exception {
@@ -162,7 +164,7 @@ public class BPTransferTest {
         expect(mockClient.makeDirectory(dir)).andReturn(true);
         expect(mockClient.changeDirectory(dir)).andReturn(true);
         expectTransferFile(transfer, toTransfer);
-        testTransfer(transfer, 1);
+        assertTransfer(transfer, 1);
     }
 
     @Test public void testCreateSingleDirectoryFromRemoteDirectoryWithEnvVar() throws Exception {
@@ -175,26 +177,26 @@ public class BPTransferTest {
         expect(mockClient.makeDirectory(expandedDir)).andReturn(true);
         expect(mockClient.changeDirectory(expandedDir)).andReturn(true);
         expectTransferFile(transfer, toTransfer);
-        testTransfer(transfer, 1);
+        assertTransfer(transfer, 1);
     }
 
     @Test public void testCreateMultipleDirectoriesFromRemoteDirectory() throws Exception {
-        testCreateMultipleDirectoriesFromRemoteDirectory("newDir/and/another", new String[] {"newDir", "and", "another"});
+        assertCreateMultipleDirectoriesFromRemoteDirectory("newDir/and/another", new String[] {"newDir", "and", "another"});
     }
 
     @Test public void testCreateMultipleDirectoriesFromRemoteDirectoryWin() throws Exception {
-        testCreateMultipleDirectoriesFromRemoteDirectory("newDir\\and\\another", new String[] {"newDir", "and", "another"});
+        assertCreateMultipleDirectoriesFromRemoteDirectory("newDir\\and\\another", new String[] {"newDir", "and", "another"});
     }
 
     @Test public void testCreateMultipleDirectoriesFromRemoteDirectoryTrailingSeparator() throws Exception {
-        testCreateMultipleDirectoriesFromRemoteDirectory("newDir/and/another/", new String[] {"newDir", "and", "another"});
+        assertCreateMultipleDirectoriesFromRemoteDirectory("newDir/and/another/", new String[] {"newDir", "and", "another"});
     }
 
     @Test public void testCreateMultipleDirectoriesFromRemoteDirectoryTrailingSeparatorWin() throws Exception {
-        testCreateMultipleDirectoriesFromRemoteDirectory("newDir\\and\\another\\", new String[] {"newDir", "and", "another"});
+        assertCreateMultipleDirectoriesFromRemoteDirectory("newDir\\and\\another\\", new String[] {"newDir", "and", "another"});
     }
 
-    private void testCreateMultipleDirectoriesFromRemoteDirectory(final String remoteDir, final String[] expectedDirs) throws Exception {
+    private void assertCreateMultipleDirectoriesFromRemoteDirectory(final String remoteDir, final String[] expectedDirs) throws Exception {
         final String normalizedDir = remoteDir.contains("\\") ? remoteDir.replaceAll("\\\\", "/") : remoteDir;
         final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
         final BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), remoteDir, "", false, false);
@@ -207,17 +209,17 @@ public class BPTransferTest {
             expect(mockClient.changeDirectory(subDir)).andReturn(true);
         }
         expectTransferFile(transfer, toTransfer);
-        testTransfer(transfer, 1);
+        assertTransfer(transfer, 1);
     }
 
 
     @Test public void testCreateDirectoriesFromSrcFileAndRemoteDirectory() throws Exception {
         final RandomFile srcFile = new RandomFile(baseDir.getRoot(), "bit/of/a/trek/to/my.file");
-        testCreateDirectories(srcFile, "my/remote/dir", new String[] {"my", "remote", "dir"},
+        assertCreateDirectories(srcFile, "my/remote/dir", new String[] {"my", "remote", "dir"},
             new String[] {"bit", "of", "a", "trek", "to"});
     }
 
-    private void testCreateDirectories(final RandomFile srcFile, final String remoteDir, final String[] expectedDirsRemoteDir,
+    private void assertCreateDirectories(final RandomFile srcFile, final String remoteDir, final String[] expectedDirsRemoteDir,
             final String[] expectedDirsSrcFiles) throws Exception {
         final BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
@@ -237,7 +239,7 @@ public class BPTransferTest {
             expect(mockClient.changeDirectory(subDir)).andReturn(true);
         }
         expectTransferFile(transfer, srcFile);
-        testTransfer(transfer, 1);
+        assertTransfer(transfer, 1);
     }
 
     @Test public void testCreateSingleDirectoryFromRemoteDirectoryAbsolute() throws Exception {
@@ -249,7 +251,7 @@ public class BPTransferTest {
         expect(mockClient.makeDirectory(dir)).andReturn(true);
         expect(mockClient.changeDirectory(dir)).andReturn(true);
         expectTransferFile(transfer, toTransfer);
-        testTransfer(transfer, 1);
+        assertTransfer(transfer, 1);
     }
 
     @Test public void testCreateSingleDirectoryFromRemoteDirectoryAbsoluteWin() throws Exception {
@@ -261,7 +263,7 @@ public class BPTransferTest {
         expect(mockClient.makeDirectory(dir)).andReturn(true);
         expect(mockClient.changeDirectory(dir)).andReturn(true);
         expectTransferFile(transfer, toTransfer);
-        testTransfer(transfer, 1);
+        assertTransfer(transfer, 1);
     }
 
     @Test public void testCreateMultipleFilesWithDirectories() throws Exception {
@@ -292,7 +294,7 @@ public class BPTransferTest {
 
         expectTransferFile(transfer, srcFile2);
 
-        testTransfer(transfer, 2);
+        assertTransfer(transfer, 2);
     }
 
     @Test public void testFlatten() throws Exception {
@@ -310,7 +312,7 @@ public class BPTransferTest {
         expectTransferFile(transfer, srcFile1);
         expectTransferFile(transfer, srcFile2);
 
-        testTransfer(transfer, 2);
+        assertTransfer(transfer, 2);
     }
 
     @Test(expected = BapPublisherException.class)
@@ -320,7 +322,7 @@ public class BPTransferTest {
         final String duplicateFileName = "my.file";
         final RandomFile srcFile1 = new RandomFile(baseDir.getRoot(), srcPath1 + "/" + duplicateFileName);
         new RandomFile(baseDir.getRoot(), srcPath2 + "/" + duplicateFileName);
-        String remoteDir = "remote/root";
+        final String remoteDir = "remote/root";
         final BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, true);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         expect(mockClient.changeDirectory(remoteDir)).andReturn(true);
@@ -346,7 +348,7 @@ public class BPTransferTest {
         expect(mockClient.changeDirectory(srcPath2)).andReturn(true);
         expectTransferFile(transfer, srcFile2);
 
-        testTransfer(transfer, 2);
+        assertTransfer(transfer, 2);
     }
 
     @Test public void testRemovePrefixTrailingSlash() throws Exception {
@@ -366,7 +368,7 @@ public class BPTransferTest {
         expect(mockClient.changeDirectory(srcPath2)).andReturn(true);
         expectTransferFile(transfer, srcFile2);
 
-        testTransfer(transfer, 2);
+        assertTransfer(transfer, 2);
     }
 
     @Test public void testRemovePrefixPrecedingSlash() throws Exception {
@@ -379,7 +381,7 @@ public class BPTransferTest {
         expect(mockClient.changeDirectory(expected)).andReturn(true);
         expectTransferFile(transfer, srcFile);
 
-        testTransfer(transfer, 1);
+        assertTransfer(transfer, 1);
     }
 
     @Test public void testRemovePrefixThrowsExceptionIfPathDoesNotHavePrefix() throws Exception {
@@ -408,14 +410,12 @@ public class BPTransferTest {
         expect(mockClient.changeDirectory("world")).andReturn(true);
         expectTransferFile(transfer, srcFile);
 
-        testTransfer(transfer, 1);
+        assertTransfer(transfer, 1);
     }
 
     @Test public void testRemoteDirectoryCanBeSimpleDateFormat() throws Exception {
         final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
-        final Calendar buildTime = Calendar.getInstance();
-        buildTime.setTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse("25/11/2010 13:14:15"));
-        buildInfo.setBuildTime(buildTime);
+        buildInfo.setBuildTime(createCalendar("25/11/2010 13:14:15"));
         final String dir = "'/myBuild-'yyyyMMdd-HHmmss";
         final String expected = "myBuild-20101125-131415";
         final BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), dir, "", true, false);
@@ -423,14 +423,12 @@ public class BPTransferTest {
         expect(mockClient.changeDirectory(expected)).andReturn(true);
         expectTransferFile(transfer, toTransfer);
 
-        testTransfer(transfer, 1);
+        assertTransfer(transfer, 1);
     }
 
     @Test public void testRemoteDirectoryCanBeSimpleDateFormatAndUseEnvVars() throws Exception {
         final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
-        final Calendar buildTime = Calendar.getInstance();
-        buildTime.setTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse("25/11/2010 13:14:15"));
-        buildInfo.setBuildTime(buildTime);
+        buildInfo.setBuildTime(createCalendar("25/11/2010 13:14:15"));
         envVars.put("NODE_NAME", "slave1");
         final String dir = "'${NODE_NAME}-'yyyyMMdd";
         final String expected = "slave1-20101125";
@@ -440,14 +438,12 @@ public class BPTransferTest {
         expect(mockClient.changeDirectory(expected)).andReturn(true);
         expectTransferFile(transfer, toTransfer);
 
-        testTransfer(transfer, 1);
+        assertTransfer(transfer, 1);
     }
 
     @Test public void testExceptionIfBadSDFInRemoteDirectory() throws Exception {
         final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
-        final Calendar buildTime = Calendar.getInstance();
-        buildTime.setTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse("25/11/2010 13:14:15"));
-        buildInfo.setBuildTime(buildTime);
+        buildInfo.setBuildTime(createCalendar("25/11/2010 13:14:15"));
         final String dir = "/myBuild-yyyyMMdd-HHmmss";
         final BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), dir, "", true, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
@@ -458,13 +454,19 @@ public class BPTransferTest {
             assertTrue(bpe.getLocalizedMessage().contains(dir));
         }
     }
+    
+    private Calendar createCalendar(final String dateString) throws ParseException {
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).parse(dateString));
+        return calendar;
+    }
 
     private void replayAndTransfer(final BPTransfer transfer) throws Exception {
         mockControl.replay();
         transfer.transfer(buildInfo, mockClient);
     }
 
-    private void testTransfer(final BPTransfer transfer, final int expectedFileCount) throws Exception {
+    private void assertTransfer(final BPTransfer transfer, final int expectedFileCount) throws Exception {
         mockControl.replay();
         assertEquals(expectedFileCount, transfer.transfer(buildInfo, mockClient));
         mockControl.verify();

@@ -39,8 +39,10 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Set;
 
+@SuppressWarnings("PMD.TooManyMethods")
 public class BPTransfer implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -101,7 +103,7 @@ public class BPTransfer implements Serializable {
 
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public void transferFile(final BPClient client, final FilePath filePath) throws Exception {
-        InputStream inputStream = filePath.read();
+        final InputStream inputStream = filePath.read();
         try {
             client.transferFile(this, filePath, inputStream);
         } finally {
@@ -174,7 +176,8 @@ public class BPTransfer implements Serializable {
 
         private String buildTimeFormat(final String simpleDateFormatString) {
             try {
-                final SimpleDateFormat sdf = new SimpleDateFormat(simpleDateFormatString);
+                // get locale from master?
+                final SimpleDateFormat sdf = new SimpleDateFormat(simpleDateFormatString, Locale.getDefault());
                 return sdf.format(buildInfo.getBuildTime().getTime());
             } catch (IllegalArgumentException iae) {
                 throw new BapPublisherException(Messages.exception_badDateFormat(simpleDateFormatString, iae.getLocalizedMessage()), iae);

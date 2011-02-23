@@ -39,6 +39,7 @@ import org.kohsuke.stapler.StaplerResponse;
 
 import java.util.List;
 
+@SuppressWarnings("PMD.TooManyMethods")
 public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_CONFIG>
             extends BuildStepDescriptor<Publisher> {
 

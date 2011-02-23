@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
 public class BPHostConfigurationTest {
 
-    final private BPHostConfiguration hostConfig = new ConcreteBPHostConfiguration();
+    private final BPHostConfiguration hostConfig = new ConcreteBPHostConfiguration();
 
     @Test public void testIsAbsoluteFalseForNull() throws Exception {
         assertFalse(hostConfig.isDirectoryAbsolute(null));
