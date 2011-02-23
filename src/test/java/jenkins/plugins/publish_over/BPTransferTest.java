@@ -454,7 +454,7 @@ public class BPTransferTest {
             assertTrue(bpe.getLocalizedMessage().contains(dir));
         }
     }
-    
+
     private Calendar createCalendar(final String dateString) throws ParseException {
         final Calendar calendar = Calendar.getInstance();
         calendar.setTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).parse(dateString));
