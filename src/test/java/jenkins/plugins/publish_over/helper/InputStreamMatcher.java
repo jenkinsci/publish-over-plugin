@@ -47,7 +47,7 @@ public class InputStreamMatcher implements IArgumentMatcher {
     private byte[] expectedContents;
 
     public InputStreamMatcher(final byte[] expectedContents) {
-        this.expectedContents = expectedContents;
+        this.expectedContents = Arrays.copyOf(expectedContents, expectedContents.length);
     }
 
     public boolean matches(final Object o) {
