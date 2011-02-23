@@ -24,6 +24,8 @@
 
 package jenkins.plugins.publish_over;
 
-public interface BPHostConfigurationAccess<CLIENT extends BPClient, COMMON_CONFIG> {
+import java.io.Serializable;
+
+public interface BPHostConfigurationAccess<CLIENT extends BPClient, COMMON_CONFIG> extends Serializable {
     BPHostConfiguration<CLIENT, COMMON_CONFIG> getConfiguration(String name);
 }

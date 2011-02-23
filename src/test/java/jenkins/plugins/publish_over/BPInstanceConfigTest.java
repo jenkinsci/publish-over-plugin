@@ -46,17 +46,16 @@ import static org.junit.Assert.assertFalse;
 
 public class BPInstanceConfigTest {
 
+    private static final Logger INSTANCE_CONFIG_LOGGER = Logger.getLogger(BPInstanceConfig.class.getCanonicalName());
     private static Level originalLogLevel;
-    private static Logger logger;
 
     @BeforeClass public static void before() {
-        logger = Logger.getLogger(BPInstanceConfig.class.getCanonicalName());
-        originalLogLevel = logger.getLevel();
-        logger.setLevel(Level.OFF);
+        originalLogLevel = INSTANCE_CONFIG_LOGGER.getLevel();
+        INSTANCE_CONFIG_LOGGER.setLevel(Level.OFF);
     }
 
     @AfterClass public static void after() {
-        logger.setLevel(originalLogLevel);
+        INSTANCE_CONFIG_LOGGER.setLevel(originalLogLevel);
     }
 
     private BPBuildInfo buildInfo = new BPBuildInfoFactory().createEmpty();

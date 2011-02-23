@@ -35,8 +35,8 @@ public abstract class BPDefaultClient<TRANSFER extends BPTransfer> implements BP
         return changeDirectory(absoluteRemoteRoot);
     }
 
-    public void beginTransfers(final TRANSFER transfer) { }
+    public void beginTransfers(final TRANSFER transfer) { } // NOPMD - Default do-nothing implementation
 
-    public void endTransfers(final TRANSFER transfer) { }
+    public void endTransfers(final TRANSFER transfer) { } // NOPMD - Default do-nothing implementation
 
 }
