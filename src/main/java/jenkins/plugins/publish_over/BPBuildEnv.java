@@ -39,7 +39,7 @@ import java.util.TreeMap;
 
 public class BPBuildEnv implements Serializable {
 
-    static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private static final Log LOG = LogFactory.getLog(BPBuildEnv.class);
     public static final String ENV_NODE_NAME = "NODE_NAME";
     public static final String ENV_JOB_NAME = "JOB_NAME";

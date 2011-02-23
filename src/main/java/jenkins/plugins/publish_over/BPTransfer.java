@@ -43,7 +43,7 @@ import java.util.Set;
 
 public class BPTransfer implements Serializable {
 
-    static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     private static final Log LOG = LogFactory.getLog(BPTransfer.class);
 
     private String remoteDirectory;

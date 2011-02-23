@@ -38,7 +38,7 @@ import java.util.List;
 
 public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Serializable {
 
-    static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log LOG = LogFactory.getLog(BPInstanceConfig.class);
 

@@ -36,7 +36,7 @@ import java.util.TreeMap;
 
 public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
-    static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private String configName;
     private boolean verbose;

@@ -37,7 +37,7 @@ import java.io.InputStream;
 
 public class BPBuildInfo extends BPBuildEnv {
 
-    static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     public static final String PROMOTION_ENV_VARS_PREFIX = "promotion_";
 
     private FilePath configDir;
