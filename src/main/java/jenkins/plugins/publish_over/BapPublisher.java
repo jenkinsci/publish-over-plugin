@@ -67,31 +67,31 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         this.configName = configName;
     }
 
-    public boolean isUseWorkspaceInPromotion() {
+    public final boolean isUseWorkspaceInPromotion() {
         return useWorkspaceInPromotion;
     }
-    public void setUseWorkspaceInPromotion(final boolean useWorkspaceInPromotion) {
+    public final void setUseWorkspaceInPromotion(final boolean useWorkspaceInPromotion) {
         this.useWorkspaceInPromotion = useWorkspaceInPromotion;
     }
 
-    public boolean isUsePromotionTimestamp() {
+    public final boolean isUsePromotionTimestamp() {
         return usePromotionTimestamp;
     }
-    public void setUsePromotionTimestamp(final boolean usePromotionTimestamp) {
+    public final void setUsePromotionTimestamp(final boolean usePromotionTimestamp) {
         this.usePromotionTimestamp = usePromotionTimestamp;
     }
 
-    public boolean isVerbose() {
+    public final boolean isVerbose() {
         return verbose;
     }
-    public void setVerbose(final boolean verbose) {
+    public final void setVerbose(final boolean verbose) {
         this.verbose = verbose;
     }
 
-    public List<TRANSFER> getTransfers() {
+    public final List<TRANSFER> getTransfers() {
         return transfers;
     }
-    public void setTransfers(final List<TRANSFER> transfers) {
+    public final void setTransfers(final List<TRANSFER> transfers) {
         if (transfers == null) {
             this.transfers = new ArrayList<TRANSFER>();
         } else {

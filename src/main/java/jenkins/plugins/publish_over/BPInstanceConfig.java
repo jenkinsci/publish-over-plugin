@@ -61,10 +61,10 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         this.masterNodeName = masterNodeName;
     }
 
-    public List<PUBLISHER> getPublishers() {
+    public final List<PUBLISHER> getPublishers() {
         return publishers;
     }
-    public void setPublishers(final List<PUBLISHER> publishers) {
+    public final void setPublishers(final List<PUBLISHER> publishers) {
         if (publishers == null) {
             this.publishers = new ArrayList<PUBLISHER>();
         } else {
@@ -72,26 +72,26 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         }
     }
 
-    public boolean isContinueOnError() { return continueOnError; }
-    public void setContinueOnError(final boolean continueOnError) { this.continueOnError = continueOnError; }
+    public final boolean isContinueOnError() { return continueOnError; }
+    public final void setContinueOnError(final boolean continueOnError) { this.continueOnError = continueOnError; }
 
-    public boolean isFailOnError() { return failOnError; }
-    public void setFailOnError(final boolean failOnError) { this.failOnError = failOnError; }
+    public final boolean isFailOnError() { return failOnError; }
+    public final void setFailOnError(final boolean failOnError) { this.failOnError = failOnError; }
 
-    public boolean isAlwaysPublishFromMaster() { return alwaysPublishFromMaster; }
-    public void setAlwaysPublishFromMaster(final boolean alwaysPublishFromMaster) {
+    public final boolean isAlwaysPublishFromMaster() { return alwaysPublishFromMaster; }
+    public final void setAlwaysPublishFromMaster(final boolean alwaysPublishFromMaster) {
         this.alwaysPublishFromMaster = alwaysPublishFromMaster;
     }
 
-    public String getMasterNodeName() { return masterNodeName; }
-    public void setMasterNodeName(final String masterNodeName) { this.masterNodeName = masterNodeName; }
+    public final String getMasterNodeName() { return masterNodeName; }
+    public final void setMasterNodeName(final String masterNodeName) { this.masterNodeName = masterNodeName; }
 
-    public void setHostConfigurationAccess(final BPHostConfigurationAccess hostConfigurationAccess) {
+    public final void setHostConfigurationAccess(final BPHostConfigurationAccess hostConfigurationAccess) {
         this.hostConfigurationAccess = hostConfigurationAccess;
     }
 
     public BPHostConfiguration getConfiguration(final String configName) {
-        final BPHostConfiguration config =  hostConfigurationAccess.getConfiguration(configName);
+        final BPHostConfiguration config = hostConfigurationAccess.getConfiguration(configName);
         if (config == null)
             throw new BapPublisherException(Messages.exception_failedToFindConfiguration(configName));
         return config;
@@ -107,7 +107,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         fixMasterNodeNameInEnv(buildInfo.getTargetBuildEnv());
     }
 
-    public Result perform(final BPBuildInfo buildInfo) {
+    public final Result perform(final BPBuildInfo buildInfo) {
         Result toReturn = Result.SUCCESS;
         final Result onError = failOnError ? Result.FAILURE : Result.UNSTABLE;
         fixMasterNodeName(buildInfo);

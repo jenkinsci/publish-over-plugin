@@ -55,7 +55,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
         this.name = name;
         this.hostname = hostname;
         this.username = username;
-        setPassword(password);
+        secretPassword = Secret.fromString(password);
         this.remoteRootDir = remoteRootDir;
         this.port = port;
     }
@@ -69,7 +69,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     public String getUsername() { return username; }
     public void setUsername(final String username) { this.username = username; }
 
-    public String getPassword() { return Secret.toString(secretPassword); }
+    protected String getPassword() { return Secret.toString(secretPassword); }
     public void setPassword(final String password) { secretPassword = Secret.fromString(password); }
 
     public String getEncryptedPassword() {
@@ -158,8 +158,9 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     }
 
     public Object readResolve() {
-        if (password != null)
-            setPassword(password);
+        if (secretPassword == null)
+            secretPassword = Secret.fromString(password);
+        password = null;
         return this;
     }
 
