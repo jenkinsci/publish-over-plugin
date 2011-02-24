@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.TreeMap;
 
 @SuppressWarnings("PMD.LooseCoupling") // serializable ... Map ...
@@ -52,11 +51,11 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     public static final String PROMOTION_JOB_TYPE = "hudson.plugins.promoted_builds.PromotionProcess";
     public static final String PROMOTION_CLASS_NAME = "hudson.plugins.promoted_builds.Promotion";
 
+    private final String consolePrefix;
     private BPInstanceConfig delegate;
-    private String consolePrefix;
 
-    public BPPlugin(final String consolePrefix, final ArrayList<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError,
-                    final boolean alwaysPublishFromMaster, final String masterNodeName) {
+    public BPPlugin(final String consolePrefix, final ArrayList<PUBLISHER> publishers, final boolean continueOnError,
+                    final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName) {
         this.delegate = new BPInstanceConfig<PUBLISHER>(publishers, continueOnError, failOnError, alwaysPublishFromMaster, masterNodeName);
         delegate.setHostConfigurationAccess(this);
         this.consolePrefix = consolePrefix;

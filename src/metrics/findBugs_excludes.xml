@@ -30,4 +30,8 @@
         <Class name="~.*Test\$.*"/>
         <Bug code="SE"/>
     </Match>
+    <Match>
+        <Class name="~.*BPHostConfigurationFactory.*"/>
+        <Bug code="SE"/>
+    </Match>
 </FindBugsFilter>

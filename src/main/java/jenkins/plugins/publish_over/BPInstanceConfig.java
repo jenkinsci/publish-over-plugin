@@ -35,7 +35,8 @@ import org.apache.commons.logging.LogFactory;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-@SuppressWarnings("PMD.TooManyMethods") // only actually 4 "real" methods in here all rest accessors and boiler str/has/eq
+// serializable + only actually 4 "real" methods in here all rest accessors and boiler str/has/eq
+@SuppressWarnings({ "PMD.LooseCoupling", "PMD.TooManyMethods" })
 public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Serializable {
 
     private static final long serialVersionUID = 1L;

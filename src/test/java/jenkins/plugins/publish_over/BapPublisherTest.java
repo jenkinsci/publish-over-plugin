@@ -41,7 +41,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods" })
+@SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods", "PMD.LooseCoupling" })
 public class BapPublisherTest {
 
     private final BPBuildInfo buildInfo = new BPBuildInfoFactory().createEmpty();

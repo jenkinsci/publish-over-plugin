@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-@SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods", "PMD.AvoidDuplicateLiterals" })
+@SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods", "PMD.AvoidDuplicateLiterals", "PMD.LooseCoupling" })
 public class BPInstanceConfigTest {
 
     private static final Logger INSTANCE_CONFIG_LOGGER = Logger.getLogger(BPInstanceConfig.class.getCanonicalName());
