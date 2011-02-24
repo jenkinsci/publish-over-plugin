@@ -35,8 +35,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,7 +62,7 @@ public class BPInstanceConfigTest {
     private final IMocksControl mockControl = EasyMock.createStrictControl();
     private final BPHostConfigurationAccess mockHostConfigurationAccess = Mockito.mock(BPHostConfigurationAccess.class);
     private final BPHostConfiguration hostConfiguration = new BPHostConfigurationFactory().create("TEST-CONFIG");
-    private final List<BapPublisher> publishers = new LinkedList<BapPublisher>();
+    private final ArrayList<BapPublisher> publishers = new ArrayList<BapPublisher>();
 
     @Before public void setUp() throws Exception {
         Mockito.when(mockHostConfigurationAccess.getConfiguration(Mockito.anyString())).thenReturn(hostConfiguration);

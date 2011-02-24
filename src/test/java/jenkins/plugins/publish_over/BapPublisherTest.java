@@ -30,9 +30,8 @@ import org.easymock.classextension.EasyMock;
 import org.easymock.classextension.IMocksControl;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 import static org.easymock.EasyMock.expect;
 import static org.junit.Assert.assertEquals;
@@ -49,7 +48,7 @@ public class BapPublisherTest {
     private final IMocksControl mockControl = EasyMock.createStrictControl();
     private final BPClient mockClient = mockControl.createMock(BPClient.class);
     private final BPHostConfiguration hostConfiguration = new BPHostConfigurationFactory().create("TEST-CONFIG", mockClient);
-    private final List<BPTransfer> transfers = new LinkedList<BPTransfer>();
+    private final ArrayList<BPTransfer> transfers = new ArrayList<BPTransfer>();
 
     @Test public void testTransfersExecutedAndClientNotified() throws Exception {
         final int numberOfFilesTransferred1 = 2;

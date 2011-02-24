@@ -34,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("PMD.TooManyMethods") // only actually 4 "real" methods in here all rest accessors and boiler str/has/eq
 public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Serializable {
@@ -43,7 +42,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
 
     private static final Log LOG = LogFactory.getLog(BPInstanceConfig.class);
 
-    private List<PUBLISHER> publishers;
+    private ArrayList<PUBLISHER> publishers;
     private boolean continueOnError;
     private boolean failOnError;
     private boolean alwaysPublishFromMaster;
@@ -52,7 +51,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
 
     public BPInstanceConfig() { }
 
-    public BPInstanceConfig(final List<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError,
+    public BPInstanceConfig(final ArrayList<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError,
                             final boolean alwaysPublishFromMaster, final String masterNodeName) {
         setPublishers(publishers);
         this.continueOnError = continueOnError;
@@ -61,10 +60,10 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         this.masterNodeName = masterNodeName;
     }
 
-    public final List<PUBLISHER> getPublishers() {
+    public final ArrayList<PUBLISHER> getPublishers() {
         return publishers;
     }
-    public final void setPublishers(final List<PUBLISHER> publishers) {
+    public final void setPublishers(final ArrayList<PUBLISHER> publishers) {
         if (publishers == null) {
             this.publishers = new ArrayList<PUBLISHER>();
         } else {

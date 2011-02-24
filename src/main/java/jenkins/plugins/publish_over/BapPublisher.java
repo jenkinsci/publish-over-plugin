@@ -41,17 +41,17 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
     private String configName;
     private boolean verbose;
-    private List<TRANSFER> transfers;
+    private ArrayList<TRANSFER> transfers;
     private boolean useWorkspaceInPromotion;
     private boolean usePromotionTimestamp;
 
     public BapPublisher() { }
 
-    public BapPublisher(final String configName, final boolean verbose, final List<TRANSFER> transfers) {
+    public BapPublisher(final String configName, final boolean verbose, final ArrayList<TRANSFER> transfers) {
         this(configName, verbose, transfers, false, false);
     }
 
-    public BapPublisher(final String configName, final boolean verbose, final List<TRANSFER> transfers,
+    public BapPublisher(final String configName, final boolean verbose, final ArrayList<TRANSFER> transfers,
                         final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp) {
         this.configName = configName;
         this.verbose = verbose;
@@ -88,10 +88,10 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         this.verbose = verbose;
     }
 
-    public final List<TRANSFER> getTransfers() {
+    public final ArrayList<TRANSFER> getTransfers() {
         return transfers;
     }
-    public final void setTransfers(final List<TRANSFER> transfers) {
+    public final void setTransfers(final ArrayList<TRANSFER> transfers) {
         if (transfers == null) {
             this.transfers = new ArrayList<TRANSFER>();
         } else {

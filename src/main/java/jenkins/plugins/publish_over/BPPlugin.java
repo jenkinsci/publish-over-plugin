@@ -41,6 +41,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -54,7 +55,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     private BPInstanceConfig delegate;
     private String consolePrefix;
 
-    public BPPlugin(final String consolePrefix, final List<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError,
+    public BPPlugin(final String consolePrefix, final ArrayList<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError,
                     final boolean alwaysPublishFromMaster, final String masterNodeName) {
         this.delegate = new BPInstanceConfig<PUBLISHER>(publishers, continueOnError, failOnError, alwaysPublishFromMaster, masterNodeName);
         delegate.setHostConfigurationAccess(this);
@@ -68,9 +69,6 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         this.delegate = delegate;
         delegate.setHostConfigurationAccess(this);
     }
-
-    public String getConsolePrefix() { return consolePrefix; }
-    public void setConsolePrefix(final String consolePrefix) { this.consolePrefix = consolePrefix; }
 
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.BUILD;
