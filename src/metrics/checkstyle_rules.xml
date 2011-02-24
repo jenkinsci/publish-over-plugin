@@ -84,7 +84,9 @@
         <module name="SimplifyBooleanReturn"/>
         <module name="FinalClass"/>
         <module name="InterfaceIsType"/>
-        <module name="VisibilityModifier"/>
+        <module name="VisibilityModifier">
+            <property name="publicMemberPattern" value="^baseDir$"/> <!-- TemporaryDirectory needs to be public -->
+        </module>
         <module name="ArrayTypeStyle"/>
         <module name="FinalParameters"/>
         <module name="TodoComment"/>
