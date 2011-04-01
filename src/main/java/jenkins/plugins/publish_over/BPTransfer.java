@@ -52,15 +52,22 @@ public class BPTransfer implements Serializable {
     private String sourceFiles;
     private String removePrefix;
     private boolean remoteDirectorySDF;
-    private boolean flatten = true;
+    private boolean flatten;
+    private boolean cleanRemote;
 
     public BPTransfer(final String sourceFiles, final String remoteDirectory, final String removePrefix,
                       final boolean remoteDirectorySDF, final boolean flatten) {
+        this(sourceFiles, remoteDirectory, removePrefix, remoteDirectorySDF, flatten, false);
+    }
+
+    public BPTransfer(final String sourceFiles, final String remoteDirectory, final String removePrefix,
+                      final boolean remoteDirectorySDF, final boolean flatten, final boolean cleanRemote) {
         this.sourceFiles = sourceFiles;
         this.remoteDirectory = remoteDirectory;
         this.removePrefix = removePrefix;
         this.remoteDirectorySDF = remoteDirectorySDF;
         this.flatten = flatten;
+        this.cleanRemote = cleanRemote;
     }
 
     public String getRemoteDirectory() { return remoteDirectory; }
@@ -78,6 +85,9 @@ public class BPTransfer implements Serializable {
     public boolean isFlatten() { return flatten; }
     public void setFlatten(final boolean flatten) { this.flatten = flatten; }
 
+    public boolean isCleanRemote() { return cleanRemote; }
+    public void setCleanRemote(final boolean cleanRemote) { this.cleanRemote = cleanRemote; }
+
     public boolean hasConfiguredSourceFiles() {
         return Util.fixEmptyAndTrim(getSourceFiles()) != null;
     }
@@ -93,6 +103,10 @@ public class BPTransfer implements Serializable {
     public int transfer(final BPBuildInfo buildInfo, final BPClient client) throws Exception {
         int transferred = 0;
         final DirectoryMaker dirMaker = new DirectoryMaker(buildInfo, client);
+        if (cleanRemote) {
+            dirMaker.resetToSubDirectory();
+            client.deleteTree();
+        }
         for (FilePath filePath : getSourceFiles(buildInfo)) {
             dirMaker.changeAndMakeDirs(filePath);
             transferFile(client, filePath);
@@ -230,7 +244,7 @@ public class BPTransfer implements Serializable {
 
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(sourceFiles).append(removePrefix).append(remoteDirectory)
-            .append(remoteDirectorySDF).append(flatten);
+            .append(remoteDirectorySDF).append(flatten).append(cleanRemote);
     }
 
     protected EqualsBuilder createEqualsBuilder(final BPTransfer that) {
@@ -242,7 +256,8 @@ public class BPTransfer implements Serializable {
             .append(removePrefix, that.removePrefix)
             .append(remoteDirectory, that.remoteDirectory)
             .append(remoteDirectorySDF, that.remoteDirectorySDF)
-            .append(flatten, that.flatten);
+            .append(flatten, that.flatten)
+            .append(cleanRemote, that.cleanRemote);
     }
 
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
@@ -250,7 +265,8 @@ public class BPTransfer implements Serializable {
             .append("removePrefix", removePrefix)
             .append("remoteDirectory", remoteDirectory)
             .append("remoteDirectorySDF", remoteDirectorySDF)
-            .append("flatten", flatten);
+            .append("flatten", flatten)
+            .append("cleanRemote", cleanRemote);
     }
 
     public boolean equals(final Object that) {

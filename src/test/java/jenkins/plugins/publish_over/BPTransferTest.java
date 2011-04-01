@@ -455,6 +455,16 @@ public class BPTransferTest {
         }
     }
 
+    @Test(expected = UnsupportedOperationException.class)
+    public void testCleanRemote() throws Exception {
+        final String remoteDirectory = "remote";
+        expect(mockClient.changeToInitialDirectory()).andReturn(true);
+        expect(mockClient.changeDirectory(remoteDirectory)).andReturn(true);
+        mockClient.deleteTree();
+        expectLastCall().andThrow(new UnsupportedOperationException());
+        replayAndTransfer(new BPTransfer("**/*", remoteDirectory, "", false, false, true));
+    }
+
     private Calendar createCalendar(final String dateString) throws ParseException {
         final Calendar calendar = Calendar.getInstance();
         calendar.setTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).parse(dateString));

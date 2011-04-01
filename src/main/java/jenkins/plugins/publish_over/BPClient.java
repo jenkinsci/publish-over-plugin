@@ -40,6 +40,12 @@ public interface BPClient<TRANSFER extends BPTransfer> {
 
     void beginTransfers(TRANSFER transfer);
 
+    /**
+     * Remove all files and directories from the current directory
+     */
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+    void deleteTree() throws Exception;
+
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     void transferFile(TRANSFER transfer, FilePath filePath, InputStream fileContent) throws Exception;
 

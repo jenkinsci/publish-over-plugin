@@ -39,4 +39,8 @@ public abstract class BPDefaultClient<TRANSFER extends BPTransfer> implements BP
 
     public void endTransfers(final TRANSFER transfer) { } // NOPMD - Default do-nothing implementation
 
+    public void deleteTree() throws Exception { // NOPMD - Default - not supported
+        throw new UnsupportedOperationException();
+    }
+
 }
