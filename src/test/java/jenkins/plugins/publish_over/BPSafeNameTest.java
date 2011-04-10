@@ -27,8 +27,10 @@ package jenkins.plugins.publish_over;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
-import static hudson.util.FormValidation.Kind.*;
+import static hudson.util.FormValidation.Kind.ERROR;
+import static hudson.util.FormValidation.Kind.OK;
 
+@SuppressWarnings({ "PMD.TooManyMethods" })
 public class BPSafeNameTest {
 
     @Test public void testSingleCharacterOk() {
