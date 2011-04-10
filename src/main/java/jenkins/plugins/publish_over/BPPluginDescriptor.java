@@ -96,7 +96,7 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
     }
 
     public FormValidation doCheckName(@QueryParameter final String value) {
-        return FormValidation.validateRequired(value);
+        return BPSafeName.validateName(value);
     }
     public FormValidation doCheckHostname(@QueryParameter final String value) {
         return FormValidation.validateRequired(value);
