@@ -27,31 +27,39 @@ package jenkins.plugins.publish_over;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
-@SuppressWarnings("PMD.MagicNumberCheck")
 public class JellySupportTest {
 
     @Test public void textAreaHeightMinimumIfNoContent() {
-        assertEquals(3, JellySupport.textAreaHeight(3, null));
+        final int minimumHeight = 3;
+        assertEquals(minimumHeight, JellySupport.textAreaHeight(minimumHeight, null));
     }
 
     @Test public void textAreaHeightMinimumIfEmpty() {
-        assertEquals(1, JellySupport.textAreaHeight(1, ""));
+        final int minimumHeight = 1;
+        assertEquals(minimumHeight, JellySupport.textAreaHeight(minimumHeight, ""));
     }
 
     @Test public void textAreaHeightUnixContentLines() {
-        assertEquals(3, JellySupport.textAreaHeight(1, "one\ntwo\nthree"));
+        final int expectedHeight = 3;
+        final int requestedMinimum = 1;
+        assertEquals(expectedHeight, JellySupport.textAreaHeight(requestedMinimum, "one\ntwo\nthree"));
     }
 
     @Test public void textAreaHeightWindowsContentLines() {
-        assertEquals(3, JellySupport.textAreaHeight(1, "one\r\ntwo\r\nthree"));
+        final int expectedHeight = 3;
+        final int requestedMinimum = 1;
+        assertEquals(expectedHeight, JellySupport.textAreaHeight(requestedMinimum, "one\r\ntwo\r\nthree"));
     }
 
     @Test public void textAreaHeightMinimumIfGreaterThanHeight() {
-        assertEquals(3, JellySupport.textAreaHeight(3, "one\ntwo"));
+        final int minimumHeight = 3;
+        assertEquals(minimumHeight, JellySupport.textAreaHeight(minimumHeight, "one\ntwo"));
     }
 
     @Test public void textAreaHeightContentHeightIfGreaterThanMinimum() {
-        assertEquals(3, JellySupport.textAreaHeight(2, "one\ntwo\nthree"));
+        final int expectedHeight = 3;
+        final int requestedMinimum = 2;
+        assertEquals(expectedHeight, JellySupport.textAreaHeight(requestedMinimum, "one\ntwo\nthree"));
     }
 
     @Test public void textAreaHeightEnforceMinimumMinimum() {
