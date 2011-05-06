@@ -462,7 +462,7 @@ public class BPTransferTest {
         expect(mockClient.changeDirectory(remoteDirectory)).andReturn(true);
         mockClient.deleteTree();
         expectLastCall().andThrow(new UnsupportedOperationException());
-        replayAndTransfer(new BPTransfer("**/*", remoteDirectory, "", false, false, true));
+        replayAndTransfer(new BPTransfer("**/*", null, remoteDirectory, "", false, false, true));
     }
 
     private Calendar createCalendar(final String dateString) throws ParseException {

@@ -37,6 +37,8 @@ import org.apache.commons.logging.LogFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashSet;
 import java.util.Locale;
@@ -48,21 +50,52 @@ public class BPTransfer implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Log LOG = LogFactory.getLog(BPTransfer.class);
 
+    private static FilePath[] listWithExcludes(final FilePath base, final String includes, final String excludes) {
+        final Method list = listWithExcludesMethod();
+        try {
+            return (FilePath[])list.invoke(base, includes, excludes);
+        } catch (IllegalAccessException iae) {
+            throw new BapPublisherException("No chance!", iae);
+        } catch (InvocationTargetException ite) {
+            throw new BapPublisherException(Messages.exception_invokeList(includes, excludes), ite.getCause());
+        }
+    }
+
+    private static Method listWithExcludesMethod() {
+        try {
+            return FilePath.class.getMethod("list", String.class, String.class);
+        } catch (NoSuchMethodException nsme) {
+            return null;
+        }
+    }
+
+    public static boolean canUseExcludes() {
+        return listWithExcludesMethod() != null;
+    }
+
     private String remoteDirectory;
     private String sourceFiles;
+    private String excludes;
     private String removePrefix;
     private boolean remoteDirectorySDF;
     private boolean flatten;
     private boolean cleanRemote;
 
-    public BPTransfer(final String sourceFiles, final String remoteDirectory, final String removePrefix,
+    // retain original constructor for testing as don't compile against new enough core to enable testing of excludes!
+    BPTransfer(final String sourceFiles, final String remoteDirectory, final String removePrefix,
                       final boolean remoteDirectorySDF, final boolean flatten) {
-        this(sourceFiles, remoteDirectory, removePrefix, remoteDirectorySDF, flatten, false);
+        this(sourceFiles, null, remoteDirectory, removePrefix, remoteDirectorySDF, flatten, false);
     }
 
-    public BPTransfer(final String sourceFiles, final String remoteDirectory, final String removePrefix,
+    public BPTransfer(final String sourceFiles, final String excludes, final String remoteDirectory, final String removePrefix,
+                      final boolean remoteDirectorySDF, final boolean flatten) {
+        this(sourceFiles, excludes, remoteDirectory, removePrefix, remoteDirectorySDF, flatten, false);
+    }
+
+    public BPTransfer(final String sourceFiles, final String excludes, final String remoteDirectory, final String removePrefix,
                       final boolean remoteDirectorySDF, final boolean flatten, final boolean cleanRemote) {
         this.sourceFiles = sourceFiles;
+        this.excludes = excludes;
         this.remoteDirectory = remoteDirectory;
         this.removePrefix = removePrefix;
         this.remoteDirectorySDF = remoteDirectorySDF;
@@ -75,6 +108,9 @@ public class BPTransfer implements Serializable {
 
     public String getSourceFiles() { return sourceFiles; }
     public void setSourceFiles(final String sourceFiles) { this.sourceFiles = sourceFiles; }
+
+    public String getExcludes() { return excludes; }
+    public void setExcludes(final String excludes) { this.excludes = excludes; }
 
     public String getRemovePrefix() { return removePrefix; }
     public void setRemovePrefix(final String removePrefix) { this.removePrefix = removePrefix; }
@@ -94,9 +130,15 @@ public class BPTransfer implements Serializable {
 
     public FilePath[] getSourceFiles(final BPBuildInfo buildInfo) throws IOException, InterruptedException {
         final String expanded = Util.replaceMacro(sourceFiles, buildInfo.getEnvVars());
-        if (LOG.isDebugEnabled())
+        final String expandedExcludes = Util.fixEmptyAndTrim(Util.replaceMacro(excludes, buildInfo.getEnvVars()));
+        final boolean useExcludes = canUseExcludes() && expandedExcludes != null;
+        if (LOG.isDebugEnabled()) {
             LOG.debug(Messages.log_sourceFiles(sourceFiles, expanded));
-        return buildInfo.getBaseDirectory().list(expanded);
+            if (useExcludes)
+                LOG.debug(Messages.log_excludes(excludes, expandedExcludes));
+        }
+        return useExcludes ? listWithExcludes(buildInfo.getBaseDirectory(), expanded, expandedExcludes)
+                           : buildInfo.getBaseDirectory().list(expanded);
     }
 
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
@@ -244,7 +286,7 @@ public class BPTransfer implements Serializable {
 
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(sourceFiles).append(removePrefix).append(remoteDirectory)
-            .append(remoteDirectorySDF).append(flatten).append(cleanRemote);
+            .append(remoteDirectorySDF).append(flatten).append(cleanRemote).append(excludes);
     }
 
     protected EqualsBuilder createEqualsBuilder(final BPTransfer that) {
@@ -254,6 +296,7 @@ public class BPTransfer implements Serializable {
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPTransfer that) {
         return builder.append(sourceFiles, that.sourceFiles)
             .append(removePrefix, that.removePrefix)
+            .append(excludes, that.excludes)
             .append(remoteDirectory, that.remoteDirectory)
             .append(remoteDirectorySDF, that.remoteDirectorySDF)
             .append(flatten, that.flatten)
@@ -262,6 +305,7 @@ public class BPTransfer implements Serializable {
 
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         return builder.append("sourceFiles", sourceFiles)
+            .append("excludes", excludes)
             .append("removePrefix", removePrefix)
             .append("remoteDirectory", remoteDirectory)
             .append("remoteDirectorySDF", remoteDirectorySDF)

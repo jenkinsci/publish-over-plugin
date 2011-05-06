@@ -110,6 +110,9 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
     public FormValidation doCheckTimeout(@QueryParameter final String value) {
         return FormValidation.validateNonNegativeInteger(value);
     }
+    public boolean canUseExcludes() {
+        return BPTransfer.canUseExcludes();
+    }
 
     public FormValidation doTestConnection(final StaplerRequest request, final StaplerResponse response) {
         final HOST_CONFIG hostConfig = request.bindParameters(hostConfigClass, "bap-pub.");
