@@ -50,10 +50,11 @@ public class BPTransfer implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Log LOG = LogFactory.getLog(BPTransfer.class);
 
+    @SuppressWarnings("PMD.PreserveStackTrace") // coz the ITE itself is not interesting!
     private static FilePath[] listWithExcludes(final FilePath base, final String includes, final String excludes) {
         final Method list = listWithExcludesMethod();
         try {
-            return (FilePath[])list.invoke(base, includes, excludes);
+            return (FilePath[]) list.invoke(base, includes, excludes);
         } catch (IllegalAccessException iae) {
             throw new BapPublisherException("No chance!", iae);
         } catch (InvocationTargetException ite) {

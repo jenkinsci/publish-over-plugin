@@ -27,6 +27,7 @@ package jenkins.plugins.publish_over;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
+@SuppressWarnings("PMD.MagicNumberCheck")
 public class JellySupportTest {
 
     @Test public void textAreaHeightMinimumIfNoContent() {
@@ -54,7 +55,7 @@ public class JellySupportTest {
     }
 
     @Test public void textAreaHeightEnforceMinimumMinimum() {
-        assertEquals(JellySupport.MINIMUM_MINIMUM_HEIGHT, JellySupport.textAreaHeight(JellySupport.MINIMUM_MINIMUM_HEIGHT -1, null));
+        assertEquals(JellySupport.MINIMUM_MINIMUM_HEIGHT, JellySupport.textAreaHeight(JellySupport.MINIMUM_MINIMUM_HEIGHT - 1, null));
     }
 
 }
