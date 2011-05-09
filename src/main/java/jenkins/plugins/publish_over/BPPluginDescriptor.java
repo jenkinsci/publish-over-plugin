@@ -96,7 +96,7 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
     }
 
     public FormValidation doCheckName(@QueryParameter final String value) {
-        return BPSafeName.validateName(value);
+        return BPValidators.validateName(value);
     }
     public FormValidation doCheckHostname(@QueryParameter final String value) {
         return FormValidation.validateRequired(value);
@@ -120,7 +120,7 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
             final COMMON_CONFIG commonConfig = request.bindParameters(commonConfigClass, "common.");
             hostConfig.setCommonConfig(commonConfig);
         }
-        final BPBuildInfo buildInfo = createDummyBuildInfo();
+        final BPBuildInfo buildInfo = createDummyBuildInfo(request);
         try {
             hostConfig.createClient(buildInfo).disconnect();
             return FormValidation.ok(msg.connectionOK());
@@ -132,7 +132,7 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
         }
     }
 
-    private BPBuildInfo createDummyBuildInfo() {
+    protected BPBuildInfo createDummyBuildInfo(final StaplerRequest request) {
         return new BPBuildInfo(
             TaskListener.NULL,
             "",

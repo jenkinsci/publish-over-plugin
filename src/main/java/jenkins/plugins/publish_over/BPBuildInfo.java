@@ -34,6 +34,8 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
+import java.util.TreeMap;
 
 public class BPBuildInfo extends BPBuildEnv {
 
@@ -46,6 +48,7 @@ public class BPBuildInfo extends BPBuildEnv {
     private String consoleMsgPrefix;
     private BPBuildEnv currentBuildEnv;
     private BPBuildEnv targetBuildEnv;
+    private TreeMap<String, Serializable> context = new TreeMap<String, Serializable>();
 
     public BPBuildInfo() { }
 
@@ -75,6 +78,17 @@ public class BPBuildInfo extends BPBuildEnv {
 
     public BPBuildEnv getTargetBuildEnv() { return targetBuildEnv; }
     public void setTargetBuildEnv(final BPBuildEnv targetBuildEnv) { this.targetBuildEnv = targetBuildEnv; }
+
+    public Serializable get(final String key) {
+        return context.get(key);
+    }
+    public void put(final String key, final Serializable value) {
+        context.put(key, value);
+    }
+
+    public boolean onMaster() {
+        return !configDir.isRemote();
+    }
 
     public byte[] readFileFromMaster(final String filePath) {
         final FilePath file = configDir.child(filePath);

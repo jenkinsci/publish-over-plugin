@@ -103,14 +103,21 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
                     new FilePath(promoted.getArtifactsDir()), promoted.getTimestamp());
         }
 
-        final Result result = delegate.perform(new BPBuildInfo(listener, consolePrefix, Hudson.getInstance().getRootPath(),
-                currentBuildEnv, targetBuildEnv));
+        final BPBuildInfo buildInfo = new BPBuildInfo(listener, consolePrefix, Hudson.getInstance().getRootPath(),
+                                                      currentBuildEnv, targetBuildEnv);
+        fixup(build, buildInfo);
+        final Result result = delegate.perform(buildInfo);
 
         if (build.getResult() == null)
             build.setResult(result);
         else
             build.setResult(result.combine(build.getResult()));
         return result.isBetterOrEqualTo(Result.UNSTABLE);
+    }
+
+    protected void fixup(final AbstractBuild<?, ?> build, final BPBuildInfo buildInfo) {
+        // provide a hook for the plugin impl to get at other internals - ie Hudson.getInstance is null when remote from a publisher!!!!!
+        // as is Exceutor.currentExecutor, Computer.currentComputer - it's a wilderness out there!
     }
 
     protected boolean isBuildGoodEnoughToRun(final AbstractBuild<?, ?> build, final PrintStream console) {

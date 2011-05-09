@@ -27,12 +27,16 @@ package jenkins.plugins.publish_over;
 import hudson.Util;
 import hudson.util.FormValidation;
 
-public class BPSafeName {
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-    private static final String ILLEGAL_CHARS = "< & ' \" \\";
+public class BPValidators {
+
+    private static final String VALID_NAME_ILLEGAL_CHARS = "< & ' \" \\";
+    private static final Pattern FOUR_NUMBERS_DOT_DELIM = Pattern.compile("(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})");
 
     public static String getIllegalCharacters() {
-        return ILLEGAL_CHARS;
+        return VALID_NAME_ILLEGAL_CHARS;
     }
 
     public static boolean isValidName(final String proposed) {
@@ -40,7 +44,21 @@ public class BPSafeName {
     }
 
     public static FormValidation validateName(final String name) {
-        return isValidName(name) ? FormValidation.ok() : FormValidation.error(Messages.validator_safeName(ILLEGAL_CHARS));
+        return isValidName(name) ? FormValidation.ok() : FormValidation.error(Messages.validator_safeName(VALID_NAME_ILLEGAL_CHARS));
+    }
+
+    public static FormValidation validateOptionalIp(final String ip) {
+        if (Util.fixEmptyAndTrim(ip) == null) return FormValidation.ok();
+        final Matcher matcher = FOUR_NUMBERS_DOT_DELIM.matcher(ip.trim());
+        if (!matcher.matches()) return FormValidation.error(Messages.validator_optionalIP());
+        if (isOctetValid(matcher.group(1)) && isOctetValid(matcher.group(2)) && isOctetValid(matcher.group(3))
+                && isOctetValid(matcher.group(4))) return FormValidation.ok();
+        return FormValidation.error(Messages.validator_optionalIP());
+    }
+
+    private static boolean isOctetValid(final String octetString) {
+        final int octet = Integer.parseInt(octetString);
+        return octet < 256;
     }
 
 }

@@ -63,7 +63,9 @@ public class BPCallablePublisher implements FilePath.FileCallable<Void> {
             printHostName();
             publisher.perform(hostConfig, buildInfo);
         } catch (Exception e) {
-            throw new BapPublisherException(Messages.exception_remoteCallException(e.getLocalizedMessage()), e);
+            final String message = Messages.exception_remoteCallException(e.getLocalizedMessage());
+            LOG.warn(message, e);
+            throw new BapPublisherException(message, e);
         }
         return null;
     }
