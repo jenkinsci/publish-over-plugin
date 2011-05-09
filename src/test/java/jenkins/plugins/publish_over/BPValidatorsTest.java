@@ -30,7 +30,7 @@ import static junit.framework.Assert.assertEquals;
 import static hudson.util.FormValidation.Kind.ERROR;
 import static hudson.util.FormValidation.Kind.OK;
 
-@SuppressWarnings({ "PMD.TooManyMethods" })
+@SuppressWarnings({ "PMD.TooManyMethods", "PMD.AvoidUsingHardCodedIP" })
 public class BPValidatorsTest {
 
     @Test public void validateNameSingleCharacterOk() {

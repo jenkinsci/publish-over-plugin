@@ -44,7 +44,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-@SuppressWarnings("PMD.LooseCoupling") // serializable ... Map ...
+@SuppressWarnings({"PMD.LooseCoupling", "PMD.TooManyMethods"}) // serializable ... Map ...
 public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BPClient, COMMON_CONFIG>
             extends Notifier implements BPHostConfigurationAccess<CLIENT, COMMON_CONFIG> {
 

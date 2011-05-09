@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.TreeMap;
 
+@SuppressWarnings({ "PMD.LooseCoupling" }) // SERIALIZABLE!!!!!!!
 public class BPBuildInfo extends BPBuildEnv {
 
     private static final long serialVersionUID = 1L;
@@ -48,7 +49,7 @@ public class BPBuildInfo extends BPBuildEnv {
     private String consoleMsgPrefix;
     private BPBuildEnv currentBuildEnv;
     private BPBuildEnv targetBuildEnv;
-    private TreeMap<String, Serializable> context = new TreeMap<String, Serializable>();
+    private final TreeMap<String, Serializable> context = new TreeMap<String, Serializable>();
 
     public BPBuildInfo() { }
 

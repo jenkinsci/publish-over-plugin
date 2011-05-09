@@ -47,9 +47,9 @@ public class BPValidators {
         return isValidName(name) ? FormValidation.ok() : FormValidation.error(Messages.validator_safeName(VALID_NAME_ILLEGAL_CHARS));
     }
 
-    public static FormValidation validateOptionalIp(final String ip) {
-        if (Util.fixEmptyAndTrim(ip) == null) return FormValidation.ok();
-        final Matcher matcher = FOUR_NUMBERS_DOT_DELIM.matcher(ip.trim());
+    public static FormValidation validateOptionalIp(final String ipAddress) {
+        if (Util.fixEmptyAndTrim(ipAddress) == null) return FormValidation.ok();
+        final Matcher matcher = FOUR_NUMBERS_DOT_DELIM.matcher(ipAddress.trim());
         if (!matcher.matches()) return FormValidation.error(Messages.validator_optionalIP());
         if (isOctetValid(matcher.group(1)) && isOctetValid(matcher.group(2)) && isOctetValid(matcher.group(3))
                 && isOctetValid(matcher.group(4))) return FormValidation.ok();
