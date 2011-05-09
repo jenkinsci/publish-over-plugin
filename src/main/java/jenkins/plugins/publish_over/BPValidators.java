@@ -34,6 +34,8 @@ public class BPValidators {
 
     private static final String VALID_NAME_ILLEGAL_CHARS = "< & ' \" \\";
     private static final Pattern FOUR_NUMBERS_DOT_DELIM = Pattern.compile("(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})");
+    private static final int OCTETS_IN_IPV4 = 4;
+    private static final int OCTET_MAX_VALUE = 255;
 
     public static String getIllegalCharacters() {
         return VALID_NAME_ILLEGAL_CHARS;
@@ -51,14 +53,15 @@ public class BPValidators {
         if (Util.fixEmptyAndTrim(ipAddress) == null) return FormValidation.ok();
         final Matcher matcher = FOUR_NUMBERS_DOT_DELIM.matcher(ipAddress.trim());
         if (!matcher.matches()) return FormValidation.error(Messages.validator_optionalIP());
-        if (isOctetValid(matcher.group(1)) && isOctetValid(matcher.group(2)) && isOctetValid(matcher.group(3))
-                && isOctetValid(matcher.group(4))) return FormValidation.ok();
-        return FormValidation.error(Messages.validator_optionalIP());
+        for (int octet = 1; octet < OCTETS_IN_IPV4 + 1; octet++)
+            if (!isOctetValid(matcher.group(octet)))
+                return FormValidation.error(Messages.validator_optionalIP());
+        return FormValidation.ok();
     }
 
     private static boolean isOctetValid(final String octetString) {
         final int octet = Integer.parseInt(octetString);
-        return octet < 256;
+        return octet < OCTET_MAX_VALUE + 1;
     }
 
 }

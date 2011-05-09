@@ -44,7 +44,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-@SuppressWarnings({"PMD.LooseCoupling", "PMD.TooManyMethods"}) // serializable ... Map ...
+@SuppressWarnings({ "PMD.LooseCoupling", "PMD.TooManyMethods" }) // serializable ... Map ...
 public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BPClient, COMMON_CONFIG>
             extends Notifier implements BPHostConfigurationAccess<CLIENT, COMMON_CONFIG> {
 
@@ -115,6 +115,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         return result.isBetterOrEqualTo(Result.UNSTABLE);
     }
 
+    @SuppressWarnings("EmptyMethodInAbstractClassShouldBeAbstract") // don't need to provide impl, so not abstract!
     protected void fixup(final AbstractBuild<?, ?> build, final BPBuildInfo buildInfo) {
         // provide a hook for the plugin impl to get at other internals - ie Hudson.getInstance is null when remote from a publisher!!!!!
         // as is Exceutor.currentExecutor, Computer.currentComputer - it's a wilderness out there!

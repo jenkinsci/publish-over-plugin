@@ -117,12 +117,12 @@ public class BPValidatorsTest {
         assertValidateOptionalIpNok("255.255.33");
     }
 
-    private void assertValidateOptionalIpOk(final String ip) {
-        assertEquals(OK, BPValidators.validateOptionalIp(ip).kind);
+    private void assertValidateOptionalIpOk(final String ipAddress) {
+        assertEquals(OK, BPValidators.validateOptionalIp(ipAddress).kind);
     }
 
-    private void assertValidateOptionalIpNok(final String ip) {
-        assertEquals(ERROR, BPValidators.validateOptionalIp(ip).kind);
+    private void assertValidateOptionalIpNok(final String ipAddress) {
+        assertEquals(ERROR, BPValidators.validateOptionalIp(ipAddress).kind);
     }
 
 }
