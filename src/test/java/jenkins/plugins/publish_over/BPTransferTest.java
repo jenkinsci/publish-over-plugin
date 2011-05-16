@@ -465,6 +465,17 @@ public class BPTransferTest {
         replayAndTransfer(new BPTransfer("**/*", null, remoteDirectory, "", false, false, true));
     }
 
+    @Test public void testPotentiallyHelpfulMessageIfBaseDirNotExist() throws Exception {
+        buildInfo.setBaseDirectory(buildInfo.getBaseDirectory().child("IamNotThere"));
+        final BPTransfer transfer = new BPTransfer("", "", "", true, false);
+        try {
+            replayAndTransfer(transfer);
+            fail();
+        } catch (BapPublisherException bpe) {
+            assertTrue(bpe.getLocalizedMessage().contains(Messages.exception_baseDirectoryNotExist()));
+        }
+    }
+
     private Calendar createCalendar(final String dateString) throws ParseException {
         final Calendar calendar = Calendar.getInstance();
         calendar.setTime(new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()).parse(dateString));

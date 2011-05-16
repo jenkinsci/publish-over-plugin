@@ -142,14 +142,20 @@ public class BPTransfer implements Serializable {
                            : buildInfo.getBaseDirectory().list(expanded);
     }
 
+    private void assertBaseDirectoryExists(final BPBuildInfo buildInfo) throws Exception {
+        if (!buildInfo.getBaseDirectory().exists())
+            throw new BapPublisherException(Messages.exception_baseDirectoryNotExist());
+    }
+
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public int transfer(final BPBuildInfo buildInfo, final BPClient client) throws Exception {
-        int transferred = 0;
+        assertBaseDirectoryExists(buildInfo);
         final DirectoryMaker dirMaker = new DirectoryMaker(buildInfo, client);
         if (cleanRemote) {
             dirMaker.resetToSubDirectory();
             client.deleteTree();
         }
+        int transferred = 0;
         for (FilePath filePath : getSourceFiles(buildInfo)) {
             dirMaker.changeAndMakeDirs(filePath);
             transferFile(client, filePath);
