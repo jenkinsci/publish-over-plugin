@@ -123,7 +123,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
 
     protected boolean isBuildGoodEnoughToRun(final AbstractBuild<?, ?> build, final PrintStream console) {
         if ((build.getResult() != null) && !build.getResult().isBetterOrEqualTo(Result.UNSTABLE)) {
-            console.println(Messages.console_notPerforming(build.getResult()));
+            console.println(consolePrefix + Messages.console_notPerforming(build.getResult()));
             return false;
         }
         return true;
