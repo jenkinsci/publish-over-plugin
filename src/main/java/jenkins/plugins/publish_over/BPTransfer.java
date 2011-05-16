@@ -142,6 +142,7 @@ public class BPTransfer implements Serializable {
                            : buildInfo.getBaseDirectory().list(expanded);
     }
 
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     private void assertBaseDirectoryExists(final BPBuildInfo buildInfo) throws Exception {
         if (!buildInfo.getBaseDirectory().exists())
             throw new BapPublisherException(Messages.exception_baseDirectoryNotExist());
