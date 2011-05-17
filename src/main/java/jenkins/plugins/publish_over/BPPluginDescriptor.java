@@ -32,6 +32,7 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Publisher;
 import hudson.util.CopyOnWriteList;
 import hudson.util.FormValidation;
+import hudson.util.VersionNumber;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -112,6 +113,12 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
     }
     public boolean canUseExcludes() {
         return BPTransfer.canUseExcludes();
+    }
+    public String getDefaultMasterNodeName() {
+        return BPInstanceConfig.DEFAULT_MASTER_NODE_NAME;
+    }
+    public boolean canSetMasterNodeName() {
+        return Hudson.getVersion().isOlderThan(new VersionNumber(BPInstanceConfig.MASTER_GETS_NODE_NAME_IN_VERSION));
     }
 
     public FormValidation doTestConnection(final StaplerRequest request, final StaplerResponse response) {

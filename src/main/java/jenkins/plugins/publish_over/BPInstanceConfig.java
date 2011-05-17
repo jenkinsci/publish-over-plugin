@@ -42,6 +42,9 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     private static final long serialVersionUID = 1L;
 
     private static final Log LOG = LogFactory.getLog(BPInstanceConfig.class);
+    public static final String DEFAULT_MASTER_NODE_NAME = "master";
+    // @TODO fix this when core gets Slides master NODE_NAME mod
+    public static final String MASTER_GETS_NODE_NAME_IN_VERSION = "999.999";
 
     private ArrayList<PUBLISHER> publishers;
     private boolean continueOnError;
@@ -110,7 +113,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     public final Result perform(final BPBuildInfo buildInfo) {
         Result toReturn = Result.SUCCESS;
         final Result onError = failOnError ? Result.FAILURE : Result.UNSTABLE;
-        fixMasterNodeName(buildInfo);
+        if (masterNodeName != null) fixMasterNodeName(buildInfo);
         for (PUBLISHER publisher : publishers) {
             publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
             try {
