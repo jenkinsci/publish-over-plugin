@@ -25,8 +25,11 @@
 package jenkins.plugins.publish_over;
 
 import hudson.Util;
+import hudson.model.Hudson;
 import hudson.util.FormValidation;
+import hudson.util.VersionNumber;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,6 +65,17 @@ public class BPValidators {
     private static boolean isOctetValid(final String octetString) {
         final int octet = Integer.parseInt(octetString);
         return octet < OCTET_MAX_VALUE + 1;
+    }
+
+    public static FormValidation validateFileOnMaster(final String value) {
+        // this check prevents a NPE when called from global configuration - if not global, use validatePath directly
+        if (Hudson.getVersion().isOlderThan(new VersionNumber("1.399")))
+            return FormValidation.ok();
+        try {
+            return Hudson.getInstance().getRootPath().validateRelativePath(value, true, true);
+        } catch (IOException ioe) {
+            return FormValidation.error(ioe, "");
+        }
     }
 
 }

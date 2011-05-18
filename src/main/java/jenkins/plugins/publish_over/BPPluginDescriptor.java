@@ -84,7 +84,7 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
     }
 
     public boolean configure(final StaplerRequest request, final JSONObject formData) {
-        final List<HOST_CONFIG> newConfigurations = request.bindJSONToList(hostConfigClass, formData.get("hostconfig"));
+        final List<HOST_CONFIG> newConfigurations = request.bindJSONToList(hostConfigClass, formData.get("instance"));
         if (commonConfigClass != null) {
             commonConfig = request.bindJSON(commonConfigClass, formData.getJSONObject("common"));
             for (HOST_CONFIG hostConfig : newConfigurations) {
@@ -122,7 +122,7 @@ public class BPPluginDescriptor<HOST_CONFIG extends BPHostConfiguration, COMMON_
     }
 
     public FormValidation doTestConnection(final StaplerRequest request, final StaplerResponse response) {
-        final HOST_CONFIG hostConfig = request.bindParameters(hostConfigClass, "bap-pub.");
+        final HOST_CONFIG hostConfig = request.bindParameters(hostConfigClass, "");
         if (commonConfigClass != null) {
             final COMMON_CONFIG commonConfig = request.bindParameters(commonConfigClass, "common.");
             hostConfig.setCommonConfig(commonConfig);
