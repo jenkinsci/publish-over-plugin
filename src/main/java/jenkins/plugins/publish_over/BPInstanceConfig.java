@@ -43,8 +43,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
 
     private static final Log LOG = LogFactory.getLog(BPInstanceConfig.class);
     public static final String DEFAULT_MASTER_NODE_NAME = "master";
-    // @TODO fix this when core gets Slides master NODE_NAME mod
-    public static final String MASTER_GETS_NODE_NAME_IN_VERSION = "999.999";
+    public static final String MASTER_GETS_NODE_NAME_IN_VERSION = "1.414";
 
     private ArrayList<PUBLISHER> publishers;
     private boolean continueOnError;
