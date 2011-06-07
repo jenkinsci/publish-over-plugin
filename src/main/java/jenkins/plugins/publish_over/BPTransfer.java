@@ -288,6 +288,7 @@ public class BPTransfer implements Serializable {
 
     }
 
+    @Deprecated
     protected HashCodeBuilder createHashCodeBuilder() {
         return addToHashCode(new HashCodeBuilder());
     }
@@ -297,6 +298,7 @@ public class BPTransfer implements Serializable {
             .append(remoteDirectorySDF).append(flatten).append(cleanRemote).append(excludes);
     }
 
+    @Deprecated
     protected EqualsBuilder createEqualsBuilder(final BPTransfer that) {
         return addToEquals(new EqualsBuilder(), that);
     }
@@ -325,11 +327,11 @@ public class BPTransfer implements Serializable {
         if (this == that) return true;
         if (that == null || getClass() != that.getClass()) return false;
 
-        return createEqualsBuilder((BPTransfer) that).isEquals();
+        return addToEquals(new EqualsBuilder(), (BPTransfer) that).isEquals();
     }
 
     public int hashCode() {
-        return createHashCodeBuilder().toHashCode();
+        return addToHashCode(new HashCodeBuilder()).toHashCode();
     }
 
     public String toString() {

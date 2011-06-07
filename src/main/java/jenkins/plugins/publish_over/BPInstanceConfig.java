@@ -134,6 +134,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         return toReturn;
     }
 
+    @Deprecated
     protected HashCodeBuilder createHashCodeBuilder() {
         return addToHashCode(new HashCodeBuilder());
     }
@@ -143,6 +144,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
             .append(alwaysPublishFromMaster).append(masterNodeName);
     }
 
+    @Deprecated
     protected EqualsBuilder createEqualsBuilder(final BPInstanceConfig that) {
         return addToEquals(new EqualsBuilder(), that);
     }
@@ -167,11 +169,11 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         if (this == that) return true;
         if (that == null || getClass() != that.getClass()) return false;
 
-        return createEqualsBuilder((BPInstanceConfig) that).isEquals();
+        return addToEquals(new EqualsBuilder(), (BPInstanceConfig) that).isEquals();
     }
 
     public int hashCode() {
-        return createHashCodeBuilder().toHashCode();
+        return addToHashCode(new HashCodeBuilder()).toHashCode();
     }
 
     public String toString() {

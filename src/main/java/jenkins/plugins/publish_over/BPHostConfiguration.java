@@ -105,6 +105,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
         BapPublisherException.exception(client, message);
     }
 
+    @Deprecated
     protected HashCodeBuilder createHashCodeBuilder() {
         return addToHashCode(new HashCodeBuilder());
     }
@@ -119,6 +120,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
             .append(port);
     }
 
+    @Deprecated
     protected EqualsBuilder createEqualsBuilder(final BPHostConfiguration that) {
         return addToEquals(new EqualsBuilder(), that);
     }
@@ -146,11 +148,11 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
         if (this == that) return true;
         if (that == null || getClass() != that.getClass()) return false;
 
-        return createEqualsBuilder((BPHostConfiguration) that).isEquals();
+        return addToEquals(new EqualsBuilder(), (BPHostConfiguration) that).isEquals();
     }
 
     public int hashCode() {
-        return createHashCodeBuilder().toHashCode();
+        return addToHashCode(new HashCodeBuilder()).toHashCode();
     }
 
     public String toString() {

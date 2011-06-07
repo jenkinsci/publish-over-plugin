@@ -129,6 +129,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         return true;
     }
 
+    @Deprecated
     protected HashCodeBuilder createHashCodeBuilder() {
         return addToHashCode(new HashCodeBuilder());
     }
@@ -137,6 +138,7 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         return builder.append(delegate).append(consolePrefix);
     }
 
+    @Deprecated
     protected EqualsBuilder createEqualsBuilder(final BPPlugin that) {
         return addToEquals(new EqualsBuilder(), that);
     }
@@ -155,11 +157,11 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         if (this == that) return true;
         if (that == null || getClass() != that.getClass()) return false;
 
-        return createEqualsBuilder((BPPlugin) that).isEquals();
+        return addToEquals(new EqualsBuilder(), (BPPlugin) that).isEquals();
     }
 
     public int hashCode() {
-        return createHashCodeBuilder().toHashCode();
+        return addToHashCode(new HashCodeBuilder()).toHashCode();
     }
 
     public String toString() {

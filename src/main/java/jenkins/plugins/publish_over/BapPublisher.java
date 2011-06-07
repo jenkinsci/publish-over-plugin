@@ -155,6 +155,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         }
     }
 
+    @Deprecated
     protected HashCodeBuilder createHashCodeBuilder() {
         return addToHashCode(new HashCodeBuilder());
     }
@@ -164,6 +165,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             .append(useWorkspaceInPromotion).append(usePromotionTimestamp);
     }
 
+    @Deprecated
     protected EqualsBuilder createEqualsBuilder(final BapPublisher that) {
         return addToEquals(new EqualsBuilder(), that);
     }
@@ -188,11 +190,11 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         if (this == that) return true;
         if (that == null || getClass() != that.getClass()) return false;
 
-        return createEqualsBuilder((BapPublisher) that).isEquals();
+        return addToEquals(new EqualsBuilder(), (BapPublisher) that).isEquals();
     }
 
     public int hashCode() {
-        return createHashCodeBuilder().toHashCode();
+        return addToHashCode(new HashCodeBuilder()).toHashCode();
     }
 
     public String toString() {
