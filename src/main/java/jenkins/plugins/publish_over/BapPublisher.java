@@ -48,14 +48,13 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
     public BapPublisher() { }
 
-    public BapPublisher(final String configName, final boolean verbose, final ArrayList<TRANSFER> transfers) {
-        this(configName, verbose, transfers, false, false);
+    public BapPublisher(final String configName, final ArrayList<TRANSFER> transfers) {
+        this(configName, transfers, false, false);
     }
 
-    public BapPublisher(final String configName, final boolean verbose, final ArrayList<TRANSFER> transfers,
+    public BapPublisher(final String configName, final ArrayList<TRANSFER> transfers,
                         final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp) {
         this.configName = configName;
-        this.verbose = verbose;
         setTransfers(transfers);
         this.useWorkspaceInPromotion = useWorkspaceInPromotion;
         this.usePromotionTimestamp = usePromotionTimestamp;
@@ -82,9 +81,11 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         this.usePromotionTimestamp = usePromotionTimestamp;
     }
 
+    @Deprecated
     public final boolean isVerbose() {
         return verbose;
     }
+    @Deprecated
     public final void setVerbose(final boolean verbose) {
         this.verbose = verbose;
     }
@@ -118,7 +119,6 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     }
 
     public void setEffectiveEnvironmentInBuildInfo(final BPBuildInfo buildInfo) {
-        buildInfo.setVerbose(verbose);
         final BPBuildEnv current = buildInfo.getCurrentBuildEnv();
         final BPBuildEnv target = buildInfo.getTargetBuildEnv();
         if (target == null) {

@@ -58,7 +58,7 @@ public class BapPublisherTest {
         final BPTransfer transfer2 = createHappyTransfer(numberOfFilesTransferred2);
         final BPTransfer transfer3 = createHappyTransfer(numberOfFilesTransferred3);
         transfers.addAll(Arrays.asList(new BPTransfer[]{transfer1, transfer2, transfer3}));
-        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
+        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), transfers);
         mockClient.disconnectQuietly();
 
         mockControl.replay();
@@ -79,7 +79,7 @@ public class BapPublisherTest {
         final BPTransfer transfer1 = mockControl.createMock(BPTransfer.class);
         final BPTransfer transfer2 = mockControl.createMock(BPTransfer.class);
         transfers.addAll(Arrays.asList(new BPTransfer[]{transfer1, transfer2}));
-        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
+        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), transfers);
         final RuntimeException toThrow = new RuntimeException("xxx");
         mockClient.beginTransfers(transfer1);
         expect(transfer1.hasConfiguredSourceFiles()).andReturn(true);
@@ -97,18 +97,18 @@ public class BapPublisherTest {
         mockControl.verify();
     }
 
-    @Test public void testVerbositySetInBuildInfo() throws Exception {
-        final BapPublisher publisher = new BapPublisher(null, false, null);
+    @Test public void testPublishersVerbosityIsIgnored() throws Exception {
+        final BapPublisher publisher = new BapPublisher(null, null);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertFalse(buildInfo.isVerbose());
         publisher.setVerbose(true);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
-        assertTrue(buildInfo.isVerbose());
+        assertFalse(buildInfo.isVerbose());
     }
 
     @Test public void testEnvironmentUntouchedIfNotPromotion() {
         assertNotSame(buildInfo, buildInfo.getCurrentBuildEnv());
-        final BapPublisher publisher = new BapPublisher(null, false, null);
+        final BapPublisher publisher = new BapPublisher(null, null);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertSame(buildInfo.getCurrentBuildEnv().getEnvVars(), buildInfo.getEnvVars());
         assertSame(buildInfo.getCurrentBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
@@ -124,7 +124,7 @@ public class BapPublisherTest {
         target.getEnvVars().put(envVarName, targetJobName);
         buildInfo.getCurrentBuildEnv().getEnvVars().put(envVarName, promoJobName);
         assertNotSame(buildInfo, target);
-        final BapPublisher publisher = new BapPublisher(null, false, null);
+        final BapPublisher publisher = new BapPublisher(null, null);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertSame(buildInfo.getTargetBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
         assertSame(buildInfo.getTargetBuildEnv().getBuildTime(), buildInfo.getBuildTime());
@@ -141,7 +141,7 @@ public class BapPublisherTest {
         target.getEnvVars().put(envVarName, targetJobName);
         buildInfo.getCurrentBuildEnv().getEnvVars().put(envVarName, promoJobName);
         assertNotSame(buildInfo, target);
-        final BapPublisher publisher = new BapPublisher(null, false, null, true, false);
+        final BapPublisher publisher = new BapPublisher(null, null, true, false);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertSame(buildInfo.getCurrentBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
         assertSame(buildInfo.getTargetBuildEnv().getBuildTime(), buildInfo.getBuildTime());
@@ -158,7 +158,7 @@ public class BapPublisherTest {
         target.getEnvVars().put(envVarName, targetJobName);
         buildInfo.getCurrentBuildEnv().getEnvVars().put(envVarName, promoJobName);
         assertNotSame(buildInfo, target);
-        final BapPublisher publisher = new BapPublisher(null, false, null, false, true);
+        final BapPublisher publisher = new BapPublisher(null, null, false, true);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertSame(buildInfo.getTargetBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
         assertSame(buildInfo.getCurrentBuildEnv().getBuildTime(), buildInfo.getBuildTime());
