@@ -51,18 +51,16 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     private boolean alwaysPublishFromMaster;
     private String masterNodeName;
     private BPHostConfigurationAccess hostConfigurationAccess;
-    private boolean verbose;
 
     public BPInstanceConfig() { }
 
     public BPInstanceConfig(final ArrayList<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError,
-                            final boolean alwaysPublishFromMaster, final String masterNodeName, final boolean verbose) {
+                            final boolean alwaysPublishFromMaster, final String masterNodeName) {
         setPublishers(publishers);
         this.continueOnError = continueOnError;
         this.failOnError = failOnError;
         this.alwaysPublishFromMaster = alwaysPublishFromMaster;
         this.masterNodeName = masterNodeName;
-        this.verbose = verbose;
     }
 
     public final ArrayList<PUBLISHER> getPublishers() {
@@ -75,9 +73,6 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
             this.publishers = publishers;
         }
     }
-
-    public final boolean isVerbose() { return verbose; }
-    final void setVerbose(final boolean verbose) { this.verbose = verbose; }
 
     public final boolean isContinueOnError() { return continueOnError; }
     public final void setContinueOnError(final boolean continueOnError) { this.continueOnError = continueOnError; }
@@ -118,7 +113,6 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         Result toReturn = Result.SUCCESS;
         final Result onError = failOnError ? Result.FAILURE : Result.UNSTABLE;
         if (masterNodeName != null) fixMasterNodeName(buildInfo);
-        buildInfo.setVerbose(verbose);
         for (PUBLISHER publisher : publishers) {
             publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
             try {
@@ -142,7 +136,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
 
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(publishers).append(continueOnError).append(failOnError)
-            .append(alwaysPublishFromMaster).append(masterNodeName).append(verbose);
+            .append(alwaysPublishFromMaster).append(masterNodeName);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPInstanceConfig that) {
@@ -150,8 +144,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
             .append(continueOnError, that.continueOnError)
             .append(failOnError, that.failOnError)
             .append(masterNodeName, that.masterNodeName)
-            .append(alwaysPublishFromMaster, that.alwaysPublishFromMaster)
-            .append(verbose, that.verbose);
+            .append(alwaysPublishFromMaster, that.alwaysPublishFromMaster);
     }
 
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
@@ -159,8 +152,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
             .append("continueOnError", continueOnError)
             .append("failOnError", failOnError)
             .append("masterNodeName", masterNodeName)
-            .append("alwaysPublishFromMaster", alwaysPublishFromMaster)
-            .append("verbose", verbose);
+            .append("alwaysPublishFromMaster", alwaysPublishFromMaster);
     }
 
     public boolean equals(final Object that) {

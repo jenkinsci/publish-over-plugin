@@ -52,17 +52,13 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     public static final String PROMOTION_CLASS_NAME = "hudson.plugins.promoted_builds.Promotion";
 
     private final String consolePrefix;
-    private boolean verbosePulledUp;
     private BPInstanceConfig delegate;
 
     public BPPlugin(final String consolePrefix, final ArrayList<PUBLISHER> publishers, final boolean continueOnError,
-                    final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName,
-                    final boolean verbose) {
-        this.delegate = new BPInstanceConfig<PUBLISHER>(publishers, continueOnError, failOnError, alwaysPublishFromMaster,
-                                                                                                                masterNodeName, verbose);
+                    final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName) {
+        this.delegate = new BPInstanceConfig<PUBLISHER>(publishers, continueOnError, failOnError, alwaysPublishFromMaster, masterNodeName);
         delegate.setHostConfigurationAccess(this);
         this.consolePrefix = consolePrefix;
-        verbosePulledUp = true;
     }
 
     public BPInstanceConfig getInstanceConfig() { return delegate; }
@@ -160,18 +156,6 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
 
     public String toString() {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)).toString();
-    }
-
-    public Object readResolve() {
-        if (!verbosePulledUp) {
-            for (Object publisherObj : delegate.getPublishers()) {
-                final BapPublisher publisher = (BapPublisher) publisherObj;
-                if (publisher.isVerbose()) delegate.setVerbose(true);
-                publisher.setVerbose(false);
-            }
-            verbosePulledUp = true;
-        }
-        return this;
     }
 
 }
