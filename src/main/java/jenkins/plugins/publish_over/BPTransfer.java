@@ -288,19 +288,9 @@ public class BPTransfer implements Serializable {
 
     }
 
-    @Deprecated
-    protected HashCodeBuilder createHashCodeBuilder() {
-        return addToHashCode(new HashCodeBuilder());
-    }
-
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(sourceFiles).append(removePrefix).append(remoteDirectory)
             .append(remoteDirectorySDF).append(flatten).append(cleanRemote).append(excludes);
-    }
-
-    @Deprecated
-    protected EqualsBuilder createEqualsBuilder(final BPTransfer that) {
-        return addToEquals(new EqualsBuilder(), that);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPTransfer that) {

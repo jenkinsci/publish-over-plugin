@@ -155,19 +155,9 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         }
     }
 
-    @Deprecated
-    protected HashCodeBuilder createHashCodeBuilder() {
-        return addToHashCode(new HashCodeBuilder());
-    }
-
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(configName).append(verbose).append(transfers)
             .append(useWorkspaceInPromotion).append(usePromotionTimestamp);
-    }
-
-    @Deprecated
-    protected EqualsBuilder createEqualsBuilder(final BapPublisher that) {
-        return addToEquals(new EqualsBuilder(), that);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BapPublisher that) {

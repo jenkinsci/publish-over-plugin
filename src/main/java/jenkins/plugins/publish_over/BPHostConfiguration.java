@@ -105,11 +105,6 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
         BapPublisherException.exception(client, message);
     }
 
-    @Deprecated
-    protected HashCodeBuilder createHashCodeBuilder() {
-        return addToHashCode(new HashCodeBuilder());
-    }
-
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(name)
             .append(hostname)
@@ -118,11 +113,6 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
             .append(remoteRootDir)
             .append(commonConfig)
             .append(port);
-    }
-
-    @Deprecated
-    protected EqualsBuilder createEqualsBuilder(final BPHostConfiguration that) {
-        return addToEquals(new EqualsBuilder(), that);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPHostConfiguration that) {

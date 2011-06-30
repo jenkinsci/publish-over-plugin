@@ -140,19 +140,9 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         return toReturn;
     }
 
-    @Deprecated
-    protected HashCodeBuilder createHashCodeBuilder() {
-        return addToHashCode(new HashCodeBuilder());
-    }
-
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(publishers).append(continueOnError).append(failOnError)
             .append(alwaysPublishFromMaster).append(masterNodeName).append(verbose);
-    }
-
-    @Deprecated
-    protected EqualsBuilder createEqualsBuilder(final BPInstanceConfig that) {
-        return addToEquals(new EqualsBuilder(), that);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPInstanceConfig that) {

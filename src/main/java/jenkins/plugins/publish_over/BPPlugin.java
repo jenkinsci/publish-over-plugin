@@ -133,18 +133,8 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         return true;
     }
 
-    @Deprecated
-    protected HashCodeBuilder createHashCodeBuilder() {
-        return addToHashCode(new HashCodeBuilder());
-    }
-
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(delegate).append(consolePrefix);
-    }
-
-    @Deprecated
-    protected EqualsBuilder createEqualsBuilder(final BPPlugin that) {
-        return addToEquals(new EqualsBuilder(), that);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPPlugin that) {
