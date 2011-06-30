@@ -221,24 +221,24 @@ public class BPInstanceConfigTest {
 
         assertFalse(buildInfo.getCurrentBuildEnv().getEnvVars().containsKey(BPBuildInfo.ENV_NODE_NAME));
     }
-    
+
     @Test public void testBuildInfoIsVerboseWhenConfigured() throws Exception {
         final BPInstanceConfig instanceConfig = new BPInstanceConfig(publishers, false, false, false, "master", true);
         instanceConfig.setHostConfigurationAccess(mockHostConfigurationAccess);
         final BapPublisher mockPublisher = createAndAddMockPublisher(hostConfiguration.getName());
         mockPublisher.perform(hostConfiguration, buildInfo);
         assertResult(Result.SUCCESS, instanceConfig);
-        
+
         assertTrue(buildInfo.isVerbose());
     }
-    
+
     @Test public void testBuildInfoIsNotVerboseWhenNotConfigured() throws Exception {
         final BPInstanceConfig instanceConfig = new BPInstanceConfig(publishers, false, false, false, "master", false);
         instanceConfig.setHostConfigurationAccess(mockHostConfigurationAccess);
         final BapPublisher mockPublisher = createAndAddMockPublisher(hostConfiguration.getName());
         mockPublisher.perform(hostConfiguration, buildInfo);
         assertResult(Result.SUCCESS, instanceConfig);
-        
+
         assertFalse(buildInfo.isVerbose());
     }
 

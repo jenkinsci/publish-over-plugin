@@ -173,5 +173,5 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         }
         return this;
     }
-    
+
 }
