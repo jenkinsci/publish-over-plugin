@@ -24,6 +24,7 @@
 
 package jenkins.plugins.publish_over;
 
+import hudson.FilePath;
 import jenkins.plugins.publish_over.helper.BPBuildInfoFactory;
 import jenkins.plugins.publish_over.helper.BPHostConfigurationFactory;
 import org.easymock.classextension.EasyMock;
@@ -193,13 +194,13 @@ public class BapPublisherTest {
         transfers.add(transfer);
         mockClient.beginTransfers(transfer);
         expect(transfer.hasConfiguredSourceFiles()).andReturn(true);
-        final BPTransfer.TransferState state = new BPTransfer.TransferState();
+        final BPTransfer.TransferState state = BPTransfer.TransferState.create(new FilePath[0]);
         final BapTransferException bte = new BapTransferException(new IOException(), state);
         expect(transfer.transfer(buildInfo, mockClient)).andThrow(bte);
         mockClient.disconnectQuietly();
         mockClient.beginTransfers(transfer);
         expect(transfer.hasConfiguredSourceFiles()).andReturn(true);
-        expect(transfer.transfer(buildInfo, mockClient, state)).andReturn(10);
+        expect(transfer.transfer(buildInfo, mockClient, state)).andReturn(1);
         mockClient.endTransfers(transfer);
         mockClient.disconnectQuietly();
         final Retry retry = new Retry(retries, retryDelay);
@@ -217,7 +218,7 @@ public class BapPublisherTest {
         transfers.add(transfer);
         mockClient.beginTransfers(transfer);
         expect(transfer.hasConfiguredSourceFiles()).andReturn(true);
-        final BPTransfer.TransferState state = new BPTransfer.TransferState();
+        final BPTransfer.TransferState state = BPTransfer.TransferState.create(new FilePath[0]);
         final BapTransferException bte = new BapTransferException(new IOException(), state);
         expect(transfer.transfer(buildInfo, mockClient)).andThrow(bte);
         mockClient.disconnectQuietly();

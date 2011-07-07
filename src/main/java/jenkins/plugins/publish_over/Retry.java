@@ -29,7 +29,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-public class Retry {
+import java.io.Serializable;
+
+public class Retry implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     public static final int DEFAULT_RETRIES = 0;
     public static final long DEFAULT_RETRY_DELAY = 10000;

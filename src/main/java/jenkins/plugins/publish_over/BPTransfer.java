@@ -44,7 +44,7 @@ import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Set;
 
-@SuppressWarnings("PMD.TooManyMethods")
+@SuppressWarnings({ "PMD.TooManyMethods", "PMD.SignatureDeclareThrowsException" })
 public class BPTransfer implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -142,19 +142,16 @@ public class BPTransfer implements Serializable {
                            : buildInfo.getBaseDirectory().list(expanded);
     }
 
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     private void assertBaseDirectoryExists(final BPBuildInfo buildInfo) throws Exception {
         if (!buildInfo.getBaseDirectory().exists())
             throw new BapPublisherException(Messages.exception_baseDirectoryNotExist());
     }
 
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public int transfer(final BPBuildInfo buildInfo, final BPClient client) throws Exception {
         assertBaseDirectoryExists(buildInfo);
-        return transfer(buildInfo, client, new TransferState(getSourceFiles(buildInfo)));
+        return transfer(buildInfo, client, TransferState.create(getSourceFiles(buildInfo)));
     }
 
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public int transfer(final BPBuildInfo buildInfo, final BPClient client, final TransferState state) {
         try {
             final DirectoryMaker dirMaker = new DirectoryMaker(buildInfo, client);
@@ -163,7 +160,7 @@ public class BPTransfer implements Serializable {
                 client.deleteTree();
                 state.doneCleaning = true;
             }
-            while(state.transferred < state.sourceFiles.length) {
+            while (state.transferred < state.sourceFiles.length) {
                 dirMaker.changeAndMakeDirs(state.sourceFiles[state.transferred]);
                 transferFile(client, state.sourceFiles[state.transferred]);
                 state.transferred++;
@@ -174,7 +171,6 @@ public class BPTransfer implements Serializable {
         return state.transferred;
     }
 
-    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public void transferFile(final BPClient client, final FilePath filePath) throws Exception {
         final InputStream inputStream = filePath.read();
         try {
@@ -337,14 +333,17 @@ public class BPTransfer implements Serializable {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)).toString();
     }
 
-    public static class TransferState {
-        private FilePath[] sourceFiles;
+    public static class TransferState implements Serializable {
+        private static final long serialVersionUID = 1L;
+        private final FilePath[] sourceFiles;
         private int transferred;
         private boolean doneCleaning;
         private TransferState(final FilePath[] sourceFiles) {
             this.sourceFiles = sourceFiles;
         }
-        protected TransferState() { }
+        protected static TransferState create(final FilePath[] sourceFiles) {
+            return new TransferState(sourceFiles);
+        }
     }
 
 }
