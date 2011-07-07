@@ -24,6 +24,9 @@
 
 package jenkins.plugins.publish_over;
 
+import hudson.model.Hudson;
+import hudson.util.VersionNumber;
+
 import java.util.regex.Pattern;
 
 public class JellySupport {
@@ -31,11 +34,21 @@ public class JellySupport {
     public static final int MINIMUM_MINIMUM_HEIGHT = 1;
     public static final int DEFAULT_MINIMUM_HEIGHT = 5;
     private static final Pattern LINE_END = Pattern.compile("\r?\n");
+    private static final VersionNumber BOX_GETS_TITLE = new VersionNumber("1.389");
+    private static final VersionNumber BOX_GETS_CSS_SPACE = new VersionNumber("1.406");
 
     public static final int textAreaHeight(final int minimum, final String content) {
         final int min = Math.max(minimum, MINIMUM_MINIMUM_HEIGHT);
         if (content == null) return min;
         return Math.max(min, LINE_END.split(content).length);
+    }
+
+    public static final boolean boxMissingTitle() {
+        return Hudson.getVersion().isOlderThan(BOX_GETS_TITLE);
+    }
+
+    public static final boolean boxNeedsSpace() {
+        return Hudson.getVersion().isOlderThan(BOX_GETS_CSS_SPACE);
     }
 
 }

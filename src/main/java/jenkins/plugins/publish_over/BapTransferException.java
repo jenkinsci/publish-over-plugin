@@ -24,30 +24,21 @@
 
 package jenkins.plugins.publish_over;
 
-public class BapPublisherException extends RuntimeException {
+public class BapTransferException extends BapPublisherException {
 
-    public static void exception(final BPClient client, final String message) {
-        exception(client, message, null);
+    private BPTransfer.TransferState state;
+
+    public BapTransferException(final Throwable throwable) {
+        this(throwable, null);
     }
 
-    public static void exception(final BPClient client, final String message, final Throwable throwable) {
-        client.disconnectQuietly();
-        if (throwable == null)
-            throw new BapPublisherException(message);
-        else
-            throw new BapPublisherException(message, throwable);
-    }
-
-    public BapPublisherException(final String message) {
-        super(message);
-    }
-
-    public BapPublisherException(final String message, final Throwable throwable) {
-        super(message, throwable);
-    }
-
-    public BapPublisherException(final Throwable throwable) {
+    public BapTransferException(final Throwable throwable, final BPTransfer.TransferState state) {
         super(throwable);
+        this.state = state;
+    }
+
+    public BPTransfer.TransferState getState() {
+        return state;
     }
 
 }

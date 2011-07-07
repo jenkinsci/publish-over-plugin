@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -49,6 +50,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.same;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -127,8 +129,8 @@ public class BPTransferTest {
         try {
             replayAndTransfer(transfer);
             fail();
-        } catch (Exception e) {
-            assertSame(someException, e);
+        } catch (BapTransferException bte) {
+            assertSame(someException, bte.getCause());
         }
     }
 
@@ -455,16 +457,6 @@ public class BPTransferTest {
         }
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void testCleanRemote() throws Exception {
-        final String remoteDirectory = "remote";
-        expect(mockClient.changeToInitialDirectory()).andReturn(true);
-        expect(mockClient.changeDirectory(remoteDirectory)).andReturn(true);
-        mockClient.deleteTree();
-        expectLastCall().andThrow(new UnsupportedOperationException());
-        replayAndTransfer(new BPTransfer("**/*", null, remoteDirectory, "", false, false, true));
-    }
-
     @Test public void testPotentiallyHelpfulMessageIfBaseDirNotExist() throws Exception {
         buildInfo.setBaseDirectory(buildInfo.getBaseDirectory().child("IamNotThere"));
         final BPTransfer transfer = new BPTransfer("", "", "", true, false);
@@ -474,6 +466,64 @@ public class BPTransferTest {
         } catch (BapPublisherException bpe) {
             assertTrue(bpe.getLocalizedMessage().contains(Messages.exception_baseDirectoryNotExist()));
         }
+    }
+
+    @Test public void testCanCompleteTransferIfCalledWithState() throws Exception {
+        final RandomFile log1 = new RandomFile(baseDir.getRoot(), "1.log");
+        final RandomFile log2 = new RandomFile(baseDir.getRoot(), "2.log");
+        final RandomFile log3 = new RandomFile(baseDir.getRoot(), "3.log");
+        final BPTransfer transfer = new BPTransfer("*", "", "", "", false, false, true);
+        expect(mockClient.changeToInitialDirectory()).andReturn(true);
+        mockClient.deleteTree();
+        expect(mockClient.changeToInitialDirectory()).andReturn(true);
+        expectTransferFile(transfer, log1, log2);
+        expectLastCall().andThrow(new IOException());
+        mockControl.replay();
+        BPTransfer.TransferState state = null;
+        try {
+            transfer.transfer(buildInfo, mockClient);
+            fail();
+        } catch (BapTransferException bte) {
+            state = bte.getState();
+            assertNotNull(state);
+        }
+        mockControl.verify();
+        mockControl.reset();
+        expect(mockClient.changeToInitialDirectory()).andReturn(true);
+        expectTransferFile(transfer, log2, log3);
+        final int expectedFileCount = 3;
+        mockControl.replay();
+        assertEquals(expectedFileCount, transfer.transfer(buildInfo, mockClient, state));
+        mockControl.verify();
+    }
+
+    @Test public void testWillCleanAgainIfCleanFailedAndThenComplete() throws Exception {
+        final RandomFile log1 = new RandomFile(baseDir.getRoot(), "1.log");
+        final RandomFile log2 = new RandomFile(baseDir.getRoot(), "2.log");
+        final RandomFile log3 = new RandomFile(baseDir.getRoot(), "3.log");
+        final BPTransfer transfer = new BPTransfer("*", "", "", "", false, false, true);
+        expect(mockClient.changeToInitialDirectory()).andReturn(true);
+        mockClient.deleteTree();
+        expectLastCall().andThrow(new IOException());
+        mockControl.replay();
+        BPTransfer.TransferState state = null;
+        try {
+            transfer.transfer(buildInfo, mockClient);
+            fail();
+        } catch (BapTransferException bte) {
+            state = bte.getState();
+            assertNotNull(state);
+        }
+        mockControl.verify();
+        mockControl.reset();
+        expect(mockClient.changeToInitialDirectory()).andReturn(true);
+        mockClient.deleteTree();
+        expect(mockClient.changeToInitialDirectory()).andReturn(true);
+        expectTransferFile(transfer, log1, log2, log3);
+        final int expectedFileCount = 3;
+        mockControl.replay();
+        assertEquals(expectedFileCount, transfer.transfer(buildInfo, mockClient, state));
+        mockControl.verify();
     }
 
     private Calendar createCalendar(final String dateString) throws ParseException {

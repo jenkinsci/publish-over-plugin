@@ -28,12 +28,18 @@ import jenkins.plugins.publish_over.helper.BPBuildInfoFactory;
 import jenkins.plugins.publish_over.helper.BPHostConfigurationFactory;
 import org.easymock.classextension.EasyMock;
 import org.easymock.classextension.IMocksControl;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
@@ -43,6 +49,20 @@ import static org.junit.Assert.fail;
 
 @SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods", "PMD.LooseCoupling" })
 public class BapPublisherTest {
+
+    private static final Logger PUBLISHER_LOGGER = Logger.getLogger(BapPublisher.class.getCanonicalName());
+    private static Level originalLogLevel;
+
+    @BeforeClass
+    public static void before() {
+        originalLogLevel = PUBLISHER_LOGGER.getLevel();
+        PUBLISHER_LOGGER.setLevel(Level.OFF);
+    }
+
+    @AfterClass
+    public static void after() {
+        PUBLISHER_LOGGER.setLevel(originalLogLevel);
+    }
 
     private final BPBuildInfo buildInfo = new BPBuildInfoFactory().createEmpty();
     private final IMocksControl mockControl = EasyMock.createStrictControl();
@@ -58,7 +78,7 @@ public class BapPublisherTest {
         final BPTransfer transfer2 = createHappyTransfer(numberOfFilesTransferred2);
         final BPTransfer transfer3 = createHappyTransfer(numberOfFilesTransferred3);
         transfers.addAll(Arrays.asList(new BPTransfer[]{transfer1, transfer2, transfer3}));
-        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
+        final BapPublisher publisher = createPublisher(hostConfiguration.getName(), false, transfers);
         mockClient.disconnectQuietly();
 
         mockControl.replay();
@@ -79,7 +99,7 @@ public class BapPublisherTest {
         final BPTransfer transfer1 = mockControl.createMock(BPTransfer.class);
         final BPTransfer transfer2 = mockControl.createMock(BPTransfer.class);
         transfers.addAll(Arrays.asList(new BPTransfer[]{transfer1, transfer2}));
-        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers);
+        final BapPublisher publisher = createPublisher(hostConfiguration.getName(), false, transfers);
         final RuntimeException toThrow = new RuntimeException("xxx");
         mockClient.beginTransfers(transfer1);
         expect(transfer1.hasConfiguredSourceFiles()).andReturn(true);
@@ -98,7 +118,7 @@ public class BapPublisherTest {
     }
 
     @Test public void testVerbositySetInBuildInfo() throws Exception {
-        final BapPublisher publisher = new BapPublisher(null, false, null);
+        final BapPublisher publisher = createPublisher(null, false, null);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertFalse(buildInfo.isVerbose());
         publisher.setVerbose(true);
@@ -108,7 +128,7 @@ public class BapPublisherTest {
 
     @Test public void testEnvironmentUntouchedIfNotPromotion() {
         assertNotSame(buildInfo, buildInfo.getCurrentBuildEnv());
-        final BapPublisher publisher = new BapPublisher(null, false, null);
+        final BapPublisher publisher = createPublisher(null, false, null);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertSame(buildInfo.getCurrentBuildEnv().getEnvVars(), buildInfo.getEnvVars());
         assertSame(buildInfo.getCurrentBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
@@ -124,7 +144,7 @@ public class BapPublisherTest {
         target.getEnvVars().put(envVarName, targetJobName);
         buildInfo.getCurrentBuildEnv().getEnvVars().put(envVarName, promoJobName);
         assertNotSame(buildInfo, target);
-        final BapPublisher publisher = new BapPublisher(null, false, null);
+        final BapPublisher publisher = createPublisher(null, false, null);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertSame(buildInfo.getTargetBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
         assertSame(buildInfo.getTargetBuildEnv().getBuildTime(), buildInfo.getBuildTime());
@@ -141,7 +161,7 @@ public class BapPublisherTest {
         target.getEnvVars().put(envVarName, targetJobName);
         buildInfo.getCurrentBuildEnv().getEnvVars().put(envVarName, promoJobName);
         assertNotSame(buildInfo, target);
-        final BapPublisher publisher = new BapPublisher(null, false, null, true, false);
+        final BapPublisher publisher = createPublisher(null, false, null, true, false);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertSame(buildInfo.getCurrentBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
         assertSame(buildInfo.getTargetBuildEnv().getBuildTime(), buildInfo.getBuildTime());
@@ -158,12 +178,99 @@ public class BapPublisherTest {
         target.getEnvVars().put(envVarName, targetJobName);
         buildInfo.getCurrentBuildEnv().getEnvVars().put(envVarName, promoJobName);
         assertNotSame(buildInfo, target);
-        final BapPublisher publisher = new BapPublisher(null, false, null, false, true);
+        final BapPublisher publisher = createPublisher(null, false, null, false, true);
         publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
         assertSame(buildInfo.getTargetBuildEnv().getBaseDirectory(), buildInfo.getBaseDirectory());
         assertSame(buildInfo.getCurrentBuildEnv().getBuildTime(), buildInfo.getBuildTime());
         assertEquals(buildInfo.getEnvVars().get(envVarName), targetJobName);
         assertEquals(buildInfo.getEnvVars().get(BPBuildInfo.PROMOTION_ENV_VARS_PREFIX + envVarName), promoJobName);
+    }
+
+    @Test public void testRetry() throws Exception {
+        final int retries = 1;
+        final long retryDelay = 100;
+        final BPTransfer transfer = mockControl.createMock(BPTransfer.class);
+        transfers.add(transfer);
+        mockClient.beginTransfers(transfer);
+        expect(transfer.hasConfiguredSourceFiles()).andReturn(true);
+        final BPTransfer.TransferState state = new BPTransfer.TransferState();
+        final BapTransferException bte = new BapTransferException(new IOException(), state);
+        expect(transfer.transfer(buildInfo, mockClient)).andThrow(bte);
+        mockClient.disconnectQuietly();
+        mockClient.beginTransfers(transfer);
+        expect(transfer.hasConfiguredSourceFiles()).andReturn(true);
+        expect(transfer.transfer(buildInfo, mockClient, state)).andReturn(10);
+        mockClient.endTransfers(transfer);
+        mockClient.disconnectQuietly();
+        final Retry retry = new Retry(retries, retryDelay);
+        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers, false, false, retry);
+
+        mockControl.replay();
+        publisher.perform(hostConfiguration, buildInfo);
+        mockControl.verify();
+    }
+
+    @Test public void testTransferExceptionCauseIsReThrownWhenRetriesExhausted() throws Exception {
+        final int retries = 1;
+        final long retryDelay = 100;
+        final BPTransfer transfer = mockControl.createMock(BPTransfer.class);
+        transfers.add(transfer);
+        mockClient.beginTransfers(transfer);
+        expect(transfer.hasConfiguredSourceFiles()).andReturn(true);
+        final BPTransfer.TransferState state = new BPTransfer.TransferState();
+        final BapTransferException bte = new BapTransferException(new IOException(), state);
+        expect(transfer.transfer(buildInfo, mockClient)).andThrow(bte);
+        mockClient.disconnectQuietly();
+        mockClient.beginTransfers(transfer);
+        expect(transfer.hasConfiguredSourceFiles()).andReturn(true);
+        final IOException expected = new IOException("It was all baaad");
+        expect(transfer.transfer(buildInfo, mockClient, state)).andThrow(new BapTransferException(expected, state));
+        mockClient.disconnectQuietly();
+        final Retry retry = new Retry(retries, retryDelay);
+        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers, false, false, retry);
+
+        mockControl.replay();
+        try {
+            publisher.perform(hostConfiguration, buildInfo);
+            fail();
+        } catch (IOException ioe) {
+            assertSame(expected, ioe);
+        }
+        mockControl.verify();
+    }
+
+    @Test public void testExceptionIsReThrownWhenRetriesExhausted() throws Exception {
+        final int retries = 1;
+        final long retryDelay = 100;
+        final BPTransfer transfer = mockControl.createMock(BPTransfer.class);
+        transfers.add(transfer);
+        mockClient.beginTransfers(transfer);
+        expectLastCall().andThrow(new RuntimeException("Ouch!"));
+        mockClient.disconnectQuietly();
+        mockClient.beginTransfers(transfer);
+        final RuntimeException expected = new RuntimeException("Unexpected :-/");
+        expectLastCall().andThrow(expected);
+        mockClient.disconnectQuietly();
+        final Retry retry = new Retry(retries, retryDelay);
+        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers, false, false, retry);
+
+        mockControl.replay();
+        try {
+            publisher.perform(hostConfiguration, buildInfo);
+            fail();
+        } catch (RuntimeException re) {
+            assertSame(expected, re);
+        }
+        mockControl.verify();
+    }
+
+    private static BapPublisher createPublisher(final String configName, final boolean verbose, final ArrayList<BPTransfer> transfers) {
+        return createPublisher(configName, verbose, transfers, false, false);
+    }
+
+    private static BapPublisher createPublisher(final String configName, final boolean verbose, final ArrayList<BPTransfer> transfers,
+                                                final boolean useWorkspace, final boolean usePromotionTimestamp) {
+        return new BapPublisher(configName, verbose, transfers, useWorkspace, usePromotionTimestamp, null);
     }
 
 }

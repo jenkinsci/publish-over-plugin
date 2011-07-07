@@ -151,18 +151,27 @@ public class BPTransfer implements Serializable {
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public int transfer(final BPBuildInfo buildInfo, final BPClient client) throws Exception {
         assertBaseDirectoryExists(buildInfo);
-        final DirectoryMaker dirMaker = new DirectoryMaker(buildInfo, client);
-        if (cleanRemote) {
-            dirMaker.resetToSubDirectory();
-            client.deleteTree();
+        return transfer(buildInfo, client, new TransferState(getSourceFiles(buildInfo)));
+    }
+
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+    public int transfer(final BPBuildInfo buildInfo, final BPClient client, final TransferState state) {
+        try {
+            final DirectoryMaker dirMaker = new DirectoryMaker(buildInfo, client);
+            if (cleanRemote && !state.doneCleaning) {
+                dirMaker.resetToSubDirectory();
+                client.deleteTree();
+                state.doneCleaning = true;
+            }
+            while(state.transferred < state.sourceFiles.length) {
+                dirMaker.changeAndMakeDirs(state.sourceFiles[state.transferred]);
+                transferFile(client, state.sourceFiles[state.transferred]);
+                state.transferred++;
+            }
+        } catch (Exception e) {
+            throw new BapTransferException(e, state);
         }
-        int transferred = 0;
-        for (FilePath filePath : getSourceFiles(buildInfo)) {
-            dirMaker.changeAndMakeDirs(filePath);
-            transferFile(client, filePath);
-            transferred++;
-        }
-        return transferred;
+        return state.transferred;
     }
 
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
@@ -326,6 +335,16 @@ public class BPTransfer implements Serializable {
 
     public String toString() {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)).toString();
+    }
+
+    public static class TransferState {
+        private FilePath[] sourceFiles;
+        private int transferred;
+        private boolean doneCleaning;
+        private TransferState(final FilePath[] sourceFiles) {
+            this.sourceFiles = sourceFiles;
+        }
+        protected TransferState() { }
     }
 
 }

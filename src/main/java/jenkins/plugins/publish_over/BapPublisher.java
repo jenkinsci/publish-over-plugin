@@ -33,32 +33,33 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // serializable + only actually 4 "real" methods in here all rest accessors and boiler str/has/eq
 @SuppressWarnings({ "PMD.LooseCoupling", "PMD.TooManyMethods" })
 public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(BapPublisher.class.getName());
 
     private String configName;
     private boolean verbose;
     private ArrayList<TRANSFER> transfers;
     private boolean useWorkspaceInPromotion;
     private boolean usePromotionTimestamp;
+    private Retry retry;
 
     public BapPublisher() { }
 
-    public BapPublisher(final String configName, final boolean verbose, final ArrayList<TRANSFER> transfers) {
-        this(configName, verbose, transfers, false, false);
-    }
-
     public BapPublisher(final String configName, final boolean verbose, final ArrayList<TRANSFER> transfers,
-                        final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp) {
+                        final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp, final Retry retry) {
         this.configName = configName;
         this.verbose = verbose;
         setTransfers(transfers);
         this.useWorkspaceInPromotion = useWorkspaceInPromotion;
         this.usePromotionTimestamp = usePromotionTimestamp;
+        this.retry = retry;
     }
 
     public String getConfigName() {
@@ -100,6 +101,10 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         }
     }
 
+    public Retry getRetry() {
+        return retry;
+    }
+
     private int sumTransfers(final List<Integer> transferred) {
         int total = 0;
         for (int tx : transferred) {
@@ -136,28 +141,14 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public void perform(final BPHostConfiguration hostConfig, final BPBuildInfo buildInfo) throws Exception {
-        buildInfo.println(Messages.console_connecting(configName));
-        final BPClient client = hostConfig.createClient(buildInfo);
-        final List<Integer> transferred = new ArrayList<Integer>();
-        try {
-            for (TRANSFER transfer : transfers) {
-                client.beginTransfers(transfer);
-                if (transfer.hasConfiguredSourceFiles())
-                    transferred.add(transfer.transfer(buildInfo, client));
-                else
-                    transferred.add(0);
-                client.endTransfers(transfer);
-            }
-            printNumberOfFilesTransferred(buildInfo, transferred);
-        } finally {
-            buildInfo.println(Messages.console_disconnecting(configName));
-            client.disconnectQuietly();
-        }
+        final Performer performer = new Performer(hostConfig, buildInfo);
+        printNumberOfFilesTransferred(buildInfo, performer.perform());
     }
 
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(configName).append(verbose).append(transfers)
-            .append(useWorkspaceInPromotion).append(usePromotionTimestamp);
+            .append(useWorkspaceInPromotion).append(usePromotionTimestamp)
+            .append(retry);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BapPublisher that) {
@@ -165,7 +156,8 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             .append(verbose, that.verbose)
             .append(transfers, that.transfers)
             .append(useWorkspaceInPromotion, that.useWorkspaceInPromotion)
-            .append(usePromotionTimestamp, that.usePromotionTimestamp);
+            .append(usePromotionTimestamp, that.usePromotionTimestamp)
+            .append(retry, that.retry);
     }
 
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
@@ -173,7 +165,8 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             .append("verbose", verbose)
             .append("transfers", transfers)
             .append("useWorkspaceInPromotion", useWorkspaceInPromotion)
-            .append("usePromotionTimestamp", usePromotionTimestamp);
+            .append("usePromotionTimestamp", usePromotionTimestamp)
+            .append("retry", retry);
     }
 
     public boolean equals(final Object that) {
@@ -189,6 +182,90 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
     public String toString() {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)).toString();
+    }
+
+    private class Performer {
+
+        private final BPHostConfiguration hostConfig;
+        private final BPBuildInfo buildInfo;
+        private BPClient client;
+        private int remainingTries;
+        private ArrayList<TRANSFER> remainingTransfers = new ArrayList<TRANSFER>();
+        final List<Integer> transferred = new ArrayList<Integer>();
+        private boolean transferComplete;
+        private BPTransfer.TransferState transferState;
+        private Exception exception;
+
+        private Performer(final BPHostConfiguration hostConfig, final BPBuildInfo buildInfo) {
+            this.hostConfig = hostConfig;
+            this.buildInfo = buildInfo;
+            remainingTries = retry == null ? 0 : retry.getRetries();
+            remainingTransfers.addAll(transfers);
+        }
+
+        private List<Integer> perform() throws Exception {
+            do {
+                try {
+                    buildInfo.println(Messages.console_connecting(configName));
+                    client = hostConfig.createClient(buildInfo);
+                    while (!remainingTransfers.isEmpty()) {
+                        beginTransfers();
+                        transfer();
+                        endTransfers();
+                    }
+                    return transferred;
+                } catch (BapTransferException bte) {
+                    transferState = bte.getState();
+                    exception = (Exception) bte.getCause();
+                } catch (Exception e) {
+                    exception = e;
+                } finally {
+                    if (client != null) {
+                        buildInfo.println(Messages.console_disconnecting(configName));
+                        client.disconnectQuietly();
+                    }
+                }
+            } while (remainingTries-- > 0 && delay());
+            throw exception;
+        }
+
+        private boolean delay() {
+            LOGGER.log(Level.WARNING, Messages.log_exceptionCaught_retrying(), exception);
+            buildInfo.println(Messages.console_retryDelay(exception.getLocalizedMessage(), retry.getRetryDelay()));
+            try {
+                Thread.sleep(retry.getRetryDelay());
+            } catch (InterruptedException ie) {
+                throw new BapPublisherException(Messages.exception_retryDelayInterrupted(), ie);
+            }
+            return true;
+        }
+
+        private void beginTransfers() {
+            client.beginTransfers(remainingTransfers.get(0));
+        }
+
+        private void transfer() throws Exception {
+            if (transferComplete) return;
+            final BPTransfer transfer = remainingTransfers.get(0);
+            if (!transfer.hasConfiguredSourceFiles()) {
+                transferred.add(0);
+                transferComplete = true;
+                return;
+            }
+            if (transferState == null)
+                transferred.add(transfer.transfer(buildInfo, client));
+            else
+                transferred.add(transfer.transfer(buildInfo, client, transferState));
+            transferComplete = true;
+        }
+
+        private void endTransfers() {
+            client.endTransfers(remainingTransfers.get(0));
+            remainingTransfers.remove(0);
+            transferState = null;
+            transferComplete = false;
+        }
+
     }
 
 }

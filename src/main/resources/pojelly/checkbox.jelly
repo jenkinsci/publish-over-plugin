@@ -1,0 +1,35 @@
+<!--
+  ~ The MIT License
+  ~
+  ~ Copyright (C) 2010-2011 by Anthony Robinson
+  ~
+  ~ Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~ of this software and associated documentation files (the "Software"), to deal
+  ~ in the Software without restriction, including without limitation the rights
+  ~ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~ copies of the Software, and to permit persons to whom the Software is
+  ~ furnished to do so, subject to the following conditions:
+  ~
+  ~ The above copyright notice and this permission notice shall be included in
+  ~ all copies or substantial portions of the Software.
+  ~
+  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  ~ THE SOFTWARE.
+  -->
+
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:f="/lib/form">
+
+    <!-- checkbox that can use @title in Hudson pre 1.389 -->
+    <f:prepareDatabinding />
+    <j:new var="poj" className="jenkins.plugins.publish_over.JellySupport" useContextClassLoader="true"/>
+    <f:checkbox field="${attrs.field}" title="${attrs.title}" name="${attrs.name}" checked="${attrs.checked}"/>
+    <j:if test="${poj.boxMissingTitle() and (attrs.title != null)}">
+        <st:nbsp/><label class="attach-previous">${attrs.title}</label>
+    </j:if>
+
+</j:jelly>
