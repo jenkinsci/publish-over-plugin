@@ -38,8 +38,8 @@ public class Retry implements Serializable {
     public static final int DEFAULT_RETRIES = 0;
     public static final long DEFAULT_RETRY_DELAY = 10000;
 
-    private int retries;
-    private long retryDelay;
+    private final int retries;
+    private final long retryDelay;
 
     public Retry(final int retries, final long retryDelay) {
         this.retries = retries;

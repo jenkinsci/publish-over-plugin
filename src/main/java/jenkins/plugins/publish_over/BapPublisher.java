@@ -184,19 +184,20 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)).toString();
     }
 
+    @SuppressWarnings({ "PMD.SignatureDeclareThrowsException" })
     private final class Performer {
 
         private final BPHostConfiguration hostConfig;
         private final BPBuildInfo buildInfo;
         private BPClient client;
         private int remainingTries;
-        private ArrayList<TRANSFER> remainingTransfers = new ArrayList<TRANSFER>();
+        private final ArrayList<TRANSFER> remainingTransfers = new ArrayList<TRANSFER>();
         private final List<Integer> transferred = new ArrayList<Integer>();
         private boolean transferComplete;
         private BPTransfer.TransferState transferState;
         private Exception exception;
 
-        private Performer(final BPHostConfiguration hostConfig, final BPBuildInfo buildInfo) {
+        protected Performer(final BPHostConfiguration hostConfig, final BPBuildInfo buildInfo) {
             this.hostConfig = hostConfig;
             this.buildInfo = buildInfo;
             remainingTries = retry == null ? 0 : retry.getRetries();

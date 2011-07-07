@@ -333,7 +333,7 @@ public class BPTransfer implements Serializable {
         return addToToString(new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)).toString();
     }
 
-    public static class TransferState implements Serializable {
+    public static final class TransferState implements Serializable {
         private static final long serialVersionUID = 1L;
         private final FilePath[] sourceFiles;
         private int transferred;
