@@ -29,11 +29,11 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // serializable + only actually 4 "real" methods in here all rest accessors and boiler str/has/eq
 @SuppressWarnings({ "PMD.LooseCoupling", "PMD.TooManyMethods" })
@@ -41,7 +41,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log LOG = LogFactory.getLog(BPInstanceConfig.class);
+    private static final Logger LOGGER = Logger.getLogger(BPInstanceConfig.class.getName());
     public static final String DEFAULT_MASTER_NODE_NAME = "master";
     public static final String MASTER_GETS_NODE_NAME_IN_VERSION = "1.414";
 
@@ -123,7 +123,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
                 else
                     buildInfo.getBaseDirectory().act(callablePublisher);
             } catch (Exception e) {
-                LOG.warn(Messages.log_exceptionInPerform(), e);
+                LOGGER.log(Level.WARNING, Messages.log_exceptionInPerform(), e);
                 buildInfo.getListener().error(e.getLocalizedMessage());
                 if (continueOnError)
                     toReturn = toReturn.combine(onError);

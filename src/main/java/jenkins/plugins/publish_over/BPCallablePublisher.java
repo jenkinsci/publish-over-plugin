@@ -26,19 +26,19 @@ package jenkins.plugins.publish_over;
 
 import hudson.FilePath;
 import hudson.remoting.VirtualChannel;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BPCallablePublisher implements FilePath.FileCallable<Void> {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log LOG = LogFactory.getLog(BPCallablePublisher.class);
+    private static final Logger LOGGER = Logger.getLogger(BPCallablePublisher.class.getName());
 
     private BapPublisher publisher;
     private BPHostConfiguration hostConfig;
@@ -64,7 +64,7 @@ public class BPCallablePublisher implements FilePath.FileCallable<Void> {
             publisher.perform(hostConfig, buildInfo);
         } catch (Exception e) {
             final String message = Messages.exception_remoteCallException(e.getLocalizedMessage());
-            LOG.warn(message, e);
+            LOGGER.log(Level.WARNING, message, e);
             throw new BapPublisherException(message, e);
         }
         return null;
@@ -74,7 +74,7 @@ public class BPCallablePublisher implements FilePath.FileCallable<Void> {
         try {
             buildInfo.println(Messages.console_publishFromHost_message(InetAddress.getLocalHost().getHostName()));
         } catch (UnknownHostException uhe) {
-            LOG.warn(Messages.exception_failedToGetHostName(), uhe);
+            LOGGER.log(Level.WARNING, Messages.exception_failedToGetHostName(), uhe);
             buildInfo.println(Messages.console_publishFromHost_unknown(uhe.getLocalizedMessage()));
         }
     }

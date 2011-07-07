@@ -48,14 +48,19 @@ public class BPInstanceConfigTest {
 
     private static final Logger INSTANCE_CONFIG_LOGGER = Logger.getLogger(BPInstanceConfig.class.getCanonicalName());
     private static Level originalLogLevel;
+    private static final Logger CALLABLE_PUBLISHER_LOGGER = Logger.getLogger(BPCallablePublisher.class.getCanonicalName());
+    private static Level publisherOriginalLogLevel;
 
     @BeforeClass public static void before() {
         originalLogLevel = INSTANCE_CONFIG_LOGGER.getLevel();
+        publisherOriginalLogLevel = CALLABLE_PUBLISHER_LOGGER.getLevel();
         INSTANCE_CONFIG_LOGGER.setLevel(Level.OFF);
+        CALLABLE_PUBLISHER_LOGGER.setLevel(Level.OFF);
     }
 
     @AfterClass public static void after() {
         INSTANCE_CONFIG_LOGGER.setLevel(originalLogLevel);
+        CALLABLE_PUBLISHER_LOGGER.setLevel(publisherOriginalLogLevel);
     }
 
     private final BPBuildInfo buildInfo = new BPBuildInfoFactory().createEmpty();

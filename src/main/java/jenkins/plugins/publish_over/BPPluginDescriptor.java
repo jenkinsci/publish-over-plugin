@@ -24,13 +24,13 @@
 
 package jenkins.plugins.publish_over;
 
-@SuppressWarnings("PMD.TooManyMethods")
-@Deprecated
+/**
+ * Class is left for legacy configurations which contain references to the inner interface
+ */
 public class BPPluginDescriptor {
 
     public BPPluginDescriptor() { }
 
-    @Deprecated
     public interface BPDescriptorMessages { }
 
 }
