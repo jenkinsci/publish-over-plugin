@@ -64,7 +64,7 @@ public class ParamPublishTest {
         mockControl.verify();
     }
 
-    private ParamPublish createParamPublish(String regex) {
+    private ParamPublish createParamPublish(final String regex) {
         final ParamPublish paramPublish = new ParamPublish(PARAM_NAME);
         buildInfo.getCurrentBuildEnv().getEnvVars().put(PARAM_NAME, regex);
         return paramPublish;
@@ -84,10 +84,10 @@ public class ParamPublishTest {
         expect(nullLabel.getLabel()).andReturn(null).anyTimes();
         expect(nullLabel.getConfigName()).andReturn("dave").anyTimes();
         mockControl.replay();
-        final PubSelector no_match = createParamPublish("NO_MATCH").createSelector(buildInfo);
-        assertFalse(no_match.selected(emptyLabelName));
-        assertFalse(no_match.selected(nullLabelName));
-        assertFalse(no_match.selected(nullLabel));
+        final PubSelector noMatch = createParamPublish("NO_MATCH").createSelector(buildInfo);
+        assertFalse(noMatch.selected(emptyLabelName));
+        assertFalse(noMatch.selected(nullLabelName));
+        assertFalse(noMatch.selected(nullLabel));
         final PubSelector matchEmpty = createParamPublish("").createSelector(buildInfo);
         assertTrue(matchEmpty.selected(emptyLabelName));
         assertTrue(matchEmpty.selected(nullLabelName));
@@ -103,7 +103,7 @@ public class ParamPublishTest {
         final String regex = "this should fail(";
         final ParamPublish paramPublish = createParamPublish(regex);
         try {
-            final PubSelector selector = paramPublish.createSelector(buildInfo);
+            paramPublish.createSelector(buildInfo);
             fail();
         } catch (BapPublisherException bpe) {
             assertTrue(bpe.getLocalizedMessage().contains(PARAM_NAME));
@@ -115,7 +115,7 @@ public class ParamPublishTest {
     @Test public void testNoParameter() {
         final ParamPublish paramPublish = new ParamPublish(PARAM_NAME);
         try {
-            final PubSelector selector = paramPublish.createSelector(buildInfo);
+            paramPublish.createSelector(buildInfo);
             fail();
         } catch (BapPublisherException bpe) {
             assertEquals(Messages.exception_paramPublish_noParameter(PARAM_NAME), bpe.getLocalizedMessage());

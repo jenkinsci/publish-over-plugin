@@ -229,7 +229,7 @@ public class BPInstanceConfigTest {
     }
 
     @Test public void testParameterizedPublishing() throws Exception {
-        String paramName = "PUB_PATTERN";
+        final String paramName = "PUB_PATTERN";
         final ParamPublish paramPublish = new ParamPublish(paramName);
         buildInfo.getCurrentBuildEnv().getEnvVars().put(paramName, "Bill|Ted");
         final BPInstanceConfig instanceConfig = createInstanceConfig(publishers, false, false, false, null, paramPublish);

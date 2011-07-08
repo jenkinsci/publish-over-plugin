@@ -91,6 +91,8 @@ public class ParamPublish implements Serializable {
 
     public static final class Selector implements PubSelector {
 
+        private static final long serialVersionUID = 1L;
+
         private final BPBuildInfo buildInfo;
         private final Pattern pattern;
 
