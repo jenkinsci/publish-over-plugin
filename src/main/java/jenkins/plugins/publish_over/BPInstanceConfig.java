@@ -150,13 +150,9 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     }
 
     private PubSelector createSelector(final BPBuildInfo buildInfo) {
-        if (paramPublish != null)
-            return paramPublish.createSelector(buildInfo);
-        return new PubSelector() {
-            public boolean selected(final BapPublisher publisher) {
-                return true;
-            }
-        };
+        if (paramPublish == null)
+            return new SelectAllPubSelector();
+        return paramPublish.createSelector(buildInfo);
     }
 
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {

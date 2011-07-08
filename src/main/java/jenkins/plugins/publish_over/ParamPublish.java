@@ -49,13 +49,8 @@ public class ParamPublish implements Serializable {
     }
 
     public PubSelector createSelector(final BPBuildInfo buildInfo) {
-        if (Util.fixEmptyAndTrim(parameterName) == null) {
-            return new PubSelector() {
-                public boolean selected(final BapPublisher publisher) {
-                    return true;
-                }
-            };
-        }
+        if (Util.fixEmptyAndTrim(parameterName) == null)
+            return new SelectAllPubSelector();
         final String regexp = buildInfo.getCurrentBuildEnv().getEnvVars().get(parameterName);
         if (regexp == null)
             throw new BapPublisherException(Messages.exception_paramPublish_noParameter(parameterName));
