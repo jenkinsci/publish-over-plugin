@@ -30,7 +30,7 @@ public final class SelectAllPubSelector implements PubSelector {
 
     public static final SelectAllPubSelector SELECT_ALL = new SelectAllPubSelector();
 
-    public final boolean selected(final BapPublisher publisher) {
+    public boolean selected(final BapPublisher publisher) {
         return true;
     }
 
