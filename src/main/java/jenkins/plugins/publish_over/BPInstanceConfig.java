@@ -151,7 +151,7 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
 
     private PubSelector createSelector(final BPBuildInfo buildInfo) {
         if (paramPublish == null)
-            return new SelectAllPubSelector();
+            return SelectAllPubSelector.SELECT_ALL;
         return paramPublish.createSelector(buildInfo);
     }
 

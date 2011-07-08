@@ -24,11 +24,13 @@
 
 package jenkins.plugins.publish_over;
 
-public class SelectAllPubSelector implements PubSelector {
+public final class SelectAllPubSelector implements PubSelector {
 
     private static final long serialVersionUID = 1L;
 
-    public boolean selected(BapPublisher publisher) {
+    public static final SelectAllPubSelector SELECT_ALL = new SelectAllPubSelector();
+
+    public final boolean selected(final BapPublisher publisher) {
         return true;
     }
 
