@@ -204,7 +204,7 @@ public class BapPublisherTest {
         mockClient.endTransfers(transfer);
         mockClient.disconnectQuietly();
         final Retry retry = new Retry(retries, retryDelay);
-        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers, false, false, retry);
+        final BapPublisher publisher = createPublisher(hostConfiguration.getName(), false, transfers, false, false, retry);
 
         mockControl.replay();
         publisher.perform(hostConfiguration, buildInfo);
@@ -228,7 +228,7 @@ public class BapPublisherTest {
         expect(transfer.transfer(buildInfo, mockClient, state)).andThrow(new BapTransferException(expected, state));
         mockClient.disconnectQuietly();
         final Retry retry = new Retry(retries, retryDelay);
-        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers, false, false, retry);
+        final BapPublisher publisher = createPublisher(hostConfiguration.getName(), false, transfers, false, false, retry);
 
         mockControl.replay();
         try {
@@ -253,7 +253,7 @@ public class BapPublisherTest {
         expectLastCall().andThrow(expected);
         mockClient.disconnectQuietly();
         final Retry retry = new Retry(retries, retryDelay);
-        final BapPublisher publisher = new BapPublisher(hostConfiguration.getName(), false, transfers, false, false, retry);
+        final BapPublisher publisher = createPublisher(hostConfiguration.getName(), false, transfers, false, false, retry);
 
         mockControl.replay();
         try {
@@ -271,7 +271,12 @@ public class BapPublisherTest {
 
     private static BapPublisher createPublisher(final String configName, final boolean verbose, final ArrayList<BPTransfer> transfers,
                                                 final boolean useWorkspace, final boolean usePromotionTimestamp) {
-        return new BapPublisher(configName, verbose, transfers, useWorkspace, usePromotionTimestamp, null);
+        return createPublisher(configName, verbose, transfers, useWorkspace, usePromotionTimestamp, null);
+    }
+
+    private static BapPublisher createPublisher(final String configName, final boolean verbose, final ArrayList<BPTransfer> transfers,
+                                                final boolean useWorkspace, final boolean usePromotionTimestamp, final Retry retry) {
+        return new BapPublisher(configName, verbose, transfers, useWorkspace, usePromotionTimestamp, retry, null);
     }
 
 }

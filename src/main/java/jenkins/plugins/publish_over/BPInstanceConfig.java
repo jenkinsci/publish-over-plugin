@@ -51,16 +51,18 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     private boolean alwaysPublishFromMaster;
     private String masterNodeName;
     private BPHostConfigurationAccess hostConfigurationAccess;
+    private ParamPublish paramPublish;
 
     public BPInstanceConfig() { }
 
     public BPInstanceConfig(final ArrayList<PUBLISHER> publishers, final boolean continueOnError, final boolean failOnError,
-                            final boolean alwaysPublishFromMaster, final String masterNodeName) {
+                            final boolean alwaysPublishFromMaster, final String masterNodeName, final ParamPublish paramPublish) {
         setPublishers(publishers);
         this.continueOnError = continueOnError;
         this.failOnError = failOnError;
         this.alwaysPublishFromMaster = alwaysPublishFromMaster;
         this.masterNodeName = masterNodeName;
+        this.paramPublish = paramPublish;
     }
 
     public final ArrayList<PUBLISHER> getPublishers() {
@@ -92,6 +94,10 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         this.hostConfigurationAccess = hostConfigurationAccess;
     }
 
+    public ParamPublish getParamPublish() {
+        return paramPublish;
+    }
+
     public BPHostConfiguration getConfiguration(final String configName) {
         final BPHostConfiguration config = hostConfigurationAccess.getConfiguration(configName);
         if (config == null)
@@ -113,8 +119,17 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         Result toReturn = Result.SUCCESS;
         final Result onError = failOnError ? Result.FAILURE : Result.UNSTABLE;
         if (masterNodeName != null) fixMasterNodeName(buildInfo);
+        PubSelector selector = null;
+        try {
+            selector = createSelector(buildInfo);
+        } catch (BapPublisherException bpe) {
+            LOGGER.log(Level.WARNING, bpe.getLocalizedMessage(), bpe);
+            buildInfo.getListener().error(bpe.getLocalizedMessage());
+            return onError;
+        }
         for (PUBLISHER publisher : publishers) {
             publisher.setEffectiveEnvironmentInBuildInfo(buildInfo);
+            if (!selector.selected(publisher)) continue;
             try {
                 final BPHostConfiguration hostConfig = getConfiguration(publisher.getConfigName());
                 final BPCallablePublisher callablePublisher = new BPCallablePublisher(publisher, hostConfig, buildInfo);
@@ -134,9 +149,19 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
         return toReturn;
     }
 
+    private PubSelector createSelector(final BPBuildInfo buildInfo) {
+        if (paramPublish != null)
+            return paramPublish.createSelector(buildInfo);
+        return new PubSelector() {
+            public boolean selected(final BapPublisher publisher) {
+                return true;
+            }
+        };
+    }
+
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(publishers).append(continueOnError).append(failOnError)
-            .append(alwaysPublishFromMaster).append(masterNodeName);
+            .append(alwaysPublishFromMaster).append(masterNodeName).append(paramPublish);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPInstanceConfig that) {
@@ -144,7 +169,8 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
             .append(continueOnError, that.continueOnError)
             .append(failOnError, that.failOnError)
             .append(masterNodeName, that.masterNodeName)
-            .append(alwaysPublishFromMaster, that.alwaysPublishFromMaster);
+            .append(alwaysPublishFromMaster, that.alwaysPublishFromMaster)
+            .append(paramPublish, that.paramPublish);
     }
 
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
@@ -152,7 +178,8 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
             .append("continueOnError", continueOnError)
             .append("failOnError", failOnError)
             .append("masterNodeName", masterNodeName)
-            .append("alwaysPublishFromMaster", alwaysPublishFromMaster);
+            .append("alwaysPublishFromMaster", alwaysPublishFromMaster)
+            .append("paramPublish", paramPublish);
     }
 
     public boolean equals(final Object that) {

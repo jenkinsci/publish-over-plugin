@@ -55,8 +55,10 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     private BPInstanceConfig delegate;
 
     public BPPlugin(final String consolePrefix, final ArrayList<PUBLISHER> publishers, final boolean continueOnError,
-                    final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName) {
-        this.delegate = new BPInstanceConfig<PUBLISHER>(publishers, continueOnError, failOnError, alwaysPublishFromMaster, masterNodeName);
+                    final boolean failOnError, final boolean alwaysPublishFromMaster, final String masterNodeName,
+                    final ParamPublish paramPublish) {
+        this.delegate = new BPInstanceConfig<PUBLISHER>(publishers, continueOnError, failOnError, alwaysPublishFromMaster, masterNodeName,
+                                                        paramPublish);
         delegate.setHostConfigurationAccess(this);
         this.consolePrefix = consolePrefix;
     }

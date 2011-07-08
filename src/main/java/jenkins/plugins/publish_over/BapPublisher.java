@@ -49,17 +49,20 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     private boolean useWorkspaceInPromotion;
     private boolean usePromotionTimestamp;
     private Retry retry;
+    private PublisherLabel label;
 
     public BapPublisher() { }
 
     public BapPublisher(final String configName, final boolean verbose, final ArrayList<TRANSFER> transfers,
-                        final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp, final Retry retry) {
+                        final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp, final Retry retry,
+                        final PublisherLabel label) {
         this.configName = configName;
         this.verbose = verbose;
         setTransfers(transfers);
         this.useWorkspaceInPromotion = useWorkspaceInPromotion;
         this.usePromotionTimestamp = usePromotionTimestamp;
         this.retry = retry;
+        this.label = label;
     }
 
     public String getConfigName() {
@@ -105,6 +108,10 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         return retry;
     }
 
+    public PublisherLabel getLabel() {
+        return label;
+    }
+
     private int sumTransfers(final List<Integer> transferred) {
         int total = 0;
         for (int tx : transferred) {
@@ -148,7 +155,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(configName).append(verbose).append(transfers)
             .append(useWorkspaceInPromotion).append(usePromotionTimestamp)
-            .append(retry);
+            .append(retry).append(label);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BapPublisher that) {
@@ -157,7 +164,8 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             .append(transfers, that.transfers)
             .append(useWorkspaceInPromotion, that.useWorkspaceInPromotion)
             .append(usePromotionTimestamp, that.usePromotionTimestamp)
-            .append(retry, that.retry);
+            .append(retry, that.retry)
+            .append(label, that.label);
     }
 
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
@@ -166,7 +174,8 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             .append("transfers", transfers)
             .append("useWorkspaceInPromotion", useWorkspaceInPromotion)
             .append("usePromotionTimestamp", usePromotionTimestamp)
-            .append("retry", retry);
+            .append("retry", retry)
+            .append("label", label);
     }
 
     public boolean equals(final Object that) {
