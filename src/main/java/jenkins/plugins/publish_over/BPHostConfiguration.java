@@ -85,6 +85,10 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     public COMMON_CONFIG getCommonConfig() { return commonConfig; }
     public void setCommonConfig(final COMMON_CONFIG commonConfig) { this.commonConfig = commonConfig; }
 
+    public CLIENT createClient(final BPBuildInfo buildInfo, final BapPublisher publisher) {
+        return createClient(buildInfo);
+    }
+
     public abstract CLIENT createClient(BPBuildInfo buildInfo);
 
     protected boolean isDirectoryAbsolute(final String directory) {

@@ -217,7 +217,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             do {
                 try {
                     buildInfo.println(Messages.console_connecting(configName));
-                    client = hostConfig.createClient(buildInfo);
+                    client = hostConfig.createClient(buildInfo, BapPublisher.this);
                     while (!remainingTransfers.isEmpty()) {
                         beginTransfers();
                         transfer();
