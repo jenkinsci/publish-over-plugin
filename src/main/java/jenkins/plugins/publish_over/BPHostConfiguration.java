@@ -65,6 +65,13 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
 
     public String getHostname() { return hostname; }
     public void setHostname(final String hostname) { this.hostname = hostname; }
+    // current bug in Jenkins (prototype/json-lib/stapler) will leave quotes around strings that start and end with brackets or braces
+    // this method will allow a "hack" to add a space at the end of a String, which will be stripped before use - the std. accessor
+    // is kept to ensure that the original String can persist through re-configurations.
+    // this is an awful hack to enable an IPv6 address to be used as a hostname
+    public String getHostnameTrimmed() {
+        return Util.fixEmptyAndTrim(hostname);
+    }
 
     public String getUsername() { return username; }
     public void setUsername(final String username) { this.username = username; }
