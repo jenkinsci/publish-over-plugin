@@ -27,7 +27,7 @@
     <!-- checkbox that can use @title in Hudson pre 1.389 -->
     <f:prepareDatabinding />
     <j:new var="poj" className="jenkins.plugins.publish_over.JellySupport" useContextClassLoader="true"/>
-    <f:checkbox field="${attrs.field}" title="${attrs.title}" name="${attrs.name}" checked="${attrs.checked}"/>
+    <f:checkbox field="${attrs.field}" title="${attrs.title}" name="${attrs.name}" checked="${attrs.checked}" default="${attrs.default}"/>
     <j:if test="${poj.boxMissingTitle() and (attrs.title != null)}">
         <st:nbsp/><label class="attach-previous">${attrs.title}</label>
     </j:if>
