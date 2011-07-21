@@ -26,9 +26,9 @@ package jenkins.plugins.publish_over.options;
 
 public interface RetryOptions {
 
-    public static final int DEFAULT_RETRIES = 0;
-    public static final long DEFAULT_RETRY_DELAY = 10000;
-    
+    int DEFAULT_RETRIES = 0;
+    long DEFAULT_RETRY_DELAY = 10000;
+
     int getRetries();
 
     long getRetryDelay();

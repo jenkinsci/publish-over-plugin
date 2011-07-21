@@ -27,7 +27,9 @@ package jenkins.plugins.publish_over;
 
 import java.util.regex.Pattern;
 
-import static jenkins.plugins.publish_over.JenkinsCapabilities.*;
+import static jenkins.plugins.publish_over.JenkinsCapabilities.missing;
+import static jenkins.plugins.publish_over.JenkinsCapabilities.CHECKBOX_WITH_TITLE;
+import static jenkins.plugins.publish_over.JenkinsCapabilities.CHECKBOX_WITH_CSS_SPACE;
 
 public class JellySupport {
 
