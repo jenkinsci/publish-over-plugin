@@ -24,29 +24,27 @@
 
 package jenkins.plugins.publish_over;
 
+import hudson.model.Hudson;
+import hudson.util.VersionNumber;
 
-import java.util.regex.Pattern;
+public class JenkinsCapabilities {
 
-import static jenkins.plugins.publish_over.JenkinsCapabilities.*;
+    public static final VersionNumber CHECKBOX_WITH_TITLE = new VersionNumber("1.389");
 
-public class JellySupport {
+    public static final VersionNumber SIMPLE_DESCRIPTOR_SELECTOR = new VersionNumber("1.391");
 
-    public static final int MINIMUM_MINIMUM_HEIGHT = 1;
-    public static final int DEFAULT_MINIMUM_HEIGHT = 5;
-    private static final Pattern LINE_END = Pattern.compile("\r?\n");
+    public static final VersionNumber VALIDATE_FILE_ON_MASTER_FROM_GLOBAL_CFG = new VersionNumber("1.399");
 
-    public static final int textAreaHeight(final int minimum, final String content) {
-        final int min = Math.max(minimum, MINIMUM_MINIMUM_HEIGHT);
-        if (content == null) return min;
-        return Math.max(min, LINE_END.split(content).length);
+    public static final VersionNumber CHECKBOX_WITH_CSS_SPACE = new VersionNumber("1.406");
+
+    public static final VersionNumber MASTER_HAS_NODE_NAME = new VersionNumber("1.414");
+
+    public static final boolean available(final VersionNumber version) {
+        return !missing(version);
     }
 
-    public static final boolean boxMissingTitle() {
-        return missing(CHECKBOX_WITH_TITLE);
-    }
-
-    public static final boolean boxNeedsSpace() {
-        return missing(CHECKBOX_WITH_CSS_SPACE);
+    public static final boolean missing(final VersionNumber version) {
+        return Hudson.getVersion().isOlderThan(version);
     }
 
 }

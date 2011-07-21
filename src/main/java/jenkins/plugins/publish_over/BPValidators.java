@@ -27,7 +27,6 @@ package jenkins.plugins.publish_over;
 import hudson.Util;
 import hudson.model.Hudson;
 import hudson.util.FormValidation;
-import hudson.util.VersionNumber;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -69,7 +68,7 @@ public class BPValidators {
 
     public static FormValidation validateFileOnMaster(final String value) {
         // this check prevents a NPE when called from global configuration - if not global, use validatePath directly
-        if (Hudson.getVersion().isOlderThan(new VersionNumber("1.399")))
+        if (JenkinsCapabilities.missing(JenkinsCapabilities.VALIDATE_FILE_ON_MASTER_FROM_GLOBAL_CFG))
             return FormValidation.ok();
         try {
             return Hudson.getInstance().getRootPath().validateRelativePath(value, true, true);

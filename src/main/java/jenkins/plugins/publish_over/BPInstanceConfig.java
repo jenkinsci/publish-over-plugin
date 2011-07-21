@@ -43,7 +43,6 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
 
     private static final Logger LOGGER = Logger.getLogger(BPInstanceConfig.class.getName());
     public static final String DEFAULT_MASTER_NODE_NAME = "master";
-    public static final String MASTER_GETS_NODE_NAME_IN_VERSION = "1.414";
 
     private ArrayList<PUBLISHER> publishers;
     private boolean continueOnError;
