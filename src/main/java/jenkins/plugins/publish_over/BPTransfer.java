@@ -185,20 +185,24 @@ public class BPTransfer implements Serializable {
         private final BPBuildInfo buildInfo;
         private final BPClient client;
         private final Set<String> flattenedFileNames = new LinkedHashSet<String>();
+        private boolean flattenResetCompleted;
         private String previousPath;
         private String relativeRemoteSubDirectory;
 
         DirectoryMaker(final BPBuildInfo buildInfo, final BPClient client) throws IOException {
             this.buildInfo = buildInfo;
             this.client = client;
-            if (flatten) {
-                resetToSubDirectory();
-            }
         }
 
         public void changeAndMakeDirs(final FilePath filePath) throws IOException, InterruptedException {
-            if (flatten)
+            if (flatten) {
                 assertNotDuplicateFileName(filePath);
+                if (!flattenResetCompleted) {
+                    // Only create target directory when there is a file to store
+                    resetToSubDirectory();
+                    flattenResetCompleted = true;
+                }
+            }
             final String relPath = buildInfo.getRelativePath(filePath, removePrefix);
             if (LOG.isDebugEnabled())
                 LOG.debug(Messages.log_pathToFile(filePath.getName(), relPath));

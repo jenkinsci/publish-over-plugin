@@ -148,6 +148,13 @@ public class BPTransferTest {
         assertTransfer(transfer, expectedFileCount);
     }
 
+    @Test public void testNoFiles() throws Exception {
+        final BPTransfer transfer = new BPTransfer("*.log", "", "", false, false);
+        // Should not change to/create initial directory on zero file transfer
+        final int expectedFileCount = 0;
+        assertTransfer(transfer, expectedFileCount);
+    }
+
     @Test public void testEnvVarInPattern() throws Exception {
         final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello_123.txt");
         final BPTransfer transfer = new BPTransfer("hello_${BUILD_NUMBER}.*", "", "", false, false);
@@ -299,6 +306,14 @@ public class BPTransferTest {
         assertTransfer(transfer, 2);
     }
 
+    @Test public void testCreateNoFilesWithDirectories() throws Exception {
+        final String remoteDir = "remote/root";
+        final BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, false);
+
+        // Should not change to/create initial directory on zero file transfer
+        assertTransfer(transfer, 0);
+    }
+
     @Test public void testFlatten() throws Exception {
         final String srcPath1 = "bit/of/a/trek/to";
         final String srcPath2 = "file/somewhere";
@@ -315,6 +330,14 @@ public class BPTransferTest {
         expectTransferFile(transfer, srcFile2);
 
         assertTransfer(transfer, 2);
+    }
+
+    @Test public void testFlattenWithNoFiles() throws Exception {
+        final String remoteDir = "remote/root";
+        final BPTransfer transfer = new BPTransfer("**/*", remoteDir, "", false, true);
+
+        // Should not change to/create initial directory on zero file transfer
+        assertTransfer(transfer, 0);
     }
 
     @Test(expected = BapPublisherException.class)
@@ -351,6 +374,15 @@ public class BPTransferTest {
         expectTransferFile(transfer, srcFile2);
 
         assertTransfer(transfer, 2);
+    }
+
+    @Test public void testRemovePrefixNoFiles() throws Exception {
+        final String prefix = "gonna/remove";
+
+        final BPTransfer transfer = new BPTransfer("**/*", "", prefix, false, false);
+
+        // Should not change to/create initial directory on zero file transfer
+        assertTransfer(transfer, 0);
     }
 
     @Test public void testRemovePrefixTrailingSlash() throws Exception {
