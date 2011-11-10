@@ -42,6 +42,7 @@ public class BPBuildInfo extends BPBuildEnv {
 
     private static final long serialVersionUID = 1L;
     public static final String PROMOTION_ENV_VARS_PREFIX = "promotion_";
+    public static final String OVERRIDE_CREDENTIALS_CONTEXT_KEY = "credentials";
 
     private FilePath configDir;
     private TaskListener listener;
@@ -85,6 +86,9 @@ public class BPBuildInfo extends BPBuildEnv {
     }
     public void put(final String key, final Serializable value) {
         context.put(key, value);
+    }
+    public Serializable remove(final String key) {
+        return context.remove(key);
     }
 
     public boolean onMaster() {

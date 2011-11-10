@@ -50,12 +50,13 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     private boolean usePromotionTimestamp;
     private Retry retry;
     private PublisherLabel label;
+    private Credentials credentials;
 
     public BapPublisher() { }
 
     public BapPublisher(final String configName, final boolean verbose, final ArrayList<TRANSFER> transfers,
                         final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp, final Retry retry,
-                        final PublisherLabel label) {
+                        final PublisherLabel label, final Credentials credentials) {
         this.configName = configName;
         this.verbose = verbose;
         setTransfers(transfers);
@@ -63,6 +64,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         this.usePromotionTimestamp = usePromotionTimestamp;
         this.retry = retry;
         this.label = label;
+        this.credentials = credentials;
     }
 
     public String getConfigName() {
@@ -112,6 +114,10 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         return label;
     }
 
+    public Credentials getCredentials() {
+        return credentials;
+    }
+
     private int sumTransfers(final List<Integer> transferred) {
         int total = 0;
         for (int tx : transferred) {
@@ -155,7 +161,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(configName).append(verbose).append(transfers)
             .append(useWorkspaceInPromotion).append(usePromotionTimestamp)
-            .append(retry).append(label);
+            .append(retry).append(label).append(credentials);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BapPublisher that) {
@@ -165,7 +171,8 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             .append(useWorkspaceInPromotion, that.useWorkspaceInPromotion)
             .append(usePromotionTimestamp, that.usePromotionTimestamp)
             .append(retry, that.retry)
-            .append(label, that.label);
+            .append(label, that.label)
+            .append(credentials, that.credentials);
     }
 
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
@@ -175,7 +182,8 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
             .append("useWorkspaceInPromotion", useWorkspaceInPromotion)
             .append("usePromotionTimestamp", usePromotionTimestamp)
             .append("retry", retry)
-            .append("label", label);
+            .append("label", label)
+            .append("credentials", credentials);
     }
 
     public boolean equals(final Object that) {
@@ -216,6 +224,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         private List<Integer> perform() throws Exception {
             do {
                 try {
+                    if (credentials != null) buildInfo.put(BPBuildInfo.OVERRIDE_CREDENTIALS_CONTEXT_KEY, credentials);
                     buildInfo.println(Messages.console_connecting(configName));
                     client = hostConfig.createClient(buildInfo, BapPublisher.this);
                     while (!remainingTransfers.isEmpty()) {
@@ -230,6 +239,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
                 } catch (Exception e) {
                     exception = e;
                 } finally {
+                    if (credentials != null) buildInfo.remove(BPBuildInfo.OVERRIDE_CREDENTIALS_CONTEXT_KEY);
                     if (client != null) {
                         buildInfo.println(Messages.console_disconnecting(configName));
                         client.disconnectQuietly();

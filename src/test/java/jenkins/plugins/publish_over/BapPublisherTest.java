@@ -276,7 +276,7 @@ public class BapPublisherTest {
 
     private static BapPublisher createPublisher(final String configName, final boolean verbose, final ArrayList<BPTransfer> transfers,
                                                 final boolean useWorkspace, final boolean usePromotionTimestamp, final Retry retry) {
-        return new BapPublisher(configName, verbose, transfers, useWorkspace, usePromotionTimestamp, retry, null);
+        return new BapPublisher(configName, verbose, transfers, useWorkspace, usePromotionTimestamp, retry, null, null);
     }
 
 }
