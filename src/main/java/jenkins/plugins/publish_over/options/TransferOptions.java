@@ -40,4 +40,6 @@ public interface TransferOptions {
 
     boolean isCleanRemote();
 
+    boolean isNoDefaultExcludes();
+
 }

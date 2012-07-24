@@ -97,4 +97,9 @@ public class GlobalDefaults implements GlobalOptions  {
     public boolean isCleanRemote() {
         return false;
     }
+
+    public boolean isNoDefaultExcludes() {
+        return false;
+    }
+
 }
