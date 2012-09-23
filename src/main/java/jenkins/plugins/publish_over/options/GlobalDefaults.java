@@ -102,4 +102,8 @@ public class GlobalDefaults implements GlobalOptions  {
         return false;
     }
 
+    public boolean isMakeEmptyDirs() {
+        return false;
+    }
+
 }

@@ -194,7 +194,7 @@ public class BapPublisherTest {
         transfers.add(transfer);
         mockClient.beginTransfers(transfer);
         expect(transfer.hasConfiguredSourceFiles()).andReturn(true);
-        final BPTransfer.TransferState state = BPTransfer.TransferState.create(new FilePath[0]);
+        final BPTransfer.TransferState state = BPTransfer.TransferState.create(new FileFinderResult(new FilePath[0], new FilePath[0]));
         final BapTransferException bte = new BapTransferException(new IOException(), state);
         expect(transfer.transfer(buildInfo, mockClient)).andThrow(bte);
         mockClient.disconnectQuietly();
@@ -218,7 +218,7 @@ public class BapPublisherTest {
         transfers.add(transfer);
         mockClient.beginTransfers(transfer);
         expect(transfer.hasConfiguredSourceFiles()).andReturn(true);
-        final BPTransfer.TransferState state = BPTransfer.TransferState.create(new FilePath[0]);
+        final BPTransfer.TransferState state = BPTransfer.TransferState.create(new FileFinderResult(new FilePath[0], new FilePath[0]));
         final BapTransferException bte = new BapTransferException(new IOException(), state);
         expect(transfer.transfer(buildInfo, mockClient)).andThrow(bte);
         mockClient.disconnectQuietly();

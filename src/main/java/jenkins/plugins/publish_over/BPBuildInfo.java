@@ -108,18 +108,23 @@ public class BPBuildInfo extends BPBuildEnv {
         }
     }
 
-    public String getRelativePath(final FilePath filePath, final String removePrefix) throws IOException, InterruptedException {
-        final String normalizedPathToFile = filePath.toURI().normalize().getPath();
-        String relativePathToFile = normalizedPathToFile.replace(getNormalizedBaseDirectory(), "");
-        if (Util.fixEmptyAndTrim(removePrefix) != null) {
-            final String expanded = Util.fixEmptyAndTrim(Util.replaceMacro(removePrefix.trim(), getEnvVars()));
-            relativePathToFile = removePrefix(relativePathToFile, expanded);
-        }
+    public String getRelativePathToFile(final FilePath filePath, final String removePrefix) throws IOException, InterruptedException {
+        final String relativePathToFile = getRelativeDir(filePath, removePrefix);
         final int lastDirIdx = relativePathToFile.lastIndexOf('/');
         if (lastDirIdx == -1)
             return "";
         else
             return relativePathToFile.substring(0, lastDirIdx);
+    }
+
+    public String getRelativeDir(final FilePath filePath, final String removePrefix) throws IOException, InterruptedException {
+        final String normalizedPath = filePath.toURI().normalize().getPath();
+        String relativePath = normalizedPath.replace(getNormalizedBaseDirectory(), "");
+        if (Util.fixEmptyAndTrim(removePrefix) != null) {
+            final String expanded = Util.fixEmptyAndTrim(Util.replaceMacro(removePrefix.trim(), getEnvVars()));
+            relativePath = removePrefix(relativePath, expanded);
+        }
+        return relativePath;
     }
 
     private String removePrefix(final String relativePathToFile, final String expandedPrefix) {

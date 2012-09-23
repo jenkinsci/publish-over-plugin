@@ -504,7 +504,7 @@ public class BPTransferTest {
         final RandomFile log1 = new RandomFile(baseDir.getRoot(), "1.log");
         final RandomFile log2 = new RandomFile(baseDir.getRoot(), "2.log");
         final RandomFile log3 = new RandomFile(baseDir.getRoot(), "3.log");
-        final BPTransfer transfer = new BPTransfer("*", "", "", "", false, false, true, false);
+        final BPTransfer transfer = new BPTransfer("*", "", "", "", false, false, true, false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         mockClient.deleteTree();
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
@@ -533,7 +533,7 @@ public class BPTransferTest {
         final RandomFile log1 = new RandomFile(baseDir.getRoot(), "1.log");
         final RandomFile log2 = new RandomFile(baseDir.getRoot(), "2.log");
         final RandomFile log3 = new RandomFile(baseDir.getRoot(), "3.log");
-        final BPTransfer transfer = new BPTransfer("*", "", "", "", false, false, true, false);
+        final BPTransfer transfer = new BPTransfer("*", "", "", "", false, false, true, false, false);
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
         mockClient.deleteTree();
         expectLastCall().andThrow(new IOException());

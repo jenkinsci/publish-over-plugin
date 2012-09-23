@@ -37,8 +37,6 @@ import org.apache.commons.logging.LogFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.LinkedHashSet;
 import java.util.Locale;
@@ -50,77 +48,41 @@ public class BPTransfer implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Log LOG = LogFactory.getLog(BPTransfer.class);
 
-    @SuppressWarnings("PMD.PreserveStackTrace") // coz the ITE itself is not interesting!
-    private static FilePath[] listWithExcludes(final FilePath base, final String includes, final String excludes) {
-        final Method list = listWithExcludesMethod();
+    private static FileFinderResult list(final FilePath base, final String includes, final String excludes,
+                                         final boolean noDefaultExcludes, final boolean makeEmptyDirs) {
         try {
-            return (FilePath[]) list.invoke(base, includes, excludes);
-        } catch (IllegalAccessException iae) {
-            throw new BapPublisherException("No chance!", iae);
-        } catch (InvocationTargetException ite) {
-            throw new BapPublisherException(Messages.exception_invokeList(includes, excludes), ite.getCause());
+            return base.act(new FileFinder(includes, excludes, !noDefaultExcludes, makeEmptyDirs));
+        } catch (IOException ioe) {
+            throw new BapPublisherException(Messages.exception_invokeListNoDefaultExcludes(includes, excludes, noDefaultExcludes), ioe);
+        } catch (InterruptedException ie) {
+            throw new BapPublisherException(Messages.exception_invokeListNoDefaultExcludes(includes, excludes, noDefaultExcludes), ie);
         }
     }
 
-    @SuppressWarnings("PMD.PreserveStackTrace") // coz the ITE itself is not interesting!
-    private static FilePath[] listWithNoDefaultExcludes(final FilePath base, final String includes, final String excludes, final boolean noDefaultExcludes) {
-        final Method list = listWithNoDefaultExcludesMethod();
-        try {
-            return (FilePath[]) list.invoke(base, includes, excludes, !noDefaultExcludes);
-        } catch (IllegalAccessException iae) {
-            throw new BapPublisherException("No chance!", iae);
-        } catch (InvocationTargetException ite) {
-            throw new BapPublisherException(Messages.exception_invokeListNoDefaultExcludes(includes, excludes, noDefaultExcludes), ite.getCause());
-        }
-    }
+    private final String remoteDirectory;
+    private final String sourceFiles;
+    private final String excludes;
+    private final String removePrefix;
+    private final boolean remoteDirectorySDF;
+    private final boolean flatten;
+    private final boolean cleanRemote;
+    private final boolean noDefaultExcludes;
+    private final boolean makeEmptyDirs;
 
-    private static Method listWithExcludesMethod() {
-        try {
-            return FilePath.class.getMethod("list", String.class, String.class);
-        } catch (NoSuchMethodException nsme) {
-            return null;
-        }
-    }
-
-    private static Method listWithNoDefaultExcludesMethod() {
-        try {
-            return FilePath.class.getMethod("list", String.class, String.class, boolean.class);
-        } catch (NoSuchMethodException nsme) {
-            return null;
-        }
-    }
-
-    public static boolean canUseExcludes() {
-        return listWithExcludesMethod() != null;
-    }
-
-    public static boolean canUseNoDefaultExcludes() {
-        return listWithNoDefaultExcludesMethod() != null;
-    }
-
-    private String remoteDirectory;
-    private String sourceFiles;
-    private String excludes;
-    private String removePrefix;
-    private boolean remoteDirectorySDF;
-    private boolean flatten;
-    private boolean cleanRemote;
-    private boolean noDefaultExcludes;
-
-    // retain original constructor for testing as don't compile against new enough core to enable testing of excludes!
+    // @TODO can now test excludes and default excludes
     BPTransfer(final String sourceFiles, final String remoteDirectory, final String removePrefix,
                       final boolean remoteDirectorySDF, final boolean flatten) {
-        this(sourceFiles, null, remoteDirectory, removePrefix, remoteDirectorySDF, flatten, false, false);
+        this(sourceFiles, null, remoteDirectory, removePrefix, remoteDirectorySDF, flatten, false, false, false);
     }
 
     public BPTransfer(final String sourceFiles, final String excludes, final String remoteDirectory, final String removePrefix,
                       final boolean remoteDirectorySDF, final boolean flatten) {
-        this(sourceFiles, excludes, remoteDirectory, removePrefix, remoteDirectorySDF, flatten, false, false);
+        this(sourceFiles, excludes, remoteDirectory, removePrefix, remoteDirectorySDF, flatten, false, false, false);
     }
 
     public BPTransfer(final String sourceFiles, final String excludes, final String remoteDirectory, final String removePrefix,
                       final boolean remoteDirectorySDF, final boolean flatten, final boolean cleanRemote,
-                      final boolean noDefaultExcludes) {
+                      final boolean noDefaultExcludes, final boolean makeEmptyDirs) {
         this.sourceFiles = sourceFiles;
         this.excludes = excludes;
         this.remoteDirectory = remoteDirectory;
@@ -129,51 +91,40 @@ public class BPTransfer implements Serializable {
         this.flatten = flatten;
         this.cleanRemote = cleanRemote;
         this.noDefaultExcludes = noDefaultExcludes;
+        this.makeEmptyDirs = makeEmptyDirs;
     }
 
     public String getRemoteDirectory() { return remoteDirectory; }
-    public void setRemoteDirectory(final String remoteDirectory) { this.remoteDirectory = remoteDirectory; }
 
     public String getSourceFiles() { return sourceFiles; }
-    public void setSourceFiles(final String sourceFiles) { this.sourceFiles = sourceFiles; }
 
     public String getExcludes() { return excludes; }
-    public void setExcludes(final String excludes) { this.excludes = excludes; }
 
     public String getRemovePrefix() { return removePrefix; }
-    public void setRemovePrefix(final String removePrefix) { this.removePrefix = removePrefix; }
 
     public boolean isRemoteDirectorySDF() { return remoteDirectorySDF; }
-    public void setRemoteDirectorySDF(final boolean remoteDirectorySDF) { this.remoteDirectorySDF = remoteDirectorySDF; }
 
     public boolean isFlatten() { return flatten; }
-    public void setFlatten(final boolean flatten) { this.flatten = flatten; }
 
     public boolean isCleanRemote() { return cleanRemote; }
-    public void setCleanRemote(final boolean cleanRemote) { this.cleanRemote = cleanRemote; }
 
     public boolean isNoDefaultExcludes() { return noDefaultExcludes; }
-    public void setNoDefaultExcludes(final boolean noDefaultExcludes) { this.noDefaultExcludes = noDefaultExcludes; }
+
+    public boolean isMakeEmptyDirs() { return makeEmptyDirs; }
 
     public boolean hasConfiguredSourceFiles() {
         return Util.fixEmptyAndTrim(getSourceFiles()) != null;
     }
 
-    public FilePath[] getSourceFiles(final BPBuildInfo buildInfo) throws IOException, InterruptedException {
+    public FileFinderResult getSourceFiles(final BPBuildInfo buildInfo) throws IOException, InterruptedException {
         final String expanded = Util.replaceMacro(sourceFiles, buildInfo.getEnvVars());
         final String expandedExcludes = Util.fixEmptyAndTrim(Util.replaceMacro(excludes, buildInfo.getEnvVars()));
-        final boolean useExcludes = canUseExcludes() && expandedExcludes != null;
         if (LOG.isDebugEnabled()) {
             LOG.debug(Messages.log_sourceFiles(sourceFiles, expanded));
-            if (useExcludes)
+            if (expandedExcludes != null)
                 LOG.debug(Messages.log_excludes(excludes, expandedExcludes));
         }
-        if (canUseNoDefaultExcludes())
-            return listWithNoDefaultExcludes(buildInfo.getBaseDirectory(), expanded, expandedExcludes, noDefaultExcludes);
-        else if (useExcludes)
-            return listWithExcludes(buildInfo.getBaseDirectory(), expanded, expandedExcludes);
-        else
-            return buildInfo.getBaseDirectory().list(expanded);
+        return list(buildInfo.getBaseDirectory(), expanded, expandedExcludes, noDefaultExcludes, makeEmptyDirs);
     }
 
     private void assertBaseDirectoryExists(final BPBuildInfo buildInfo) throws Exception {
@@ -195,9 +146,13 @@ public class BPTransfer implements Serializable {
                 state.doneCleaning = true;
             }
             while (state.transferred < state.sourceFiles.length) {
-                dirMaker.changeAndMakeDirs(state.sourceFiles[state.transferred]);
+                dirMaker.changeAndMakeDirs(state.sourceFiles[state.transferred], false);
                 transferFile(client, state.sourceFiles[state.transferred]);
                 state.transferred++;
+            }
+            while (state.dirsMade < state.emptyDirs.length) {
+                dirMaker.changeAndMakeDirs(state.emptyDirs[state.dirsMade], true);
+                state.dirsMade++;
             }
         } catch (Exception e) {
             throw new BapTransferException(e, state);
@@ -228,7 +183,7 @@ public class BPTransfer implements Serializable {
             this.client = client;
         }
 
-        public void changeAndMakeDirs(final FilePath filePath) throws IOException, InterruptedException {
+        public void changeAndMakeDirs(final FilePath filePath, final boolean isDirectory) throws IOException, InterruptedException {
             if (flatten) {
                 assertNotDuplicateFileName(filePath);
                 if (!flattenResetCompleted) {
@@ -237,7 +192,8 @@ public class BPTransfer implements Serializable {
                     flattenResetCompleted = true;
                 }
             }
-            final String relPath = buildInfo.getRelativePath(filePath, removePrefix);
+            final String relPath = isDirectory ? buildInfo.getRelativeDir(filePath, removePrefix)
+                                               : buildInfo.getRelativePathToFile(filePath, removePrefix);
             if (LOG.isDebugEnabled())
                 LOG.debug(Messages.log_pathToFile(filePath.getName(), relPath));
             if (!relPath.equals(previousPath) && !flatten) {
@@ -319,7 +275,7 @@ public class BPTransfer implements Serializable {
         private void changeToTargetDirectory(final FilePath filePath) throws IOException, InterruptedException {
             if (flatten)
                 return;
-            final String relativePath = buildInfo.getRelativePath(filePath, removePrefix);
+            final String relativePath = buildInfo.getRelativePathToFile(filePath, removePrefix);
             if (!"".equals(relativePath))
                 chdir(relativePath);
         }
@@ -333,7 +289,8 @@ public class BPTransfer implements Serializable {
 
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(sourceFiles).append(removePrefix).append(remoteDirectory)
-            .append(remoteDirectorySDF).append(flatten).append(cleanRemote).append(excludes).append(noDefaultExcludes);
+            .append(remoteDirectorySDF).append(flatten).append(cleanRemote).append(excludes).append(noDefaultExcludes)
+            .append(makeEmptyDirs);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPTransfer that) {
@@ -344,7 +301,8 @@ public class BPTransfer implements Serializable {
             .append(remoteDirectorySDF, that.remoteDirectorySDF)
             .append(flatten, that.flatten)
             .append(cleanRemote, that.cleanRemote)
-            .append(noDefaultExcludes, that.noDefaultExcludes);
+            .append(noDefaultExcludes, that.noDefaultExcludes)
+            .append(makeEmptyDirs, that.makeEmptyDirs);
     }
 
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
@@ -355,7 +313,8 @@ public class BPTransfer implements Serializable {
             .append("remoteDirectorySDF", remoteDirectorySDF)
             .append("flatten", flatten)
             .append("cleanRemote", cleanRemote)
-            .append("noDefaultExcludes", noDefaultExcludes);
+            .append("noDefaultExcludes", noDefaultExcludes)
+            .append("makeEmptyDirs", makeEmptyDirs);
     }
 
     public boolean equals(final Object that) {
@@ -376,13 +335,16 @@ public class BPTransfer implements Serializable {
     public static final class TransferState implements Serializable {
         private static final long serialVersionUID = 1L;
         private final FilePath[] sourceFiles;
+        private final FilePath[] emptyDirs;
         private int transferred;
+        private int dirsMade;
         private boolean doneCleaning;
-        private TransferState(final FilePath[] sourceFiles) {
-            this.sourceFiles = sourceFiles;
+        private TransferState(final FileFinderResult sources) {
+            this.sourceFiles = sources.getFiles();
+            this.emptyDirs = sources.getDirectories();
         }
-        protected static TransferState create(final FilePath[] sourceFiles) {
-            return new TransferState(sourceFiles);
+        protected static TransferState create(final FileFinderResult sources) {
+            return new TransferState(sources);
         }
     }
 

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (C) 2010-2011 by Anthony Robinson
+ * Copyright (C) 2012 by Anthony Robinson
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,26 +22,30 @@
  * THE SOFTWARE.
  */
 
-package jenkins.plugins.publish_over.options;
+package jenkins.plugins.publish_over;
 
-public interface TransferOptions {
+import hudson.FilePath;
 
-    String getSourceFiles();
+import java.io.Serializable;
 
-    String getRemovePrefix();
+public class FileFinderResult implements Serializable {
 
-    String getRemoteDirectory();
+    private static final long serialVersionUID = 1L;
 
-    String getExcludes();
+    private final FilePath[] files;
+    private final FilePath[] directories;
 
-    boolean isRemoteDirectorySDF();
+    public FileFinderResult(final FilePath[] files, final FilePath[] directories) {
+        this.files = files;
+        this.directories = directories;
+    }
 
-    boolean isFlatten();
+    public FilePath[] getFiles() {
+        return files;
+    }
 
-    boolean isCleanRemote();
-
-    boolean isNoDefaultExcludes();
-
-    boolean isMakeEmptyDirs();
+    public FilePath[] getDirectories() {
+        return directories;
+    }
 
 }
