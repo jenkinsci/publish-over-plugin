@@ -65,7 +65,7 @@ public class FileFinder implements FilePath.FileCallable<FileFinderResult> {
         return new FileFinderResult(files, dirs);
     }
 
-    private static DirectoryScanner createDirectoryScanner(final File dir, final String includes, final String excludes, final boolean defaultExcludes) throws IOException {
+    static DirectoryScanner createDirectoryScanner(final File dir, final String includes, final String excludes, final boolean defaultExcludes) throws IOException {
         final FileSet fs = new FileSet();
         fs.setDir(dir);
         fs.setProject(new Project());

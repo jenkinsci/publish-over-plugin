@@ -26,6 +26,8 @@ package jenkins.plugins.publish_over;
 
 import hudson.FilePath;
 import jenkins.plugins.publish_over.helper.RandomFile;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.DirectoryScannerAccessor;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -98,6 +100,20 @@ public class FileFinderTest {
     @Test public void neverIncludeTheRootDirectory() throws Exception {
         final String[] onlyRoot = new String[] {""};
         assertArrayEquals(new String[0], FileFinder.reduce(onlyRoot, onlyRoot));
+    }
+
+    @Test public void defaultIncludesPatternSeparatorsAreCommaAndSpace() throws Exception {
+        final String includes = " one,two three, four,,,    ,, five";
+        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir.getRoot(), includes, null, false);
+        final DirectoryScannerAccessor dsAccess = new DirectoryScannerAccessor(ds);
+        assertArrayEquals(new String[] {"one", "two", "three", "four", "five"}, dsAccess.getIncludes());
+    }
+
+    @Test public void defaultExcludesPatternSeparatorsAreCommaAndSpace() throws Exception {
+        final String excludes = " one,two three, four,,,    ,, five";
+        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir.getRoot(), "", excludes, false);
+        final DirectoryScannerAccessor dsAccess = new DirectoryScannerAccessor(ds);
+        assertArrayEquals(new String[] {"one", "two", "three", "four", "five"}, dsAccess.getExcludes());
     }
 
     private void assertFilePathArraysEqual(final String[] expectedRelNames, final FilePath[] actual) {
