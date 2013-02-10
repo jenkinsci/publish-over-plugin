@@ -49,9 +49,10 @@ public class BPTransfer implements Serializable {
     private static final Log LOG = LogFactory.getLog(BPTransfer.class);
 
     private static FileFinderResult list(final FilePath base, final String includes, final String excludes,
-                                         final boolean noDefaultExcludes, final boolean makeEmptyDirs) {
+                                         final boolean noDefaultExcludes, final boolean makeEmptyDirs,
+                                         final PatternSeparatorRegex patternSeparator) {
         try {
-            return base.act(new FileFinder(includes, excludes, !noDefaultExcludes, makeEmptyDirs));
+            return base.act(new FileFinder(includes, excludes, !noDefaultExcludes, makeEmptyDirs, patternSeparator));
         } catch (IOException ioe) {
             throw new BapPublisherException(Messages.exception_invokeListNoDefaultExcludes(includes, excludes, noDefaultExcludes), ioe);
         } catch (InterruptedException ie) {
@@ -68,21 +69,22 @@ public class BPTransfer implements Serializable {
     private final boolean cleanRemote;
     private final boolean noDefaultExcludes;
     private final boolean makeEmptyDirs;
+    private final PatternSeparatorRegex patternSeparator;
 
     // @TODO can now test excludes and default excludes
     BPTransfer(final String sourceFiles, final String remoteDirectory, final String removePrefix,
                       final boolean remoteDirectorySDF, final boolean flatten) {
-        this(sourceFiles, null, remoteDirectory, removePrefix, remoteDirectorySDF, flatten, false, false, false);
+        this(sourceFiles, null, remoteDirectory, removePrefix, remoteDirectorySDF, flatten, false, false, false, null);
     }
 
     public BPTransfer(final String sourceFiles, final String excludes, final String remoteDirectory, final String removePrefix,
                       final boolean remoteDirectorySDF, final boolean flatten) {
-        this(sourceFiles, excludes, remoteDirectory, removePrefix, remoteDirectorySDF, flatten, false, false, false);
+        this(sourceFiles, excludes, remoteDirectory, removePrefix, remoteDirectorySDF, flatten, false, false, false, null);
     }
 
     public BPTransfer(final String sourceFiles, final String excludes, final String remoteDirectory, final String removePrefix,
                       final boolean remoteDirectorySDF, final boolean flatten, final boolean cleanRemote,
-                      final boolean noDefaultExcludes, final boolean makeEmptyDirs) {
+                      final boolean noDefaultExcludes, final boolean makeEmptyDirs, final PatternSeparatorRegex patternSeparator) {
         this.sourceFiles = sourceFiles;
         this.excludes = excludes;
         this.remoteDirectory = remoteDirectory;
@@ -92,6 +94,7 @@ public class BPTransfer implements Serializable {
         this.cleanRemote = cleanRemote;
         this.noDefaultExcludes = noDefaultExcludes;
         this.makeEmptyDirs = makeEmptyDirs;
+        this.patternSeparator = patternSeparator;
     }
 
     public String getRemoteDirectory() { return remoteDirectory; }
@@ -112,6 +115,8 @@ public class BPTransfer implements Serializable {
 
     public boolean isMakeEmptyDirs() { return makeEmptyDirs; }
 
+    public PatternSeparatorRegex getPatternSeparator() { return patternSeparator; }
+
     public boolean hasConfiguredSourceFiles() {
         return Util.fixEmptyAndTrim(getSourceFiles()) != null;
     }
@@ -124,7 +129,7 @@ public class BPTransfer implements Serializable {
             if (expandedExcludes != null)
                 LOG.debug(Messages.log_excludes(excludes, expandedExcludes));
         }
-        return list(buildInfo.getBaseDirectory(), expanded, expandedExcludes, noDefaultExcludes, makeEmptyDirs);
+        return list(buildInfo.getBaseDirectory(), expanded, expandedExcludes, noDefaultExcludes, makeEmptyDirs, patternSeparator);
     }
 
     private void assertBaseDirectoryExists(final BPBuildInfo buildInfo) throws Exception {
@@ -290,7 +295,7 @@ public class BPTransfer implements Serializable {
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(sourceFiles).append(removePrefix).append(remoteDirectory)
             .append(remoteDirectorySDF).append(flatten).append(cleanRemote).append(excludes).append(noDefaultExcludes)
-            .append(makeEmptyDirs);
+            .append(makeEmptyDirs).append(patternSeparator);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPTransfer that) {
@@ -302,7 +307,8 @@ public class BPTransfer implements Serializable {
             .append(flatten, that.flatten)
             .append(cleanRemote, that.cleanRemote)
             .append(noDefaultExcludes, that.noDefaultExcludes)
-            .append(makeEmptyDirs, that.makeEmptyDirs);
+            .append(makeEmptyDirs, that.makeEmptyDirs)
+            .append(patternSeparator, that.patternSeparator);
     }
 
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
@@ -314,7 +320,8 @@ public class BPTransfer implements Serializable {
             .append("flatten", flatten)
             .append("cleanRemote", cleanRemote)
             .append("noDefaultExcludes", noDefaultExcludes)
-            .append("makeEmptyDirs", makeEmptyDirs);
+            .append("makeEmptyDirs", makeEmptyDirs)
+            .append("patternSeparator", patternSeparator);
     }
 
     public boolean equals(final Object that) {

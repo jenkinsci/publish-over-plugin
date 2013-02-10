@@ -38,22 +38,27 @@ import java.util.LinkedHashSet;
 
 public class FileFinder implements FilePath.FileCallable<FileFinderResult> {
 
+    public static final String DEFAULT_PATTERN_SEPARATOR = "[, ]+";
     private static final long serialVersionUID = 1L;
 
     private final String includes;
     private final String excludes;
     private final boolean defaultExcludes;
     private final boolean findEmptyDirectories;
+    private final String patternSeparatorRegex;
 
-    public FileFinder(final String includes, final String excludes, final boolean defaultExcludes, final boolean findEmptyDirectories) {
+    public FileFinder(final String includes, final String excludes, final boolean defaultExcludes, final boolean findEmptyDirectories,
+                      final PatternSeparatorRegex patternSeparatorRegex) {
         this.includes = includes;
         this.excludes = excludes;
         this.defaultExcludes = defaultExcludes;
         this.findEmptyDirectories = findEmptyDirectories;
+        this.patternSeparatorRegex = patternSeparatorRegex == null ? DEFAULT_PATTERN_SEPARATOR
+                                                                   : patternSeparatorRegex.getSeparator();
     }
 
     public FileFinderResult invoke(final File file, final VirtualChannel virtualChannel) throws IOException, InterruptedException {
-        final DirectoryScanner scanner = createDirectoryScanner(file, includes, excludes, defaultExcludes);
+        final DirectoryScanner scanner = createDirectoryScanner(file, includes, excludes, defaultExcludes, patternSeparatorRegex);
         final String[] includedFiles = scanner.getIncludedFiles();
         final FilePath[] files = toFilePathArray(file, includedFiles);
         FilePath[] dirs = new FilePath[0];
@@ -65,13 +70,23 @@ public class FileFinder implements FilePath.FileCallable<FileFinderResult> {
         return new FileFinderResult(files, dirs);
     }
 
-    static DirectoryScanner createDirectoryScanner(final File dir, final String includes, final String excludes, final boolean defaultExcludes) throws IOException {
+    static DirectoryScanner createDirectoryScanner(final File dir, final String includes, final String excludes,
+                                                   final boolean defaultExcludes, final String patternSeparatorRegex) throws IOException {
         final FileSet fs = new FileSet();
         fs.setDir(dir);
         fs.setProject(new Project());
-        fs.setIncludes(includes);
-        if (excludes != null)
-            fs.setExcludes(excludes);
+        if (includes != null) {
+            final String[] includePatterns = includes.split(patternSeparatorRegex);
+            for (int i = 0; i < includePatterns.length; i++)
+                if (!"".equals(includePatterns[i]))
+                    fs.createInclude().setName(includePatterns[i]);
+        }
+        if (excludes != null) {
+            final String[] excludePatterns = excludes.split(patternSeparatorRegex);
+            for (int i = 0; i < excludePatterns.length; i++)
+                if (!"".equals(excludePatterns[i]))
+                    fs.createExclude().setName(excludePatterns[i]);
+        }
         fs.setDefaultexcludes(defaultExcludes);
         return fs.getDirectoryScanner();
     }

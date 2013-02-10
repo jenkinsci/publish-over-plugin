@@ -47,6 +47,8 @@ public class FileFinderTest {
 
     private static final String FIND_ALL = "**/";
     private static final String FS = File.separator;
+    private static final String PATTERN_TEST_STRING = " one,two three, four,,,    ,, five";
+    private static final String PATTERN_TEST_STRING_COMMA_SEP = "pattern one,pattern two";
 
     @Rule // FindBugs: must be public for the @Rule to work
     public TemporaryFolder tmpDir = new TemporaryFolder();
@@ -103,17 +105,26 @@ public class FileFinderTest {
     }
 
     @Test public void defaultIncludesPatternSeparatorsAreCommaAndSpace() throws Exception {
-        final String includes = " one,two three, four,,,    ,, five";
-        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir.getRoot(), includes, null, false);
+        final String includes = PATTERN_TEST_STRING;
+        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir.getRoot(), includes, null, false, FileFinder.DEFAULT_PATTERN_SEPARATOR);
         final DirectoryScannerAccessor dsAccess = new DirectoryScannerAccessor(ds);
         assertArrayEquals(new String[] {"one", "two", "three", "four", "five"}, dsAccess.getIncludes());
     }
 
     @Test public void defaultExcludesPatternSeparatorsAreCommaAndSpace() throws Exception {
-        final String excludes = " one,two three, four,,,    ,, five";
-        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir.getRoot(), "", excludes, false);
+        final String excludes = PATTERN_TEST_STRING;
+        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir.getRoot(), "", excludes, false, FileFinder.DEFAULT_PATTERN_SEPARATOR);
         final DirectoryScannerAccessor dsAccess = new DirectoryScannerAccessor(ds);
         assertArrayEquals(new String[] {"one", "two", "three", "four", "five"}, dsAccess.getExcludes());
+    }
+
+    @Test public void setPatternSeparatorToEnablePatternsWithSpaces() throws Exception {
+        final String includes = PATTERN_TEST_STRING_COMMA_SEP;
+        final String excludes = PATTERN_TEST_STRING_COMMA_SEP;
+        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir.getRoot(), includes, excludes, false, ",");
+        final DirectoryScannerAccessor dsAccess = new DirectoryScannerAccessor(ds);
+        assertArrayEquals(new String[] {"pattern one", "pattern two"}, dsAccess.getIncludes());
+        assertArrayEquals(new String[] {"pattern one", "pattern two"}, dsAccess.getExcludes());
     }
 
     private void assertFilePathArraysEqual(final String[] expectedRelNames, final FilePath[] actual) {
@@ -125,7 +136,7 @@ public class FileFinderTest {
 
     private FileFinderResult invoke(final String includes, final String excludes, final boolean defaultExcludes,
                                     final boolean findEmptyDirectories) throws Exception {
-        return baseDir.act(new FileFinder(includes, excludes, defaultExcludes, findEmptyDirectories));
+        return baseDir.act(new FileFinder(includes, excludes, defaultExcludes, findEmptyDirectories, null));
     }
 
 }
