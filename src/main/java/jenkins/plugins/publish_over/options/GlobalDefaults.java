@@ -24,6 +24,8 @@
 
 package jenkins.plugins.publish_over.options;
 
+import jenkins.plugins.publish_over.FileFinder;
+
 public class GlobalDefaults implements GlobalOptions  {
 
     public boolean isContinueOnError() {
@@ -104,6 +106,10 @@ public class GlobalDefaults implements GlobalOptions  {
 
     public boolean isMakeEmptyDirs() {
         return false;
+    }
+
+    public String getPatternSeparator() {
+        return FileFinder.DEFAULT_PATTERN_SEPARATOR;
     }
 
 }

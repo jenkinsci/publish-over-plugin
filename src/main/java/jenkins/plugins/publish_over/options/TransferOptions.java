@@ -44,4 +44,6 @@ public interface TransferOptions {
 
     boolean isMakeEmptyDirs();
 
+    String getPatternSeparator();
+
 }

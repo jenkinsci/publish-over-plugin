@@ -31,6 +31,7 @@ import hudson.util.FormValidation;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class BPValidators {
 
@@ -74,6 +75,15 @@ public class BPValidators {
             return Hudson.getInstance().getRootPath().validateRelativePath(value, true, true);
         } catch (IOException ioe) {
             return FormValidation.error(ioe, "");
+        }
+    }
+
+    public static FormValidation validateRegularExpression(final String value) {
+        try {
+            Pattern.compile(value);
+            return FormValidation.ok();
+        } catch (PatternSyntaxException pse) {
+            return FormValidation.error(pse, Messages.validator_regularExpression(pse.getLocalizedMessage()));
         }
     }
 
