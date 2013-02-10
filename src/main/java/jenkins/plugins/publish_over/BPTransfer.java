@@ -50,7 +50,7 @@ public class BPTransfer implements Serializable {
 
     private static FileFinderResult list(final FilePath base, final String includes, final String excludes,
                                          final boolean noDefaultExcludes, final boolean makeEmptyDirs,
-                                         final PatternSeparatorRegex patternSeparator) {
+                                         final String patternSeparator) {
         try {
             return base.act(new FileFinder(includes, excludes, !noDefaultExcludes, makeEmptyDirs, patternSeparator));
         } catch (IOException ioe) {
@@ -69,7 +69,7 @@ public class BPTransfer implements Serializable {
     private final boolean cleanRemote;
     private final boolean noDefaultExcludes;
     private final boolean makeEmptyDirs;
-    private final PatternSeparatorRegex patternSeparator;
+    private final String patternSeparator;
 
     // @TODO can now test excludes and default excludes
     BPTransfer(final String sourceFiles, final String remoteDirectory, final String removePrefix,
@@ -84,7 +84,7 @@ public class BPTransfer implements Serializable {
 
     public BPTransfer(final String sourceFiles, final String excludes, final String remoteDirectory, final String removePrefix,
                       final boolean remoteDirectorySDF, final boolean flatten, final boolean cleanRemote,
-                      final boolean noDefaultExcludes, final boolean makeEmptyDirs, final PatternSeparatorRegex patternSeparator) {
+                      final boolean noDefaultExcludes, final boolean makeEmptyDirs, final String patternSeparator) {
         this.sourceFiles = sourceFiles;
         this.excludes = excludes;
         this.remoteDirectory = remoteDirectory;
@@ -115,7 +115,7 @@ public class BPTransfer implements Serializable {
 
     public boolean isMakeEmptyDirs() { return makeEmptyDirs; }
 
-    public PatternSeparatorRegex getPatternSeparator() { return patternSeparator; }
+    public String getPatternSeparator() { return patternSeparator; }
 
     public boolean hasConfiguredSourceFiles() {
         return Util.fixEmptyAndTrim(getSourceFiles()) != null;

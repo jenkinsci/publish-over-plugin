@@ -48,13 +48,13 @@ public class FileFinder implements FilePath.FileCallable<FileFinderResult> {
     private final String patternSeparatorRegex;
 
     public FileFinder(final String includes, final String excludes, final boolean defaultExcludes, final boolean findEmptyDirectories,
-                      final PatternSeparatorRegex patternSeparatorRegex) {
+                      final String patternSeparatorRegex) {
         this.includes = includes;
         this.excludes = excludes;
         this.defaultExcludes = defaultExcludes;
         this.findEmptyDirectories = findEmptyDirectories;
         this.patternSeparatorRegex = patternSeparatorRegex == null ? DEFAULT_PATTERN_SEPARATOR
-                                                                   : patternSeparatorRegex.getSeparator();
+                                                                   : patternSeparatorRegex;
     }
 
     public FileFinderResult invoke(final File file, final VirtualChannel virtualChannel) throws IOException, InterruptedException {
