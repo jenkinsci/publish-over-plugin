@@ -24,10 +24,10 @@
 
 package jenkins.plugins.publish_over;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 @SuppressWarnings("PMD.SignatureDeclareThrowsException")
 public class BPHostConfigurationTest {
@@ -73,6 +73,11 @@ public class BPHostConfigurationTest {
         @Override
         public BPClient createClient(final BPBuildInfo buildInfo) {
             return null;
+        }
+
+        @Override
+        public Object readResolve() {
+            return super.readResolve();
         }
 
     }
