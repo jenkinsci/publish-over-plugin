@@ -24,11 +24,10 @@
 
 package jenkins.plugins.publish_over.helper;
 
+import static org.mockito.Mockito.mock;
 import jenkins.plugins.publish_over.BPBuildInfo;
 import jenkins.plugins.publish_over.BPClient;
 import jenkins.plugins.publish_over.BPHostConfiguration;
-
-import static org.mockito.Mockito.mock;
 
 public class BPHostConfigurationFactory {
 
@@ -62,6 +61,11 @@ public class BPHostConfigurationFactory {
         @Override
         public CLIENT createClient(final BPBuildInfo buildInfo) {
             return client;
+        }
+
+        @Override
+        public Object readResolve() {
+            return super.readResolve();
         }
     }
 

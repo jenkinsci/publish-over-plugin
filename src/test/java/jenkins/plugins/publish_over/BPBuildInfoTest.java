@@ -49,15 +49,15 @@ public class BPBuildInfoTest {
     }
 
     @Test public void testGetRelativePath() throws Exception {
-        final String relPath = "/some/path/to/dir";
+        final String relPath = "./some/path/to/dir";
         final FilePath path = new FilePath(baseDir, relPath + "/filename.xxx");
-        assertEquals(relPath, buildInfo.getRelativePathToFile(path, null));
+        assertEquals(relPath.replace(".", ""), buildInfo.getRelativePathToFile(path, null));
     }
 
     @Test public void testGetRelativeDirectory() throws Exception {
-        final String relDir = "/some/path/to/dir";
+        final String relDir = "./some/path/to/dir";
         final FilePath path = new FilePath(baseDir, relDir);
-        assertEquals(relDir, buildInfo.getRelativeDir(path, null));
+        assertEquals(relDir.replace(".", ""), buildInfo.getRelativeDir(path, null));
     }
 
 }
