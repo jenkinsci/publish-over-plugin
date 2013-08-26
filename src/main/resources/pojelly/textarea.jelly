@@ -67,7 +67,7 @@
   <textarea id="${attrs.id}" style="${attrs.style}"
             name ="${attrs.name ?: '_.'+attrs.field}"
             class="setting-input ${attrs.checkUrl!=null?'validated':''} ${attrs.class}"
-            checkUrl="${attrs.checkUrl}"
+            checkUrl="'${attrs.checkUrl}'"
             rows="${numRows}">
     <st:out value="${value}" />
   </textarea>
