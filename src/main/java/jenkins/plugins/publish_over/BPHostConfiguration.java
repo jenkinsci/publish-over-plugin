@@ -26,13 +26,16 @@ package jenkins.plugins.publish_over;
 
 import hudson.Util;
 import hudson.util.Secret;
+
+import java.io.IOException;
+import java.io.Serializable;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import java.io.IOException;
-import java.io.Serializable;
+import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 
 @SuppressWarnings("PMD.TooManyMethods")
 public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG> implements Serializable {
@@ -41,21 +44,17 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
 
     private String name;
     private String hostname;
-    private String username;
-    private String password;
-    private Secret secretPassword;
+    private String credentialId;
     private String remoteRootDir;
     private int port;
     private COMMON_CONFIG commonConfig;
 
     public BPHostConfiguration() { }
 
-    public BPHostConfiguration(final String name, final String hostname, final String username, final String password,
-                               final String remoteRootDir, final int port) {
+    public BPHostConfiguration(final String name, final String hostname, final String credentialId, final String remoteRootDir, final int port) {
         this.name = name;
         this.hostname = hostname;
-        this.username = username;
-        secretPassword = Secret.fromString(password);
+        this.credentialId = credentialId;
         this.remoteRootDir = remoteRootDir;
         this.port = port;
     }
@@ -65,6 +64,10 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
 
     public String getHostname() { return hostname; }
     public void setHostname(final String hostname) { this.hostname = hostname; }
+    
+    public String getCredentialId() { return credentialId; }
+    public void setCredentialId(String credentialId) { this.credentialId = credentialId; }
+
     // current bug in Jenkins (prototype/json-lib/stapler) will leave quotes around strings that start and end with brackets or braces
     // this method will allow a "hack" to add a space at the end of a String, which will be stripped before use - the std. accessor
     // is kept to ensure that the original String can persist through re-configurations.
@@ -73,14 +76,41 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
         return Util.fixEmptyAndTrim(hostname);
     }
 
-    public String getUsername() { return username; }
-    public void setUsername(final String username) { this.username = username; }
+    public String getUsername() {
+        String username = null;
+        UsernamePasswordCredentialsImpl credential = getCredential(credentialId);
+        if (credential != null) {
+            username = credential.getUsername();
+        }
+        return username;
+    }
 
-    protected String getPassword() { return Secret.toString(secretPassword); }
-    public void setPassword(final String password) { secretPassword = Secret.fromString(password); }
+    protected String getPassword() {
+        String password = null;
+        UsernamePasswordCredentialsImpl credential = getCredential(credentialId);
+        if (credential != null) {
+            password = Secret.toString(credential.getPassword());
+        }
+        return password;
+    }
 
     public String getEncryptedPassword() {
-        return (secretPassword == null) ? null : secretPassword.getEncryptedValue();
+        String encryptedPassword = null;
+        UsernamePasswordCredentialsImpl credential = getCredential(credentialId);
+        if (credential != null) {
+            encryptedPassword = credential.getPassword().getEncryptedValue();
+        }
+        return encryptedPassword;
+    }
+
+    private UsernamePasswordCredentialsImpl getCredential(final String credentialId) {
+//        List<UsernamePasswordCredentialsImpl> credentials = CredentialsProvider.lookupCredentials(type, item, auth, domainRequirements);
+//        for (UsernamePasswordCredentialsImpl credential : credentials) {
+//            if (credential.getId().equals(credentialId)) {
+//                return credential;
+//            }
+//        }
+        return null;
     }
 
     public String getRemoteRootDir() { return remoteRootDir; }
@@ -119,8 +149,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
         return builder.append(name)
             .append(hostname)
-            .append(username)
-            .append(secretPassword)
+            .append(credentialId)
             .append(remoteRootDir)
             .append(commonConfig)
             .append(port);
@@ -129,8 +158,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPHostConfiguration that) {
         return builder.append(name, that.name)
             .append(hostname, that.hostname)
-            .append(username, that.username)
-            .append(secretPassword, that.secretPassword)
+            .append(credentialId, that.credentialId)
             .append(remoteRootDir, that.remoteRootDir)
             .append(commonConfig, that.commonConfig)
             .append(port, that.port);
@@ -139,7 +167,7 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
         return builder.append("name", name)
             .append("hostname", hostname)
-            .append("username", username)
+            .append("credentialId", credentialId)
             .append("remoteRootDir", remoteRootDir)
             .append("commonConfig", commonConfig)
             .append("port", port);
@@ -161,9 +189,6 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     }
 
     public Object readResolve() {
-        if (secretPassword == null)
-            secretPassword = Secret.fromString(password);
-        password = null;
         return this;
     }
 
