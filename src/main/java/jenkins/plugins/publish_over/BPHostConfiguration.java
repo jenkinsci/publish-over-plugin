@@ -25,16 +25,21 @@
 package jenkins.plugins.publish_over;
 
 import hudson.Util;
+import hudson.model.Hudson;
+import hudson.security.ACL;
 import hudson.util.Secret;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collections;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 
 @SuppressWarnings("PMD.TooManyMethods")
@@ -76,43 +81,6 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
         return Util.fixEmptyAndTrim(hostname);
     }
 
-    public String getUsername() {
-        String username = null;
-        UsernamePasswordCredentialsImpl credential = getCredential(credentialId);
-        if (credential != null) {
-            username = credential.getUsername();
-        }
-        return username;
-    }
-
-    protected String getPassword() {
-        String password = null;
-        UsernamePasswordCredentialsImpl credential = getCredential(credentialId);
-        if (credential != null) {
-            password = Secret.toString(credential.getPassword());
-        }
-        return password;
-    }
-
-    public String getEncryptedPassword() {
-        String encryptedPassword = null;
-        UsernamePasswordCredentialsImpl credential = getCredential(credentialId);
-        if (credential != null) {
-            encryptedPassword = credential.getPassword().getEncryptedValue();
-        }
-        return encryptedPassword;
-    }
-
-    private UsernamePasswordCredentialsImpl getCredential(final String credentialId) {
-//        List<UsernamePasswordCredentialsImpl> credentials = CredentialsProvider.lookupCredentials(type, item, auth, domainRequirements);
-//        for (UsernamePasswordCredentialsImpl credential : credentials) {
-//            if (credential.getId().equals(credentialId)) {
-//                return credential;
-//            }
-//        }
-        return null;
-    }
-
     public String getRemoteRootDir() { return remoteRootDir; }
     public void setRemoteRootDir(final String remoteRootDir) { this.remoteRootDir = remoteRootDir; }
 
@@ -127,6 +95,43 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     }
 
     public abstract CLIENT createClient(BPBuildInfo buildInfo);
+
+    protected String getUsername() {
+        String username = null;
+        UsernamePasswordCredentialsImpl credential = getCredential();
+        if (credential != null) {
+            username = credential.getUsername();
+        }
+        return username;
+    }
+
+    protected String getPassword() {
+        String password = null;
+        UsernamePasswordCredentialsImpl credential = getCredential();
+        if (credential != null) {
+            password = Secret.toString(credential.getPassword());
+        }
+        return password;
+    }
+
+    protected String getEncryptedPassword() {
+        String encryptedPassword = null;
+        UsernamePasswordCredentialsImpl credential = getCredential();
+        if (credential != null) {
+            encryptedPassword = credential.getPassword().getEncryptedValue();
+        }
+        return encryptedPassword;
+    }
+
+    protected UsernamePasswordCredentialsImpl getCredential() {
+        for (UsernamePasswordCredentialsImpl credential : CredentialsProvider.lookupCredentials(UsernamePasswordCredentialsImpl.class,
+            Hudson.getInstance(), ACL.SYSTEM, Collections.<DomainRequirement> emptyList())) {
+            if (credential.getId().equals(credentialId)) {
+                return credential;
+            }
+        }
+        return null;
+    }
 
     protected boolean isDirectoryAbsolute(final String directory) {
         if ((directory == null) || (directory.length() < 1))
