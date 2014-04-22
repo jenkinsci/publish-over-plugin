@@ -23,18 +23,18 @@
  */
 package jenkins.plugins.publish_over;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 // serializable + only actually 4 "real" methods in here all rest accessors and boiler str/has/eq
 @SuppressWarnings({ "PMD.LooseCoupling", "PMD.TooManyMethods" })
@@ -43,6 +43,7 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger LOGGER = Logger.getLogger(BapPublisher.class.getName());
 
+    private String configId;
     private String configName;
     private boolean verbose;
     private ArrayList<TRANSFER> transfers;
@@ -54,9 +55,10 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
 
     public BapPublisher() { }
 
-    public BapPublisher(final String configName, final boolean verbose, final ArrayList<TRANSFER> transfers,
+    public BapPublisher(final String configId, final String configName, final boolean verbose, final ArrayList<TRANSFER> transfers,
                         final boolean useWorkspaceInPromotion, final boolean usePromotionTimestamp, final Retry retry,
                         final PublisherLabel label, final Credentials credentials) {
+        this.configId = configId;
         this.configName = configName;
         this.verbose = verbose;
         setTransfers(transfers);
@@ -65,15 +67,15 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
         this.retry = retry;
         this.label = label;
         this.credentials = credentials;
+        System.out.println("BapPublisher: " + toString());
     }
 
+    public String getConfigId() {
+        return configName;
+    }
     public String getConfigName() {
         return configName;
     }
-    public void setConfigName(final String configName) {
-        this.configName = configName;
-    }
-
     public final boolean isUseWorkspaceInPromotion() {
         return useWorkspaceInPromotion;
     }
@@ -159,13 +161,14 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     }
 
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
-        return builder.append(configName).append(verbose).append(transfers)
+        return builder.append(configId).append(configName).append(verbose).append(transfers)
             .append(useWorkspaceInPromotion).append(usePromotionTimestamp)
             .append(retry).append(label).append(credentials);
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BapPublisher that) {
-        return builder.append(configName, that.configName)
+        return builder.append(configId, that.configId)
+            .append(configName, that.configName)
             .append(verbose, that.verbose)
             .append(transfers, that.transfers)
             .append(useWorkspaceInPromotion, that.useWorkspaceInPromotion)
@@ -176,7 +179,8 @@ public class BapPublisher<TRANSFER extends BPTransfer> implements Serializable {
     }
 
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
-        return builder.append("configName", configName)
+        return builder.append("configId", configId)
+            .append("configName", configName)
             .append("verbose", verbose)
             .append("transfers", transfers)
             .append("useWorkspaceInPromotion", useWorkspaceInPromotion)

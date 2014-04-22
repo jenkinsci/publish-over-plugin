@@ -32,7 +32,9 @@ import hudson.util.Secret;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -42,27 +44,37 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
+
 @SuppressWarnings("PMD.TooManyMethods")
 public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @NonNull
+    private String id;
     private String name;
     private String hostname;
     private String credentialId;
     private String remoteRootDir;
     private int port;
     private COMMON_CONFIG commonConfig;
-
+    
     public BPHostConfiguration() { }
 
-    public BPHostConfiguration(final String name, final String hostname, final String credentialId, final String remoteRootDir, final int port) {
+    public BPHostConfiguration(final String id, final String name, final String hostname, final String credentialId, final String remoteRootDir, final int port) {
+        super();
+        this.id = checkAndSetId(id);
         this.name = name;
         this.hostname = hostname;
         this.credentialId = credentialId;
         this.remoteRootDir = remoteRootDir;
         this.port = port;
     }
+
+    @NonNull
+    public String getId() { return id; }
 
     public String getName() { return name; }
     public void setName(final String name) { this.name = name; }
@@ -152,7 +164,8 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     }
 
     protected HashCodeBuilder addToHashCode(final HashCodeBuilder builder) {
-        return builder.append(name)
+        return builder.append(id)
+            .append(name)
             .append(hostname)
             .append(credentialId)
             .append(remoteRootDir)
@@ -161,7 +174,8 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     }
 
     protected EqualsBuilder addToEquals(final EqualsBuilder builder, final BPHostConfiguration that) {
-        return builder.append(name, that.name)
+        return builder.append(id, that.id)
+            .append(name, that.name)
             .append(hostname, that.hostname)
             .append(credentialId, that.credentialId)
             .append(remoteRootDir, that.remoteRootDir)
@@ -170,7 +184,8 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
     }
 
     protected ToStringBuilder addToToString(final ToStringBuilder builder) {
-        return builder.append("name", name)
+        return builder.append("id", id)
+             .append("name", name)
             .append("hostname", hostname)
             .append("credentialId", credentialId)
             .append("remoteRootDir", remoteRootDir)
@@ -195,6 +210,17 @@ public abstract class BPHostConfiguration<CLIENT extends BPClient, COMMON_CONFIG
 
     public Object readResolve() {
         return this;
+    }
+    
+    /**
+     * Returns either the id or a generated new id if the supplied id is missing.
+     *
+     * @param id the supplied id.
+     * @return either the id or a generated new id if the supplied id is missing.
+     */
+    @NonNull
+    private String checkAndSetId(@CheckForNull String id) {
+        return StringUtils.isEmpty(id) ? UUID.randomUUID().toString() : id;
     }
 
 }

@@ -24,21 +24,6 @@
 
 package jenkins.plugins.publish_over;
 
-import hudson.FilePath;
-import jenkins.plugins.publish_over.helper.BPBuildInfoFactory;
-import jenkins.plugins.publish_over.helper.BPHostConfigurationFactory;
-import org.easymock.classextension.EasyMock;
-import org.easymock.classextension.IMocksControl;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.assertEquals;
@@ -47,6 +32,22 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import hudson.FilePath;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import jenkins.plugins.publish_over.helper.BPBuildInfoFactory;
+import jenkins.plugins.publish_over.helper.BPHostConfigurationFactory;
+
+import org.easymock.classextension.EasyMock;
+import org.easymock.classextension.IMocksControl;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 @SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods", "PMD.LooseCoupling" })
 public class BapPublisherTest {
@@ -276,7 +277,7 @@ public class BapPublisherTest {
 
     private static BapPublisher createPublisher(final String configName, final boolean verbose, final ArrayList<BPTransfer> transfers,
                                                 final boolean useWorkspace, final boolean usePromotionTimestamp, final Retry retry) {
-        return new BapPublisher(configName, verbose, transfers, useWorkspace, usePromotionTimestamp, retry, null, null);
+        return new BapPublisher(null, configName, verbose, transfers, useWorkspace, usePromotionTimestamp, retry, null, null);
     }
 
 }
