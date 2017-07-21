@@ -26,6 +26,7 @@ package jenkins.plugins.publish_over;
 
 import hudson.FilePath;
 import hudson.remoting.VirtualChannel;
+import jenkins.MasterToSlaveFileCallable;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +35,7 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class BPCallablePublisher implements FilePath.FileCallable<Void> {
+public class BPCallablePublisher extends MasterToSlaveFileCallable<Void> {
 
     private static final long serialVersionUID = 1L;
 

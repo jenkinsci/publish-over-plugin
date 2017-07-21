@@ -26,6 +26,7 @@ package jenkins.plugins.publish_over;
 
 import hudson.FilePath;
 import hudson.remoting.VirtualChannel;
+import jenkins.MasterToSlaveFileCallable;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.FileSet;
@@ -36,7 +37,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
-public class FileFinder implements FilePath.FileCallable<FileFinderResult> {
+public class FileFinder extends MasterToSlaveFileCallable<FileFinderResult> {
 
     public static final String DEFAULT_PATTERN_SEPARATOR = "[, ]+";
     private static final long serialVersionUID = 1L;

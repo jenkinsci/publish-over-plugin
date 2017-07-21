@@ -101,7 +101,7 @@ public class BPBuildInfo extends BPBuildEnv {
         try {
             inputStream = file.read();
             return IOUtils.toByteArray(inputStream);
-        } catch (IOException ioe) {
+        } catch (IOException | InterruptedException ioe) {
             throw new BapPublisherException(Messages.exception_readFile(filePath, ioe.getLocalizedMessage()), ioe);
         } finally {
             IOUtils.closeQuietly(inputStream);
