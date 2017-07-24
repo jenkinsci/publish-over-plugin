@@ -27,12 +27,13 @@ package jenkins.plugins.publish_over;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-import hudson.model.Hudson;
 import hudson.model.Result;
+import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Notifier;
+import jenkins.model.Jenkins;
+import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -46,7 +47,7 @@ import java.util.TreeMap;
 
 @SuppressWarnings({ "PMD.LooseCoupling", "PMD.TooManyMethods" }) // serializable ... Map ...
 public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BPClient, COMMON_CONFIG>
-            extends Notifier implements BPHostConfigurationAccess<CLIENT, COMMON_CONFIG> {
+            extends Notifier implements SimpleBuildStep, BPHostConfigurationAccess<CLIENT, COMMON_CONFIG> {
 
     public static final String PROMOTION_JOB_TYPE = "hudson.plugins.promoted_builds.PromotionProcess";
     public static final String PROMOTION_CLASS_NAME = "hudson.plugins.promoted_builds.Promotion";
@@ -75,10 +76,12 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         return BuildStepMonitor.NONE;
     }
 
-    private TreeMap<String, String> getEnvironmentVariables(final AbstractBuild<?, ?> build, final TaskListener listener) {
+    private TreeMap<String, String> getEnvironmentVariables(final Run<?, ?> build, final TaskListener listener) {
         try {
             final TreeMap<String, String> env = build.getEnvironment(listener);
-            env.putAll(build.getBuildVariables());
+            if(build instanceof AbstractBuild) {
+                env.putAll(((AbstractBuild)build).getBuildVariables());
+            }
             return env;
         } catch (Exception e) {
             throw new RuntimeException(Messages.exception_failedToGetEnvVars(), e);
@@ -86,11 +89,11 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
     }
 
     @Override
-    public boolean perform(final AbstractBuild<?, ?> build, final Launcher launcher, final BuildListener listener)
+    public void perform(final Run<?, ?> build, final FilePath workspace, final Launcher launcher, final TaskListener listener)
                     throws InterruptedException, IOException {
         final PrintStream console = listener.getLogger();
-        if (!isBuildGoodEnoughToRun(build, console)) return true;
-        final BPBuildEnv currentBuildEnv = new BPBuildEnv(getEnvironmentVariables(build, listener), build.getWorkspace(),
+        if (!isBuildGoodEnoughToRun(build, console)) return;
+        final BPBuildEnv currentBuildEnv = new BPBuildEnv(getEnvironmentVariables(build, listener), workspace,
                                                                                                     build.getTimestamp());
         BPBuildEnv targetBuildEnv = null;
         if (PROMOTION_CLASS_NAME.equals(build.getClass().getCanonicalName())) {
@@ -105,28 +108,41 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
                     new FilePath(promoted.getArtifactsDir()), promoted.getTimestamp());
         }
 
-        final BPBuildInfo buildInfo = new BPBuildInfo(listener, consolePrefix, Hudson.getInstance().getRootPath(),
+        Jenkins jenkins = Jenkins.getInstance();
+        if(jenkins == null) {
+            return;
+        }
+        final BPBuildInfo buildInfo = new BPBuildInfo(listener, consolePrefix, jenkins.getRootPath(),
                                                       currentBuildEnv, targetBuildEnv);
         fixup(build, buildInfo);
         final Result result = delegate.perform(buildInfo);
 
-        if (build.getResult() == null)
+        Result buildRes = build.getResult();
+
+        if (buildRes == null) {
             build.setResult(result);
-        else
-            build.setResult(result.combine(build.getResult()));
-        return result.isBetterOrEqualTo(Result.UNSTABLE);
+        } else {
+            build.setResult(result.combine(buildRes));
+        }
     }
 
     @SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract") // don't need to provide impl, so not abstract!
-    protected void fixup(final AbstractBuild<?, ?> build, final BPBuildInfo buildInfo) {
+    protected void fixup(final Run<?, ?> build, final BPBuildInfo buildInfo) {
         // provide a hook for the plugin impl to get at other internals - ie Hudson.getInstance is null when remote from a publisher!!!!!
         // as is Exceutor.currentExecutor, Computer.currentComputer - it's a wilderness out there!
     }
 
-    protected boolean isBuildGoodEnoughToRun(final AbstractBuild<?, ?> build, final PrintStream console) {
-        if ((build.getResult() != null) && !build.getResult().isBetterOrEqualTo(Result.UNSTABLE)) {
-            console.println(consolePrefix + Messages.console_notPerforming(build.getResult()));
+    protected boolean isBuildGoodEnoughToRun(final Run<?, ?> build, final PrintStream console) {
+        if(build == null) {
             return false;
+        }
+
+        Result result = build.getResult();
+        if(result != null) {
+            if(!result.isBetterOrEqualTo(Result.UNSTABLE)) {
+                console.println(consolePrefix + Messages.console_notPerforming(build.getResult()));
+                return false;
+            }
         }
         return true;
     }

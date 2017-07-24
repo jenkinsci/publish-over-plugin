@@ -27,6 +27,7 @@ package jenkins.plugins.publish_over;
 import hudson.FilePath;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class FileFinderResult implements Serializable {
 
@@ -36,16 +37,16 @@ public class FileFinderResult implements Serializable {
     private final FilePath[] directories;
 
     public FileFinderResult(final FilePath[] files, final FilePath[] directories) {
-        this.files = files;
-        this.directories = directories;
+        this.files = Arrays.copyOf(files, files.length);
+        this.directories = Arrays.copyOf(directories, directories.length);
     }
 
     public FilePath[] getFiles() {
-        return files;
+        return Arrays.copyOf(files, files.length);
     }
 
     public FilePath[] getDirectories() {
-        return directories;
+        return Arrays.copyOf(directories, directories.length);
     }
 
 }
