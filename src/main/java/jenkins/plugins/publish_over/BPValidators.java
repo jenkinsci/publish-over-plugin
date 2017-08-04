@@ -27,6 +27,7 @@ package jenkins.plugins.publish_over;
 import hudson.Util;
 import hudson.model.Hudson;
 import hudson.util.FormValidation;
+import jenkins.model.Jenkins;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -72,7 +73,11 @@ public class BPValidators {
         if (JenkinsCapabilities.missing(JenkinsCapabilities.VALIDATE_FILE_ON_MASTER_FROM_GLOBAL_CFG))
             return FormValidation.ok();
         try {
-            return Hudson.getInstance().getRootPath().validateRelativePath(value, true, true);
+            Jenkins jenkins = Jenkins.getInstance();
+            if(jenkins == null) {
+                return FormValidation.error("Unable to access Jenkins instance");
+            }
+            return jenkins.getRootPath().validateRelativePath(value, true, true);
         } catch (IOException ioe) {
             return FormValidation.error(ioe, "");
         }
