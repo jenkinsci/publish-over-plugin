@@ -30,14 +30,14 @@
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
         <version>2.32</version>
-        <relativePath/>
+        <relativePath />
     </parent>
 
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>publish-over</artifactId>
     <packaging>jar</packaging>
     <name>Publish Over</name>
-    <version>0.19-SNAPSHOT</version>
+    <version>0.19</version>
     <description>Send build artifacts somewhere.</description>
     
     <properties>
@@ -103,7 +103,8 @@
     <scm>
         <connection>scm:git:git://github.com/jenkinsci/publish-over-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/publish-over-plugin.git</developerConnection>
-    </scm>
+      <tag>publish-over-0.19</tag>
+  </scm>
     
     <distributionManagement>
         <repository>
