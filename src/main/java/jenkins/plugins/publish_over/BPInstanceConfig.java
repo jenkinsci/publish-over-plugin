@@ -96,6 +96,9 @@ public class BPInstanceConfig<PUBLISHER extends BapPublisher> implements Seriali
     public ParamPublish getParamPublish() {
         return paramPublish;
     }
+    public void setParamPublish(final ParamPublish paramPublish) {
+        this.paramPublish = paramPublish;
+    }
 
     public BPHostConfiguration getConfiguration(final String configName) {
         final BPHostConfiguration config = hostConfigurationAccess.getConfiguration(configName);
