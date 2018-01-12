@@ -22,6 +22,7 @@
   ~ THE SOFTWARE.
   -->
 
+<?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:f="/lib/form">
 
     <j:new var="poj" className="jenkins.plugins.publish_over.JellySupport" useContextClassLoader="true"/>
