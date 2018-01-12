@@ -36,7 +36,7 @@
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>publish-over</artifactId>
     <packaging>hpi</packaging>
-    <name>Publish Over</name>
+    <name>Infrastructure plugin for Publish Over X</name>
     <version>0.21-SNAPSHOT</version>
     <description>Send build artifacts somewhere.</description>
     
