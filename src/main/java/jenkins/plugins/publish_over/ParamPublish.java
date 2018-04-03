@@ -29,7 +29,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.Serializable;
 import java.util.regex.Pattern;
