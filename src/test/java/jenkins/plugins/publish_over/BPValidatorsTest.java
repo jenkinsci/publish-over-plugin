@@ -26,9 +26,9 @@ package jenkins.plugins.publish_over;
 
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
 import static hudson.util.FormValidation.Kind.ERROR;
 import static hudson.util.FormValidation.Kind.OK;
+import static org.junit.Assert.assertEquals;
 
 @SuppressWarnings({ "PMD.TooManyMethods", "PMD.AvoidUsingHardCodedIP" })
 public class BPValidatorsTest {
