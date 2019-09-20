@@ -28,7 +28,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.FilePath;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 public class FileFinderResult implements Serializable {
 
