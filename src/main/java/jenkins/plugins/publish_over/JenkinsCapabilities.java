@@ -24,8 +24,8 @@
 
 package jenkins.plugins.publish_over;
 
-import hudson.model.Hudson;
 import hudson.util.VersionNumber;
+import jenkins.model.Jenkins;
 
 public class JenkinsCapabilities {
 
@@ -44,7 +44,8 @@ public class JenkinsCapabilities {
     }
 
     public static final boolean missing(final VersionNumber version) {
-        return Hudson.getVersion().isOlderThan(version);
+        VersionNumber jenkinsVersion = Jenkins.getVersion();
+        return jenkinsVersion == null || jenkinsVersion.isOlderThan(version);
     }
 
 }
