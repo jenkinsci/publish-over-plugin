@@ -24,7 +24,6 @@
 
 package jenkins.plugins.publish_over;
 
-import hudson.FilePath;
 import hudson.remoting.VirtualChannel;
 import jenkins.MasterToSlaveFileCallable;
 

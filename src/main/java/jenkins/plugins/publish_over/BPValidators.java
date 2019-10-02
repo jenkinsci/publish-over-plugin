@@ -25,7 +25,6 @@
 package jenkins.plugins.publish_over;
 
 import hudson.Util;
-import hudson.model.Hudson;
 import hudson.util.FormValidation;
 import jenkins.model.Jenkins;
 
