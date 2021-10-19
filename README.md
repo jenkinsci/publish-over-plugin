@@ -117,15 +117,15 @@ Setting this option will cause a failure in the publisher to set the build resul
 
 This option is especially useful in the case of a promotion where the main action is to Publish Over ...
 
-##### Always send from master
+##### Always send from controller
 
-By default, the publisher will connect from the host that has the files that need to be transferred - if a build is performed on a slave, then the transfer would be initiated from the slave.
+By default, the publisher will connect from the host that has the files that need to be transferred - if a build is performed on an agent, then the transfer would be initiated from the agent.
 
-By selecting this option, the connection will be initiated from the Jenkins master.
+By selecting this option, the connection will be initiated from the Jenkins controller.
 
 May be useful for those with exciting network configurations/administrators.
 
-##### Give the master a NODE_NAME
+##### Give the controller a NODE_NAME
 
 Legacy option
 
@@ -137,7 +137,7 @@ Additionally, the option now defaults to 'master' when this plugin is installed 
 
 Sets NODE_NAME to the value specified if the environment variables contain a variable NODE_NAME that does not have a value.
 
-If you are running on multiple nodes and you have executors on the master Jenkins and the build may occur on the master, then if you set this option, the NODE_NAME for the master will be set to the configured value.
+If you are running on multiple nodes and you have executors on the Jenkins controller and the build may occur on the controller, then if you set this option, the NODE_NAME for the controller will be set to the configured value.
 This may be useful if you want to use $NODE_NAME in a Transfer Sets Remote directory eg. builds/$BUILD_NUMBER/$NODE_NAME.
 
 
