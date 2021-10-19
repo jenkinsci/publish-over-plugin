@@ -25,7 +25,7 @@ The [publisher](#publisher) is configured in a job by selecting the checkbox nex
 One or more [servers](#server) are selected and configured as destinations for transfer sets.
 
 
-One or more [transfer sets](transfer-set) are configured to select the files to send, and where to send them.
+One or more [transfer sets](#transfer-set) are configured to select the files to send, and where to send them.
 
 ## Configuration
 
@@ -319,7 +319,7 @@ See [Examples](#examples) below.
 
 When the publisher is executed during a promotion, then:
 
-- The Source files are rooted in the artifacts directory. ([see below to change](#use-workspace))
+- The Source files are rooted in the artifacts directory. ([see below to change](#use-the-workspace))
 
 Any artifact that you want to transfer during a promotion should be "archived" in the post-build actions of the build. This will make it available during a promotion. This means that if you have builds 1, 2, and 3 and you choose to "promote" build #2, then the artifacts for build 2 will be available to the publisher.
 
