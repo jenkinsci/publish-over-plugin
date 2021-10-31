@@ -463,9 +463,9 @@ public class BPTransferTest {
     @Test public void testRemoteDirectoryCanBeSimpleDateFormatAndUseEnvVars() throws Exception {
         final RandomFile toTransfer = new RandomFile(baseDir.getRoot(), "hello.txt");
         buildInfo.setBuildTime(createCalendar("25/11/2010 13:14:15"));
-        envVars.put("NODE_NAME", "slave1");
+        envVars.put("NODE_NAME", "agent1");
         final String dir = "'${NODE_NAME}-'yyyyMMdd";
-        final String expected = "slave1-20101125";
+        final String expected = "agent1-20101125";
         final BPTransfer transfer = new BPTransfer(toTransfer.getFileName(), dir, "", true, false);
 
         expect(mockClient.changeToInitialDirectory()).andReturn(true);
