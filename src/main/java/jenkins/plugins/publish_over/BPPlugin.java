@@ -107,8 +107,8 @@ public abstract class BPPlugin<PUBLISHER extends BapPublisher, CLIENT extends BP
         if (PROMOTION_CLASS_NAME.equals(build.getClass().getCanonicalName())) {
             AbstractBuild<?, ?> promoted;
             try {
-                final Method getTarget = build.getClass().getMethod("getTarget", (Class<?>[]) null);
-                promoted = (AbstractBuild) getTarget.invoke(build, (Object[]) null);
+                final Method getTargetBuild = build.getClass().getMethod("getTargetBuild", (Class<?>[]) null);
+                promoted = (AbstractBuild) getTargetBuild.invoke(build, (Object[]) null);
             } catch (Exception e) {
                 throw new RuntimeException(Messages.exception_failedToGetPromotedBuild(), e);
             }
