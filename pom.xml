@@ -207,6 +207,11 @@
         </plugins>
     </build>
 
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/jenkinsci/publish-over-plugin/issues</url>
+    </issueManagement>
+
     <repositories>
         <repository>
             <id>repo.jenkins-ci.org</id>
