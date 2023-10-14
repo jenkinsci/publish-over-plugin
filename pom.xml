@@ -39,7 +39,6 @@
     <version>0.23-SNAPSHOT</version>
 
     <properties>
-        <java.level>11</java.level>
         <java.net.id>bap</java.net.id>
         <jenkins.version>2.361.4</jenkins.version>
     </properties>
