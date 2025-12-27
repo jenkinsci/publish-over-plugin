@@ -40,7 +40,8 @@
 
     <properties>
         <java.net.id>bap</java.net.id>
-        <jenkins.version>2.361.4</jenkins.version>
+        <jenkins.baseline>2.479</jenkins.baseline>
+        <jenkins.version>${jenkins.baseline}.3</jenkins.version>
     </properties>
 
     <licenses>
