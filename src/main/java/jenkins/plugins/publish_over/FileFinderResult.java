@@ -36,18 +36,15 @@ public class FileFinderResult implements Serializable {
     private final FilePath[] files;
     private final FilePath[] directories;
 
-    @SuppressFBWarnings("EI_EXPOSE_REP2")
     public FileFinderResult(final FilePath[] files, final FilePath[] directories) {
         this.files = files;
         this.directories = directories;
     }
 
-    @SuppressFBWarnings("EI_EXPOSE_REP")
     public FilePath[] getFiles() {
         return files;
     }
 
-    @SuppressFBWarnings("EI_EXPOSE_REP")
     public FilePath[] getDirectories() {
         return directories;
     }
