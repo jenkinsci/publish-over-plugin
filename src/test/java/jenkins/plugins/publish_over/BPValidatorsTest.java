@@ -24,52 +24,62 @@
 
 package jenkins.plugins.publish_over;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static hudson.util.FormValidation.Kind.ERROR;
 import static hudson.util.FormValidation.Kind.OK;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SuppressWarnings({ "PMD.TooManyMethods", "PMD.AvoidUsingHardCodedIP" })
-public class BPValidatorsTest {
+@SuppressWarnings({"PMD.TooManyMethods", "PMD.AvoidUsingHardCodedIP"})
+class BPValidatorsTest {
 
-    @Test public void validateNameSingleCharacterOk() {
+    @Test
+    void validateNameSingleCharacterOk() {
         assertValidateNameOk("a");
     }
 
-    @Test public void validateNameWithWhitespaceOk() {
+    @Test
+    void validateNameWithWhitespaceOk() {
         assertValidateNameOk(" hello world ");
     }
 
-    @Test public void validateNameNullNotOk() {
+    @Test
+    void validateNameNullNotOk() {
         assertValidateNameNok(null);
     }
 
-    @Test public void validateNameAllWhitespaceNotOk() {
+    @Test
+    void validateNameAllWhitespaceNotOk() {
         assertValidateNameNok("  ");
     }
 
-    @Test public void validateNameLessThanNotOk() {
+    @Test
+    void validateNameLessThanNotOk() {
         assertValidateNameNok("<");
     }
 
-    @Test public void validateNameWithLessThanNotOk() {
+    @Test
+    void validateNameWithLessThanNotOk() {
         assertValidateNameNok("myname<isnotok");
     }
 
-    @Test public void validateNameWithAmpNotOk() {
+    @Test
+    void validateNameWithAmpNotOk() {
         assertValidateNameNok("myname&isnotok");
     }
 
-    @Test public void validateNameWithSingleQuoteNotOk() {
+    @Test
+    void validateNameWithSingleQuoteNotOk() {
         assertValidateNameNok("myname'isnotok");
     }
 
-    @Test public void validateNameWithDoubleQuoteNotOk() {
+    @Test
+    void validateNameWithDoubleQuoteNotOk() {
         assertValidateNameNok("myname\"isnotok");
     }
 
-    @Test public void validateNameWithBackSlashNotOk() {
+    @Test
+    void validateNameWithBackSlashNotOk() {
         assertValidateNameNok("myname\\isnotok");
     }
 
@@ -81,39 +91,48 @@ public class BPValidatorsTest {
         assertEquals(ERROR, BPValidators.validateName(name).kind);
     }
 
-    @Test public void validateOptionalIpNullOk() {
+    @Test
+    void validateOptionalIpNullOk() {
         assertValidateOptionalIpOk(null);
     }
 
-    @Test public void validateOptionalIpEmptyStringOk() {
+    @Test
+    void validateOptionalIpEmptyStringOk() {
         assertValidateOptionalIpOk("");
     }
 
-    @Test public void validateOptionalIpAllWhitespaceOk() {
+    @Test
+    void validateOptionalIpAllWhitespaceOk() {
         assertValidateOptionalIpOk("  ");
     }
 
-    @Test public void validateOptionalIpValidIpPatternOk() {
+    @Test
+    void validateOptionalIpValidIpPatternOk() {
         assertValidateOptionalIpOk("1.2.3.4");
     }
 
-    @Test public void validateOptionalIpValidIpPatternMaxOk() {
+    @Test
+    void validateOptionalIpValidIpPatternMaxOk() {
         assertValidateOptionalIpOk("255.255.255.255");
     }
 
-    @Test public void validateOptionalIpValidIpWhitespaceSurroundOk() {
+    @Test
+    void validateOptionalIpValidIpWhitespaceSurroundOk() {
         assertValidateOptionalIpOk(" 255.255.255.255   ");
     }
 
-    @Test public void validateOptionalIpOctetOver255Nok() {
+    @Test
+    void validateOptionalIpOctetOver255Nok() {
         assertValidateOptionalIpNok("255.255.256.255");
     }
 
-    @Test public void validateOptionalIpOctetNegativeNok() {
+    @Test
+    void validateOptionalIpOctetNegativeNok() {
         assertValidateOptionalIpNok("255.255.-1.255");
     }
 
-    @Test public void validateOptionalIpNotEnoughParts() {
+    @Test
+    void validateOptionalIpNotEnoughParts() {
         assertValidateOptionalIpNok("255.255.33");
     }
 

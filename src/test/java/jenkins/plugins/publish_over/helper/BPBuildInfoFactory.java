@@ -36,7 +36,7 @@ import java.util.TreeMap;
 public class BPBuildInfoFactory {
 
     public BPBuildEnv createEmptyBuildEnv() {
-        return new BPBuildEnv(new TreeMap<String, String>(), new FilePath(new File("")), Calendar.getInstance());
+        return new BPBuildEnv(new TreeMap<>(), new FilePath(new File("")), Calendar.getInstance());
     }
 
     public BPBuildInfo createEmpty() {

@@ -28,100 +28,104 @@ import hudson.FilePath;
 import jenkins.plugins.publish_over.helper.RandomFile;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.DirectoryScannerAccessor;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods", "PMD.AvoidDuplicateLiterals" })
-public class FileFinderTest {
+class FileFinderTest {
 
     private static final String FIND_ALL = "**/";
     private static final String FS = File.separator;
     private static final String PATTERN_TEST_STRING = " one,two three, four,,,    ,, five";
     private static final String PATTERN_TEST_STRING_COMMA_SEP = "pattern one,pattern two";
 
-    @Rule // FindBugs: must be public for the @Rule to work
-    public TemporaryFolder tmpDir = new TemporaryFolder();
+    @TempDir // FindBugs: must be public for the @Rule to work
+    private File tmpDir;
     private FilePath baseDir;
 
-    @Before
-    public void setUp() throws Exception {
-        baseDir = new FilePath(tmpDir.getRoot());
+    @BeforeEach
+    void beforeEach() {
+        baseDir = new FilePath(tmpDir);
     }
 
-    @Test public void noDirectoriesWhenFindEmptyDirectoriesFalse() throws Exception {
-        assertTrue(new File(tmpDir.getRoot(), "ignoreMe").mkdir());
+    @Test
+    void noDirectoriesWhenFindEmptyDirectoriesFalse() throws Exception {
+        assertTrue(new File(tmpDir, "ignoreMe").mkdir());
         final String expectedFileName = "expectMe.txt";
-        new RandomFile(tmpDir.getRoot(), expectedFileName);
+        new RandomFile(tmpDir, expectedFileName);
 
         final FileFinderResult result = invoke(FIND_ALL, null, false, false);
         assertFilePathArraysEqual(new String[]{expectedFileName}, result.getFiles());
         assertEquals(0, result.getDirectories().length);
     }
 
-    @Test public void haveDirectoryWhenFindEmptyDirectoriesTrue() throws Exception {
+    @Test
+    void haveDirectoryWhenFindEmptyDirectoriesTrue() throws Exception {
         final String expectedDirName = "expectDir";
         final String expectedFileName = "expectMe.txt";
-        assertTrue(new File(tmpDir.getRoot(), expectedDirName).mkdir());
-        new RandomFile(tmpDir.getRoot(), expectedFileName);
+        assertTrue(new File(tmpDir, expectedDirName).mkdir());
+        new RandomFile(tmpDir, expectedFileName);
 
         final FileFinderResult result = invoke(FIND_ALL, null, false, true);
         assertFilePathArraysEqual(new String[] {expectedFileName}, result.getFiles());
         assertFilePathArraysEqual(new String[]{expectedDirName}, result.getDirectories());
     }
 
-    @Test public void canReduceDirectories() throws Exception {
+    @Test
+    void canReduceDirectories() {
         final String[] in = new String[] {"",
                                           "one",
                                           "two", "two" + FS + "a", "two" + FS + "a" + FS + "alpha",
                                           "three", "three" + FS + "a", "three" + FS + "b",
                                           "four"};
-        final Set<String> expected = new HashSet<String>();
-        expected.addAll(Arrays.asList(new String[]{"one",
-                                                   "two" + FS + "a" + FS + "alpha",
-                                                   "three" + FS + "a",
-                                                   "three" + FS + "b",
-                                                   "four"}));
-        final Set<String> actualSet = new HashSet<String>();
+        final Set<String> expected = new HashSet<>(Arrays.asList("one",
+                "two" + FS + "a" + FS + "alpha",
+                "three" + FS + "a",
+                "three" + FS + "b",
+                "four"));
         final String[] actual = FileFinder.reduce(in, in);
-        actualSet.addAll(Arrays.asList(actual));
+        final Set<String> actualSet = new HashSet<>(Arrays.asList(actual));
         assertEquals(expected, actualSet);
         assertEquals(expected.size(), actual.length);
     }
 
-    @Test public void neverIncludeTheRootDirectory() throws Exception {
+    @Test
+    void neverIncludeTheRootDirectory() {
         final String[] onlyRoot = new String[] {""};
         assertArrayEquals(new String[0], FileFinder.reduce(onlyRoot, onlyRoot));
     }
 
-    @Test public void defaultIncludesPatternSeparatorsAreCommaAndSpace() throws Exception {
+    @Test
+    void defaultIncludesPatternSeparatorsAreCommaAndSpace() throws Exception {
         final String includes = PATTERN_TEST_STRING;
-        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir.getRoot(), includes, null, false, FileFinder.DEFAULT_PATTERN_SEPARATOR);
+        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir, includes, null, false, FileFinder.DEFAULT_PATTERN_SEPARATOR);
         final DirectoryScannerAccessor dsAccess = new DirectoryScannerAccessor(ds);
         assertArrayEquals(new String[] {"one", "two", "three", "four", "five"}, dsAccess.getIncludes());
     }
 
-    @Test public void defaultExcludesPatternSeparatorsAreCommaAndSpace() throws Exception {
+    @Test
+    void defaultExcludesPatternSeparatorsAreCommaAndSpace() throws Exception {
         final String excludes = PATTERN_TEST_STRING;
-        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir.getRoot(), "", excludes, false, FileFinder.DEFAULT_PATTERN_SEPARATOR);
+        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir, "", excludes, false, FileFinder.DEFAULT_PATTERN_SEPARATOR);
         final DirectoryScannerAccessor dsAccess = new DirectoryScannerAccessor(ds);
         assertArrayEquals(new String[] {"one", "two", "three", "four", "five"}, dsAccess.getExcludes());
     }
 
-    @Test public void setPatternSeparatorToEnablePatternsWithSpaces() throws Exception {
+    @Test
+    void setPatternSeparatorToEnablePatternsWithSpaces() throws Exception {
         final String includes = PATTERN_TEST_STRING_COMMA_SEP;
         final String excludes = PATTERN_TEST_STRING_COMMA_SEP;
-        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir.getRoot(), includes, excludes, false, ",");
+        final DirectoryScanner ds = FileFinder.createDirectoryScanner(tmpDir, includes, excludes, false, ",");
         final DirectoryScannerAccessor dsAccess = new DirectoryScannerAccessor(ds);
         assertArrayEquals(new String[] {"pattern one", "pattern two"}, dsAccess.getIncludes());
         assertArrayEquals(new String[] {"pattern one", "pattern two"}, dsAccess.getExcludes());

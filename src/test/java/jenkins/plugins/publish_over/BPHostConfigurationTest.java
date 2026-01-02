@@ -24,50 +24,60 @@
 
 package jenkins.plugins.publish_over;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import java.io.Serial;
 
-@SuppressWarnings("PMD.SignatureDeclareThrowsException")
-public class BPHostConfigurationTest {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@SuppressWarnings("PMD.SignatureDeclareThrowsException") class BPHostConfigurationTest {
 
     private final BPHostConfiguration hostConfig = new ConcreteBPHostConfiguration();
 
-    @Test public void testIsAbsoluteFalseForNull() throws Exception {
+    @Test
+    void testIsAbsoluteFalseForNull() {
         assertFalse(hostConfig.isDirectoryAbsolute(null));
     }
 
-    @Test public void testIsAbsoluteFalseForEmpty() throws Exception {
+    @Test
+    void testIsAbsoluteFalseForEmpty() {
         assertFalse(hostConfig.isDirectoryAbsolute(""));
     }
 
-    @Test public void testIsAbsoluteFalseForRelativeWin() throws Exception {
+    @Test
+    void testIsAbsoluteFalseForRelativeWin() {
         assertFalse(hostConfig.isDirectoryAbsolute("some\\file\\path"));
     }
 
-    @Test public void testIsAbsoluteFalseForRelativeUnix() throws Exception {
+    @Test
+    void testIsAbsoluteFalseForRelativeUnix() {
         assertFalse(hostConfig.isDirectoryAbsolute("some/file/path"));
     }
 
-    @Test public void testIsAbsoluteTrueForWin() throws Exception {
+    @Test
+    void testIsAbsoluteTrueForWin() {
         assertTrue(hostConfig.isDirectoryAbsolute("\\some\\file\\path"));
     }
 
-    @Test public void testIsAbsoluteTrueForUnix() throws Exception {
+    @Test
+    void testIsAbsoluteTrueForUnix() {
         assertTrue(hostConfig.isDirectoryAbsolute("/some/file/path"));
     }
 
-    @Test public void testIsAbsoluteTrueForWinRoot() throws Exception {
+    @Test
+    void testIsAbsoluteTrueForWinRoot() {
         assertTrue(hostConfig.isDirectoryAbsolute("\\"));
     }
 
-    @Test public void testIsAbsoluteTrueForUnixRoot() throws Exception {
+    @Test
+    void testIsAbsoluteTrueForUnixRoot() {
         assertTrue(hostConfig.isDirectoryAbsolute("/"));
     }
 
     private static class ConcreteBPHostConfiguration extends BPHostConfiguration {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -75,6 +85,7 @@ public class BPHostConfigurationTest {
             return null;
         }
 
+        @Serial
         @Override
         public Object readResolve() {
             return super.readResolve();

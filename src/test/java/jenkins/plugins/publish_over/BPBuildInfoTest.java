@@ -27,34 +27,37 @@ package jenkins.plugins.publish_over;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import jenkins.plugins.publish_over.helper.BPBuildInfoFactory;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.TreeMap;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class BPBuildInfoTest {
+class BPBuildInfoTest {
 
-    private FilePath baseDir = new FilePath(new File("baseDir"));
+    private final FilePath baseDir = new FilePath(new File("baseDir"));
     private BPBuildInfo buildInfo;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void beforeEach() {
         final BPBuildEnv current = new BPBuildInfoFactory().createEmptyBuildEnv();
         buildInfo = new BPBuildInfo(TaskListener.NULL, "", new FilePath(new File("")), current, null);
-        buildInfo.setEnvVars(new TreeMap<String, String>());
+        buildInfo.setEnvVars(new TreeMap<>());
         buildInfo.setBaseDirectory(baseDir);
     }
 
-    @Test public void testGetRelativePath() throws Exception {
+    @Test
+    void testGetRelativePath() throws Exception {
         final String relPath = "./some/path/to/dir";
         final FilePath path = new FilePath(baseDir, relPath + "/filename.xxx");
         assertEquals(relPath.replace(".", ""), buildInfo.getRelativePathToFile(path, null));
     }
 
-    @Test public void testGetRelativeDirectory() throws Exception {
+    @Test
+    void testGetRelativeDirectory() throws Exception {
         final String relDir = "./some/path/to/dir";
         final FilePath path = new FilePath(baseDir, relDir);
         assertEquals(relDir.replace(".", ""), buildInfo.getRelativeDir(path, null));
