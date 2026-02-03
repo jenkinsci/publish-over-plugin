@@ -24,45 +24,53 @@
 
 package jenkins.plugins.publish_over;
 
-import org.junit.Test;
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
-public class JellySupportTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-    @Test public void textAreaHeightMinimumIfNoContent() {
+class JellySupportTest {
+
+    @Test
+    void textAreaHeightMinimumIfNoContent() {
         final int minimumHeight = 3;
         assertEquals(minimumHeight, JellySupport.textAreaHeight(minimumHeight, null));
     }
 
-    @Test public void textAreaHeightMinimumIfEmpty() {
+    @Test
+    void textAreaHeightMinimumIfEmpty() {
         final int minimumHeight = 1;
         assertEquals(minimumHeight, JellySupport.textAreaHeight(minimumHeight, ""));
     }
 
-    @Test public void textAreaHeightUnixContentLines() {
+    @Test
+    void textAreaHeightUnixContentLines() {
         final int expectedHeight = 3;
         final int requestedMinimum = 1;
         assertEquals(expectedHeight, JellySupport.textAreaHeight(requestedMinimum, "one\ntwo\nthree"));
     }
 
-    @Test public void textAreaHeightWindowsContentLines() {
+    @Test
+    void textAreaHeightWindowsContentLines() {
         final int expectedHeight = 3;
         final int requestedMinimum = 1;
         assertEquals(expectedHeight, JellySupport.textAreaHeight(requestedMinimum, "one\r\ntwo\r\nthree"));
     }
 
-    @Test public void textAreaHeightMinimumIfGreaterThanHeight() {
+    @Test
+    void textAreaHeightMinimumIfGreaterThanHeight() {
         final int minimumHeight = 3;
         assertEquals(minimumHeight, JellySupport.textAreaHeight(minimumHeight, "one\ntwo"));
     }
 
-    @Test public void textAreaHeightContentHeightIfGreaterThanMinimum() {
+    @Test
+    void textAreaHeightContentHeightIfGreaterThanMinimum() {
         final int expectedHeight = 3;
         final int requestedMinimum = 2;
         assertEquals(expectedHeight, JellySupport.textAreaHeight(requestedMinimum, "one\ntwo\nthree"));
     }
 
-    @Test public void textAreaHeightEnforceMinimumMinimum() {
+    @Test
+    void textAreaHeightEnforceMinimumMinimum() {
         assertEquals(JellySupport.MINIMUM_MINIMUM_HEIGHT, JellySupport.textAreaHeight(JellySupport.MINIMUM_MINIMUM_HEIGHT - 1, null));
     }
 

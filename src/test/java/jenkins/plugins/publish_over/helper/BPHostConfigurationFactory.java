@@ -29,6 +29,8 @@ import jenkins.plugins.publish_over.BPBuildInfo;
 import jenkins.plugins.publish_over.BPClient;
 import jenkins.plugins.publish_over.BPHostConfiguration;
 
+import java.io.Serial;
+
 public class BPHostConfigurationFactory {
 
     public BPHostConfiguration create(final String configName) {
@@ -45,6 +47,7 @@ public class BPHostConfigurationFactory {
 
     public static class ConcreteBPHostConfiguration<CLIENT extends BPClient> extends BPHostConfiguration<CLIENT, Object> {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private final CLIENT client;
@@ -63,6 +66,7 @@ public class BPHostConfigurationFactory {
             return client;
         }
 
+        @Serial
         @Override
         public Object readResolve() {
             return super.readResolve();

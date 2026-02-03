@@ -17,27 +17,34 @@ import hudson.tasks.Shell;
 import java.util.Collections;
 
 import org.htmlunit.Page;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.concurrent.Future;
 import org.jvnet.hudson.test.JenkinsRule.WebClient;
+import org.jvnet.hudson.test.junit.jupiter.WithJenkins;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class BPPluginTest {
+@WithJenkins
+class BPPluginTest {
 
-    @Rule
-    public JenkinsRule r = new JenkinsRule();
+    private JenkinsRule r;
+
+    @BeforeEach
+    void beforeEach(JenkinsRule rule) {
+        r = rule;
+    }
 
     @Test
-    public void testNormalBuild() throws Exception {
+    void testNormalBuild() throws Exception {
 
         // create project
         FreeStyleProject freeStyleProject = r.createFreeStyleProject("proj1");
@@ -64,7 +71,7 @@ public class BPPluginTest {
     }
 
     @Test
-    public void testPromotionBuild() throws Exception {
+    void testPromotionBuild() throws Exception {
 
         // create project
         FreeStyleProject freeStyleProject = r.createFreeStyleProject("proj1");
@@ -150,12 +157,12 @@ public class BPPluginTest {
         }
 
         @Override
-        public void deleteTree() throws Exception {
+        public void deleteTree() {
 
         }
 
         @Override
-        public void transferFile(BPTransfer transfer, FilePath filePath, InputStream fileContent) throws Exception {
+        public void transferFile(BPTransfer transfer, FilePath filePath, InputStream fileContent) {
 
         }
 
@@ -165,7 +172,7 @@ public class BPPluginTest {
         }
 
         @Override
-        public void disconnect() throws Exception {
+        public void disconnect() {
 
         }
 

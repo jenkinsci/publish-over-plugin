@@ -25,33 +25,36 @@
 package jenkins.plugins.publish_over;
 
 import jenkins.plugins.publish_over.helper.BPBuildInfoFactory;
-import org.easymock.classextension.EasyMock;
-import org.easymock.classextension.IMocksControl;
-import org.junit.Before;
-import org.junit.Test;
+import org.easymock.EasyMock;
+import org.easymock.IMocksControl;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.regex.PatternSyntaxException;
 
 import static org.easymock.EasyMock.expect;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-@SuppressWarnings({ "PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods" })
-public class ParamPublishTest {
+@SuppressWarnings({"PMD.SignatureDeclareThrowsException", "PMD.TooManyMethods"})
+class ParamPublishTest {
 
     private static final String PARAM_NAME = "PUBLISHERS";
     private final BPBuildInfo buildInfo = new BPBuildInfoFactory().createEmpty();
     private final IMocksControl mockControl = EasyMock.createStrictControl();
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void beforeEach() {
         mockControl.checkOrder(false);
         buildInfo.setEnvVars(buildInfo.getCurrentBuildEnv().getEnvVars());
     }
 
-    @Test public void testSelector() throws Exception {
+    @Test
+    void testSelector() {
         final ParamPublish paramPublish = createParamPublish("[AC]");
         final BapPublisher pubA = createMockPublisher("A");
         final BapPublisher pubB = createMockPublisher("B");
@@ -77,7 +80,8 @@ public class ParamPublishTest {
         return mockPublisher;
     }
 
-    @Test public void testNoLabelIsEqualToEmptyString() {
+    @Test
+    void testNoLabelIsEqualToEmptyString() {
         final BapPublisher emptyLabelName = createMockPublisher("");
         final BapPublisher nullLabelName = createMockPublisher(null);
         final BapPublisher nullLabel = mockControl.createMock(BapPublisher.class);
@@ -99,7 +103,8 @@ public class ParamPublishTest {
         mockControl.verify();
     }
 
-    @Test public void testBadPattern() {
+    @Test
+    void testBadPattern() {
         final String regex = "this should fail(";
         final ParamPublish paramPublish = createParamPublish(regex);
         try {
@@ -108,11 +113,12 @@ public class ParamPublishTest {
         } catch (BapPublisherException bpe) {
             assertTrue(bpe.getLocalizedMessage().contains(PARAM_NAME));
             assertTrue(bpe.getLocalizedMessage().contains(regex));
-            assertTrue(bpe.getCause() instanceof PatternSyntaxException);
+            assertInstanceOf(PatternSyntaxException.class, bpe.getCause());
         }
     }
 
-    @Test public void testNoParameter() {
+    @Test
+    void testNoParameter() {
         final ParamPublish paramPublish = new ParamPublish(PARAM_NAME);
         try {
             paramPublish.createSelector(buildInfo);
@@ -122,7 +128,8 @@ public class ParamPublishTest {
         }
     }
 
-    @Test public void testLabelCanUseEnvVars() throws Exception {
+    @Test
+    void testLabelCanUseEnvVars() {
         final String nodeName = "master";
         final ParamPublish paramPublish = createParamPublish(nodeName);
         final BapPublisher pub = createMockPublisher("$" + BPBuildEnv.ENV_NODE_NAME);
