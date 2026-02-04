@@ -36,13 +36,17 @@
     <artifactId>publish-over</artifactId>
     <packaging>hpi</packaging>
     <name>Infrastructure plugin for Publish Over X</name>
-    <version>0.23-SNAPSHOT</version>
+    <version>${changelist}</version>
+    <description>Infrastructure plugin for publish-over X</description>
+    <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
 
     <properties>
         <java.net.id>bap</java.net.id>
         <jenkins.baseline>2.479</jenkins.baseline>
         <jenkins.version>${jenkins.baseline}.3</jenkins.version>
         <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
+        <changelist>999999-SNAPSHOT</changelist>
+        <gitHubRepo>jenkinsci/${project.artifactId}-plugin</gitHubRepo>
     </properties>
 
     <licenses>
