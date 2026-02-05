@@ -30,3 +30,4 @@ target/
 .classpath
 .project
 work/
+.DS_Store
